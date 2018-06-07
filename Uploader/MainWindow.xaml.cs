@@ -60,14 +60,15 @@ namespace Uploader
               
         }
 
-        private void Upload_Click(object sender, RoutedEventArgs e)
+        private async void Upload_Click(object sender, RoutedEventArgs e)
         {
-            
+            HttpResponseMessage response = await UploadImage(url, image);
 
-                       
-            
-            
-            MessageBox.Show("File has been uploaded");
+            if (response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("File has been uploaded");
+            }
+                
         }
 
         async public Task<HttpResponseMessage> UploadImage(string url, byte[] ImageData)
