@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Uploader.Model;
 
 namespace Uploader
 {
@@ -62,27 +63,38 @@ namespace Uploader
 
         private async void Upload_Click(object sender, RoutedEventArgs e)
         {
-            HttpResponseMessage response = await UploadImage(url, image);
+            //HttpResponseMessage response = await UploadImage(url, image);
 
-            if (response.IsSuccessStatusCode)
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    MessageBox.Show("File has been uploaded");
+            //}
+
+            FileModel fileModel = new FileModel
             {
-                MessageBox.Show("File has been uploaded");
-            }
-                
+                Id = new Guid(),
+                Name = "MyPhoto",
+                DateTime = DateTimeOffset.Now,
+                Photo = Convert.ToBase64String(image)
+            };
+
+            FileSender client = new FileSender(url);
+            client.AddUser(fileModel);
         }
 
-        async public Task<HttpResponseMessage> UploadImage(string url, byte[] ImageData)
-        {
-            var client = new HttpClient();
+        
+        //async public Task<HttpResponseMessage> UploadImage(string url, byte[] ImageData)
+        //{
+        //    var client = new HttpClient();
 
-            var requestContent = new MultipartFormDataContent();
+        //    var requestContent = new MultipartFormDataContent();
             
-            var imageContent = new ByteArrayContent(ImageData);
-            imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+        //    var imageContent = new ByteArrayContent(ImageData);
+        //    imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
 
-            requestContent.Add(imageContent, FileName);
+        //    requestContent.Add(imageContent, FileName);
 
-            return await client.PostAsync(url, requestContent);
-        }
+        //    return await client.PostAsync(url, requestContent);
+        //}
     }
 }
