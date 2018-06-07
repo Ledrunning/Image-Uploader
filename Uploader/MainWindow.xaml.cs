@@ -61,14 +61,16 @@ namespace Uploader
               
         }
 
-        private async void Upload_Click(object sender, RoutedEventArgs e)
+        private void Upload_Click(object sender, RoutedEventArgs e)
         {
+            #region Deprecated
             //HttpResponseMessage response = await UploadImage(url, image);
 
             //if (response.IsSuccessStatusCode)
             //{
             //    MessageBox.Show("File has been uploaded");
             //}
+            #endregion
 
             FileModel fileModel = new FileModel
             {

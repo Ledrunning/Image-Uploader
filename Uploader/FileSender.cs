@@ -26,7 +26,7 @@ namespace Uploader
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpResponseMessage response;
-                response = await client.GetAsync("api/User/" + id);
+                response = await client.GetAsync("api/file/" + id);
                 if (response.IsSuccessStatusCode)
                 {
                     FileModel user = await response.Content.ReadAsAsync<FileModel>();
