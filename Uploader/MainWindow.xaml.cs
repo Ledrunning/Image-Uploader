@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -27,7 +28,8 @@ namespace Uploader
     public partial class MainWindow : Window
     {
         byte[] image;
-        private readonly string url = "http://127.0.0.1:18710/";
+        private readonly string url = "http://localhost:59871";
+        private string FileName { get; set; }
 
         public MainWindow()
         {
@@ -37,75 +39,79 @@ namespace Uploader
         private void OpenFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            
-            
+
             openFileDialog.Filter = "JPEG(*.jpg)|*.jpg|All(*.*)|*";
-           
+
             if (openFileDialog.ShowDialog() == true)
             {
-               try
+                FileName = openFileDialog.SafeFileName;
+                try
                 {
                     image = File.ReadAllBytes(openFileDialog.FileName);
                     MessageBox.Show("File has been opened");
                 }
-                catch(IOException err)
+                catch (IOException err)
                 {
                     MessageBox.Show(err.Message);
                 }
-                
+
             }
-              
+
         }
 
-        private async Task Upload_ClickAsync(object sender, RoutedEventArgs e)
+        private void Upload_Click(object sender, RoutedEventArgs e)
         {
-            var client = new HttpClient();
+            Random randomName = new Random();
+            FileModel fileModel = new FileModel
+            {
+                Id = new Guid(),
+                Name = "MyPhoto" + randomName.Next().ToString(),
+                DateTime = DateTimeOffset.Now,
+                Photo = Convert.ToBase64String(image)
+            };
 
-                       
-            ByteArrayContent byteContent = new ByteArrayContent(image);
-            HttpResponseMessage reponse = await client.PostAsync(url, byteContent);
-            
+            FileSender client = new FileSender(url);
+            client.AddFile(fileModel);
+
             MessageBox.Show("File has been uploaded");
         }
 
-        public class UserClient
+
+
+        private async void Get_Click(object sender, RoutedEventArgs e)
         {
-            private string baseAddress;
-            public UserClient(string baseAddress)
+            FileSender client = new FileSender(url);
+            string[] formats = { "N", "D", "B", "P", "X" };
+            Guid result;
+
+            try
             {
-                this.baseAddress = baseAddress;
+                Guid.TryParseExact(txtId.Text, "D", out result);
+                var files = await client.GetFileAsync(result);
+                var buffer = Convert.FromBase64String(files.Photo);
+                imgPhoto.Source = ByteToImage(buffer);
             }
-            public async Task<RecieveTransmitModel> GetUserAsync(int id)
+            catch(NullReferenceException err)
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(baseAddress);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    HttpResponseMessage response;
-                    response = await client.GetAsync("api/User/" + id);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        RecieveTransmitModel model = await response.Content.ReadAsAsync<RecieveTransmitModel>();
-                        return model;
-                    }
-                }
-                return null;
+                MessageBox.Show(err.Message);
             }
-            public async void AddUser(RecieveTransmitModel user)
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(baseAddress);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    HttpResponseMessage response;
-                    response = await client.PostAsJsonAsync<RecieveTransmitModel>("api/User", user);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new Exception("Error when adding user!");
-                    }
-                }
-            }
+            
+
         }
+
+
+
+        public ImageSource ByteToImage(byte[] byteArrayIn)
+        {
+            BitmapImage biImg = new BitmapImage();
+            MemoryStream ms = new MemoryStream(byteArrayIn);
+            biImg.BeginInit();
+            biImg.StreamSource = ms;
+            biImg.EndInit();
+
+            ImageSource imgSrc = biImg as ImageSource;
+
+            return imgSrc;
+        }
+    }
 }
