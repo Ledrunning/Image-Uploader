@@ -9,7 +9,7 @@ namespace FileUploadWebApiTest.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Path { get; set; }
-        public DateTimeOffset Datetime { get; set; }
+        public DateTimeOffset DateTime { get; set; }
+        public string Photo { get; set; }
     }
 }

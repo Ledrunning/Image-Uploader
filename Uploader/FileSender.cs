@@ -18,7 +18,7 @@ namespace Uploader
             this.baseAddress = baseAddress;
         }
 
-        public async Task<FileModel> GetUserAsync(int id)
+        public async Task<FileModel> GetFileAsync(Guid id)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -26,7 +26,7 @@ namespace Uploader
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpResponseMessage response;
-                response = await client.GetAsync("api/file/" + id);
+                response = await client.GetAsync("api/FileUpload/" + id);
                 if (response.IsSuccessStatusCode)
                 {
                     FileModel user = await response.Content.ReadAsAsync<FileModel>();
@@ -36,7 +36,25 @@ namespace Uploader
             return null;
         }
 
-        public async void AddUser(FileModel fileModel)
+        public async Task<FileModel> GetAllAsync(int id)
+        {
+            //using (HttpClient client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(baseAddress);
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //    HttpResponseMessage response;
+            //    response = await client.GetAsync("api/FileUpload/" + id);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        FileModel user = await response.Content.ReadAsAsync<FileModel>();
+            //        return user;
+            //    }
+            //}
+            return null;
+        }
+
+        public async void AddFile(FileModel fileModel)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -45,10 +63,10 @@ namespace Uploader
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpResponseMessage response;
 
-                response = await client.PostAsJsonAsync<FileModel>("api/file", fileModel);
+                response = await client.PostAsJsonAsync<FileModel>("api/FileUpload", fileModel);
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new Exception("Error when adding user!");
+                    throw new Exception("Error when adding file!");
                 }
             }
         }

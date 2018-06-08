@@ -12,5 +12,7 @@ namespace FileUploadWebApiTest.Models
         public FileModelContext(DbContextOptions<FileModelContext> options)
             : base(options)
         { }
+
+        public FileModelContext() { }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FileUploadWebApiTest.Models;
+using FileUploadWebApiTest.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ namespace FileUploadWebApiTest
         {
             string connection = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ServerFiles;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             services.AddDbContext<FileModelContext>(options => options.UseSqlServer(connection));
+            services.AddScoped<IFileRepository, FileRepository>();
             services.AddMvc();
         }
 

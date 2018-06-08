@@ -5,9 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Uploader"
         mc:Ignorable="d"
-        Title="MainWindow" Height="200" Width="200">
+        Title="MainWindow" Height="520" Width="500
+        ">
     <Grid>
-        <Button Height="30" Width="100" Content="Open" FontFamily="Arial" FontSize="20" Margin="0,0,0,80" Click="OpenFile_Click"/>
-        <Button Height="30" Width="100" Content="Upload" FontFamily="Arial" FontSize="20" Margin="0,50,0,0" Click="Upload_Click"/>
+        <Button Height="30" Width="100" Content="Open" FontFamily="Arial" FontSize="20" Margin="74,328,318,106" Click="OpenFile_Click"/>
+        <Button Height="30" Width="100" Content="Upload" FontFamily="Arial" FontSize="20" Margin="314,328,78,106" Click="Upload_Click"/>
+        <Image Name="imgPhoto" Margin="52,58,52,173"/>
+        <Button Height="30" Width="100" Content="Get Img" FontFamily="Arial" FontSize="20" Margin="194,393,198,41" Click="Get_Click"/>
+        <TextBox Name ="txtId" Background="LightGray" Height="30" Width="100" Margin="52,393,340,41"></TextBox>
     </Grid>
 </Window>
