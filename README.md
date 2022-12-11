@@ -1,6 +1,7 @@
 # WebApiFileUploadTest
+
 - Test project for image uploading to the database via WPF Client
 
-- Client written on C# WPF
+- Client was written on C# WPF
 
-- Server side ASP .NET Core Web Api 
+- Server-side was written by ASP .NET Core
