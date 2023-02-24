@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using FileUploadWebApiTest.Models;
 
 namespace FileUploadWebApiTest.Repository
@@ -13,7 +10,7 @@ namespace FileUploadWebApiTest.Repository
 
         public FileRepository(FileModelContext fileContext)
         {
-            _fileContext = fileContext; 
+            _fileContext = fileContext;
         }
 
         public FileModel AddFile(FileModel file)
@@ -28,6 +25,7 @@ namespace FileUploadWebApiTest.Repository
             {
                 throw new Exception(err.Message);
             }
+
             return file;
         }
 
@@ -38,7 +36,6 @@ namespace FileUploadWebApiTest.Repository
 
         public IQueryable<FileModel> GetFiles()
         {
-
             try
             {
                 // Files - название таблицы DBSet

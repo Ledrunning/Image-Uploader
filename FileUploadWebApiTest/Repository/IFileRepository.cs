@@ -1,8 +1,6 @@
-﻿using FileUploadWebApiTest.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
+using FileUploadWebApiTest.Models;
 
 namespace FileUploadWebApiTest.Repository
 {
