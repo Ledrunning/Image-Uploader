@@ -22,7 +22,7 @@ namespace FileUploadWebApiTest.Migrations
 
             modelBuilder.Entity("FileUploadWebApiTest.Models.FileModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTimeOffset>("DateTime");

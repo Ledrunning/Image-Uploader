@@ -1,27 +1,24 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Uploader.Model;
 
 namespace Uploader
 {
-    /// <summary>
-    ///     Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly string url = "http://localhost:59871";
-        private byte[] _image;
+        private readonly string _urlAddress = ConfigurationManager.AppSettings["serverUriString"];
+        private byte[] _imageByteArray;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        private void OnOpenFileClick(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -35,7 +32,10 @@ namespace Uploader
 
             try
             {
-                _image = File.ReadAllBytes(openFileDialog.FileName);
+                _imageByteArray = File.ReadAllBytes(openFileDialog.FileName);
+
+                imgPhoto.Source = ByteToImage(_imageByteArray);
+
                 MessageBox.Show("File has been opened");
             }
             catch (IOException err)
@@ -48,13 +48,12 @@ namespace Uploader
         {
             var fileModel = new FileModel
             {
-                Id = new Guid(),
                 Name = $"MyPhoto_{DateTime.UtcNow.ToString("MMddyyyy_HHmmss")}",
                 DateTime = DateTimeOffset.Now,
-                Photo = Convert.ToBase64String(_image)
+                Photo = Convert.ToBase64String(_imageByteArray)
             };
 
-            var client = new FileSender(url);
+            var client = new FileSender(_urlAddress);
             client.AddFile(fileModel);
 
             MessageBox.Show("File has been uploaded");
@@ -63,11 +62,11 @@ namespace Uploader
 
         private async void OnGetFilesClick(object sender, RoutedEventArgs e)
         {
-            var client = new FileSender(url);
+            var client = new FileSender(_urlAddress);
 
             try
             {
-                Guid.TryParseExact(txtId.Text, "D", out var result);
+                int.TryParse(txtId.Text, out var result);
                 var files = await client.GetFileAsync(result);
                 var buffer = Convert.FromBase64String(files.Photo);
                 imgPhoto.Source = ByteToImage(buffer);
@@ -78,17 +77,27 @@ namespace Uploader
             }
         }
 
-
-        public ImageSource ByteToImage(byte[] byteArrayIn)
+        private static BitmapImage ByteToImage(byte[] imageData)
         {
-            var bitmapImage = new BitmapImage();
-            using (var memoryStream = new MemoryStream(byteArrayIn))
+            if (imageData == null || imageData.Length == 0)
             {
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memoryStream;
-                bitmapImage.EndInit();
-                return bitmapImage;
+                return null;
             }
+
+            var image = new BitmapImage();
+            using (var memoryStream = new MemoryStream(imageData))
+            {
+                memoryStream.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = memoryStream;
+                image.EndInit();
+            }
+
+            image.Freeze();
+            return image;
         }
     }
 }

@@ -7,8 +7,8 @@ namespace FileUploadWebApiTest.Repository
     public interface IFileRepository
     {
         IQueryable<FileModel> GetFiles();
-        FileModel GetFilesById(Guid id);
+        FileModel GetFilesById(long id);
         FileModel AddFile(FileModel file);
-        void DeleteFile(Guid id);
+        void DeleteFile(long id);
     }
 }

@@ -11,7 +11,7 @@ using System;
 namespace FileUploadWebApiTest.Migrations
 {
     [DbContext(typeof(FileModelContext))]
-    [Migration("20230225221804_InitialCreate")]
+    [Migration("20230225225217_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,7 +23,7 @@ namespace FileUploadWebApiTest.Migrations
 
             modelBuilder.Entity("FileUploadWebApiTest.Models.FileModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTimeOffset>("DateTime");

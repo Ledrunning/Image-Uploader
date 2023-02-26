@@ -22,7 +22,7 @@ namespace FileUploadWebApiTest.Controllers
         }
 
         [HttpGet("{id}", Name = "GetFileUpload")]
-        public IActionResult GetById(Guid id)
+        public IActionResult GetById(long id)
         {
             var file = _fileRepository.GetFilesById(id);
             if (file == null)
@@ -46,7 +46,7 @@ namespace FileUploadWebApiTest.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public IActionResult Delete(long id)
         {
             var file = _fileRepository.GetFilesById(id);
             if (file == null)

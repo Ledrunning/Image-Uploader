@@ -8,18 +8,18 @@ namespace Uploader
 {
     public class FileSender
     {
-        private readonly string baseAddress;
+        private readonly string _baseAddress;
 
         public FileSender(string baseAddress)
         {
-            this.baseAddress = baseAddress;
+            this._baseAddress = baseAddress;
         }
 
-        public async Task<FileModel> GetFileAsync(Guid id)
+        public async Task<FileModel> GetFileAsync(long id)
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(baseAddress);
+                client.BaseAddress = new Uri(_baseAddress);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -38,7 +38,7 @@ namespace Uploader
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(baseAddress);
+                client.BaseAddress = new Uri(_baseAddress);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

@@ -17,7 +17,6 @@ namespace FileUploadWebApiTest.Repository
         {
             try
             {
-                file.Id = Guid.NewGuid();
                 _fileContext.Files.Add(file);
                 _fileContext.SaveChanges();
             }
@@ -29,7 +28,7 @@ namespace FileUploadWebApiTest.Repository
             return file;
         }
 
-        public void DeleteFile(Guid id)
+        public void DeleteFile(long id)
         {
             throw new NotImplementedException();
         }
@@ -47,7 +46,7 @@ namespace FileUploadWebApiTest.Repository
             }
         }
 
-        public FileModel GetFilesById(Guid id)
+        public FileModel GetFilesById(long id)
         {
             return _fileContext.Files.SingleOrDefault(c => c.Id == id);
         }

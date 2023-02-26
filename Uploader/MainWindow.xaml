@@ -8,7 +8,7 @@
         Title="MainWindow" Height="520" Width="500
         ">
     <Grid>
-        <Button Height="30" Width="100" Content="Open" FontFamily="Arial" FontSize="20" Margin="74,328,318,106" Click="OpenFile_Click"/>
+        <Button Height="30" Width="100" Content="Open" FontFamily="Arial" FontSize="20" Margin="74,328,318,106" Click="OnOpenFileClick"/>
         <Button Height="30" Width="100" Content="Upload" FontFamily="Arial" FontSize="20" Margin="314,328,78,106" Click="OnUploadClick"/>
         <Image Name="imgPhoto" Margin="52,58,52,173"/>
         <Button Height="30" Width="100" Content="Get Img" FontFamily="Arial" FontSize="20" Margin="194,393,198,41" Click="OnGetFilesClick"/>
