@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using FileUploadWebApiTest.Contracts;
 using FileUploadWebApiTest.Models;
+using FileUploadWebApiTest.Repository.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileUploadWebApiTest.Repository
 {
@@ -13,32 +19,31 @@ namespace FileUploadWebApiTest.Repository
             _fileContext = fileContext;
         }
 
-        public FileModel AddFile(FileModel file)
+        public async Task AddAsync(FileEntity file, CancellationToken token)
         {
             try
             {
-                _fileContext.Files.Add(file);
-                _fileContext.SaveChanges();
+                await _fileContext.Files.AddAsync(file, token);
+                await _fileContext.SaveChangesAsync(token);
             }
             catch (Exception err)
             {
                 throw new Exception(err.Message);
             }
 
-            return file;
         }
 
-        public void DeleteFile(long id)
+        public void DeleteAsync(long id, CancellationToken token)
         {
             throw new NotImplementedException();
         }
 
-        public IQueryable<FileModel> GetFiles()
+        public async Task<IList<FileEntity>> GetAllAsync(CancellationToken token)
         {
             try
             {
                 // Files - название таблицы DBSet
-                return _fileContext.Files.AsQueryable();
+                return await _fileContext.Files.AsQueryable().ToListAsync(token);
             }
             catch (Exception err)
             {
@@ -46,9 +51,9 @@ namespace FileUploadWebApiTest.Repository
             }
         }
 
-        public FileModel GetFilesById(long id)
+        public async Task<FileEntity> GetByIdAsync(long id, CancellationToken token)
         {
-            return _fileContext.Files.SingleOrDefault(c => c.Id == id);
+            return await _fileContext.Files.SingleOrDefaultAsync(c => c.Id == id, cancellationToken: token);
         }
     }
 }

@@ -48,9 +48,9 @@ namespace Uploader
         {
             var fileModel = new FileModel
             {
-                Name = $"MyPhoto_{DateTime.UtcNow.ToString("MMddyyyy_HHmmss")}",
+                Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
                 DateTime = DateTimeOffset.Now,
-                Photo = Convert.ToBase64String(_imageByteArray)
+                Photo = _imageByteArray
             };
 
             var client = new FileSender(_urlAddress);
@@ -68,8 +68,7 @@ namespace Uploader
             {
                 int.TryParse(txtId.Text, out var result);
                 var files = await client.GetFileAsync(result);
-                var buffer = Convert.FromBase64String(files.Photo);
-                imgPhoto.Source = ByteToImage(buffer);
+                imgPhoto.Source = ByteToImage(files.Photo);
             }
             catch (NullReferenceException err)
             {

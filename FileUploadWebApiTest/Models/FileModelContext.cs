@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FileUploadWebApiTest.Repository.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileUploadWebApiTest.Models
 {
@@ -13,6 +14,6 @@ namespace FileUploadWebApiTest.Models
         {
         }
 
-        public DbSet<FileModel> Files { get; set; }
+        public DbSet<FileEntity> Files { get; set; }
     }
 }

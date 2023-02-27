@@ -1,5 +1,7 @@
-﻿using FileUploadWebApiTest.Models;
+﻿using FileUploadWebApiTest.Contracts;
+using FileUploadWebApiTest.Models;
 using FileUploadWebApiTest.Repository;
+using FileUploadWebApiTest.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +12,7 @@ namespace FileUploadWebApiTest
 {
     public class Startup
     {
-        const string ConnectionString = "DbConnection";
+        private const string ConnectionString = "DbConnection";
 
         public Startup(IConfiguration configuration)
         {
@@ -25,6 +27,7 @@ namespace FileUploadWebApiTest
 
             services.AddDbContext<FileModelContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IFileService, FileService>();
             services.AddMvc();
         }
 

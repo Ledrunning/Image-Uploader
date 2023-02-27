@@ -1,7 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using FileUploadWebApiTest.Contracts;
 using FileUploadWebApiTest.Models;
-using FileUploadWebApiTest.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileUploadWebApiTest.Controllers
@@ -9,22 +10,22 @@ namespace FileUploadWebApiTest.Controllers
     [Route("api/[controller]")]
     public class FileUploadController : Controller
     {
-        private readonly IFileRepository _fileRepository;
+        private readonly IFileService _fileService;
 
-        public FileUploadController(IFileRepository fileRepository)
+        public FileUploadController(IFileService fileService)
         {
-            _fileRepository = fileRepository;
+            _fileService = fileService;
         }
 
-        public IQueryable<FileModel> GetAll()
+        public async Task<IList<FileDto>> GetAll(CancellationToken token)
         {
-            return _fileRepository.GetFiles();
+            return await _fileService.GetAllAsync(token);
         }
 
         [HttpGet("{id}", Name = "GetFileUpload")]
-        public IActionResult GetById(long id)
+        public IActionResult GetById(long id, CancellationToken token)
         {
-            var file = _fileRepository.GetFilesById(id);
+            var file = _fileService.GetByIdAsync(id, token);
             if (file == null)
             {
                 return NotFound();
@@ -34,27 +35,28 @@ namespace FileUploadWebApiTest.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] FileModel file)
+        public IActionResult Create([FromBody] FileDto file, CancellationToken token)
         {
             if (file == null)
             {
                 return BadRequest();
             }
 
-            _fileRepository.AddFile(file);
+            _fileService.AddAsync(file, token);
             return CreatedAtRoute("GetFileUpload", new { id = file.Id }, file);
         }
 
+        //TODO Under construction
         [HttpDelete("{id}")]
-        public IActionResult Delete(long id)
+        public IActionResult Delete(long id, CancellationToken token)
         {
-            var file = _fileRepository.GetFilesById(id);
+            var file = _fileService.GetByIdAsync(id, token);
             if (file == null)
             {
                 return NotFound();
             }
 
-            _fileRepository.DeleteFile(id);
+            //_fileService.DeleteAsync(id);
             return new NoContentResult();
         }
     }

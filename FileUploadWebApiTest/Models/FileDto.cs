@@ -1,9 +1,10 @@
 ﻿using System;
 
-namespace Uploader.Model
+namespace FileUploadWebApiTest.Models
 {
-    public class FileModel
+    public class FileDto
     {
+        public long Id { get; set; }
         public string Name { get; set; }
         public DateTimeOffset DateTime { get; set; }
         public byte[] Photo { get; set; }
