@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,39 +20,25 @@ namespace FileUploadWebApiTest.Repository
 
         public async Task AddAsync(FileEntity file, CancellationToken token)
         {
-            try
-            {
-                await _fileContext.Files.AddAsync(file, token);
-                await _fileContext.SaveChangesAsync(token);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
-
+            await _fileContext.Files.AddAsync(file, token);
+            await _fileContext.SaveChangesAsync(token);
         }
 
-        public void DeleteAsync(long id, CancellationToken token)
+        public async Task DeleteAsync(FileEntity file, CancellationToken token)
         {
-            throw new NotImplementedException();
+            _fileContext.Files.Attach(file);
+            _fileContext.Files.Remove(file);
+            await _fileContext.SaveChangesAsync(token);
         }
 
         public async Task<IList<FileEntity>> GetAllAsync(CancellationToken token)
         {
-            try
-            {
-                // Files - название таблицы DBSet
-                return await _fileContext.Files.AsQueryable().ToListAsync(token);
-            }
-            catch (Exception err)
-            {
-                throw new Exception(err.Message);
-            }
+            return await _fileContext.Files.AsQueryable().ToListAsync(token);
         }
 
         public async Task<FileEntity> GetByIdAsync(long id, CancellationToken token)
         {
-            return await _fileContext.Files.SingleOrDefaultAsync(c => c.Id == id, cancellationToken: token);
+            return await _fileContext.Files.SingleOrDefaultAsync(c => c.Id == id, token);
         }
     }
 }

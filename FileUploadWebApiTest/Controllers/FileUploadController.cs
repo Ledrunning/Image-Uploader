@@ -5,6 +5,7 @@ using FileUploadWebApiTest.Contracts;
 using FileUploadWebApiTest.Models;
 using Microsoft.AspNetCore.Mvc;
 
+//TODO Custom Exception!
 namespace FileUploadWebApiTest.Controllers
 {
     [Route("api/[controller]")]
@@ -46,17 +47,16 @@ namespace FileUploadWebApiTest.Controllers
             return CreatedAtRoute("GetFileUpload", new { id = file.Id }, file);
         }
 
-        //TODO Under construction
         [HttpDelete("{id}")]
-        public IActionResult Delete(long id, CancellationToken token)
+        public async Task<IActionResult> Delete(long id, CancellationToken token)
         {
-            var file = _fileService.GetByIdAsync(id, token);
+            var file = await _fileService.GetByIdAsync(id, token);
             if (file == null)
             {
                 return NotFound();
             }
 
-            //_fileService.DeleteAsync(id);
+            await _fileService.DeleteAsync(file, file.Name, token);
             return new NoContentResult();
         }
     }

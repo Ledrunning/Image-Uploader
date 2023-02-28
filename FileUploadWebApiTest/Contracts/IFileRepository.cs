@@ -10,6 +10,6 @@ namespace FileUploadWebApiTest.Contracts
         Task<IList<FileEntity>> GetAllAsync(CancellationToken token);
         Task<FileEntity> GetByIdAsync(long id, CancellationToken token);
         Task AddAsync(FileEntity file, CancellationToken token);
-        void DeleteAsync(long id, CancellationToken token);
+        Task DeleteAsync(FileEntity file, CancellationToken token);
     }
 }

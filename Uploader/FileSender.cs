@@ -31,7 +31,7 @@ namespace Uploader
                 }
             }
 
-            return null;
+            throw new Exception("Error getting the file!");
         }
         
         public async void AddFile(FileModel fileModel)

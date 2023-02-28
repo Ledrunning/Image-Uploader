@@ -11,9 +11,10 @@ using System;
 namespace FileUploadWebApiTest.Migrations
 {
     [DbContext(typeof(FileModelContext))]
-    partial class FileModelContextModelSnapshot : ModelSnapshot
+    [Migration("20230227220005_ChangePhotoToPhotoPath")]
+    partial class ChangePhotoToPhotoPath
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

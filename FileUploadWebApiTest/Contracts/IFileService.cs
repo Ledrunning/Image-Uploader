@@ -10,5 +10,6 @@ namespace FileUploadWebApiTest.Contracts
         Task<IList<FileDto>> GetAllAsync(CancellationToken token);
         Task AddAsync(FileDto file, CancellationToken token);
         Task<FileDto> GetByIdAsync(long id, CancellationToken token);
+        Task DeleteAsync(FileDto file, string path, CancellationToken token);
     }
 }
