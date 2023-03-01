@@ -1,0 +1,16 @@
+﻿<Window x:Class="ImageUploader.DesktopClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="520" Width="500
+        ">
+    <Grid>
+        <Button Height="30" Width="100" Content="Open" FontFamily="Arial" FontSize="20" Margin="74,328,318,106" Click="OnOpenFileClick"/>
+        <Button Height="30" Width="100" Content="Upload" FontFamily="Arial" FontSize="20" Margin="314,328,78,106" Click="OnUploadClick"/>
+        <Image Name="imgPhoto" Margin="52,58,52,173"/>
+        <Button Height="30" Width="100" Content="Get Img" FontFamily="Arial" FontSize="20" Margin="194,393,198,41" Click="OnGetFilesClick"/>
+        <TextBox Name ="txtId" Background="LightGray" Height="30" Width="100" Margin="52,393,340,41"></TextBox>
+    </Grid>
+</Window>
