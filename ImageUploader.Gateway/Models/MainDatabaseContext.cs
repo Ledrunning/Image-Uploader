@@ -3,14 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ImageUploader.Gateway.Models
 {
-    public class FileModelContext : DbContext
+    public class MainDatabaseContext : DbContext
     {
-        public FileModelContext(DbContextOptions<FileModelContext> options)
+        public MainDatabaseContext(DbContextOptions<MainDatabaseContext> options)
             : base(options)
         {
         }
 
-        public FileModelContext()
+        public MainDatabaseContext()
         {
         }
 

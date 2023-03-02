@@ -11,7 +11,7 @@ using ImageUploader.Gateway.Models;
 
 namespace FileUploadWebApiTest.Migrations
 {
-    [DbContext(typeof(FileModelContext))]
+    [DbContext(typeof(MainDatabaseContext))]
     [Migration("20230227220005_ChangePhotoToPhotoPath")]
     partial class ChangePhotoToPhotoPath
     {

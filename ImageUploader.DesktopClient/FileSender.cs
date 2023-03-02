@@ -12,42 +12,58 @@ namespace ImageUploader.DesktopClient
 
         public FileSender(string baseAddress)
         {
-            this._baseAddress = baseAddress;
+            _baseAddress = baseAddress;
         }
 
         public async Task<FileModel> GetFileAsync(long id)
         {
-            using (var client = new HttpClient())
+            var response = await CreateHttpClient().GetAsync($"api/FileUpload/GetById?id={id}");
+            if (!response.IsSuccessStatusCode)
             {
-                client.BaseAddress = new Uri(_baseAddress);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                var response = await client.GetAsync("api/FileUpload/" + id);
-                if (response.IsSuccessStatusCode)
-                {
-                    var user = await response.Content.ReadAsAsync<FileModel>();
-                    return user;
-                }
+                throw new Exception("Error getting the file!");
             }
 
-            throw new Exception("Error getting the file!");
+            var user = await response.Content.ReadAsAsync<FileModel>();
+            return user;
+
         }
-        
-        public async void AddFile(FileModel fileModel)
-        {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(_baseAddress);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var response = await client.PostAsJsonAsync("api/FileUpload", fileModel);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception("Error when adding file!");
-                }
+        public async Task AddFileAsync(FileModel fileModel)
+        {
+            var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Create", fileModel);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error when adding file!");
             }
+        }
+
+        public async Task DeleteAsync(long id)
+        {
+            var response = await CreateHttpClient().DeleteAsync($"api/FileUpload/Delete?id={id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error when deleting file!");
+            }
+        }
+
+        public async Task UpdateAsync(FileModel fileModel)
+        {
+            var response = await CreateHttpClient().PostAsJsonAsync($"api/FileUpload/Update", fileModel);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error when updating file!");
+            }
+        }
+
+        public HttpClient CreateHttpClient()
+        {
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(_baseAddress);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return client;
         }
     }
 }

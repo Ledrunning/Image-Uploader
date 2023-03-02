@@ -11,7 +11,7 @@ using ImageUploader.Gateway.Models;
 
 namespace FileUploadWebApiTest.Migrations
 {
-    [DbContext(typeof(FileModelContext))]
+    [DbContext(typeof(MainDatabaseContext))]
     partial class FileModelContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

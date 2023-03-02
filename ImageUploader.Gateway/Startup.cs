@@ -26,8 +26,8 @@ namespace ImageUploader.Gateway
         {
             var connectionString = Configuration.GetConnectionString(ConnectionString);
 
-            services.AddDbContext<FileModelContext>(options => options.UseSqlServer(connectionString));
-            services.AddScoped<IFileRepository<FileEntity>, FileRepository<FileEntity>>();
+            services.AddDbContext<MainDatabaseContext>(options => options.UseSqlServer(connectionString));
+            services.AddScoped<IMainRepository<FileEntity>, MainRepository<FileEntity>>();
             services.AddScoped<IFileService, FileService>();
             services.AddMvc();
         }

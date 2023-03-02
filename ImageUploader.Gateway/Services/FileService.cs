@@ -21,9 +21,9 @@ namespace ImageUploader.Gateway.Services
                                                            Assembly.GetExecutingAssembly().Location) +
                                                        $"\\{FolderName}";
 
-        private readonly IFileRepository<FileEntity> _repository;
+        private readonly IMainRepository<FileEntity> _repository;
 
-        public FileService(IFileRepository<FileEntity> repository)
+        public FileService(IMainRepository<FileEntity> repository)
         {
             _repository = repository;
             CreateFolder();

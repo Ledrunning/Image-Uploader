@@ -18,15 +18,18 @@ namespace ImageUploader.Gateway.Controllers
             _fileService = fileService;
         }
 
+        [HttpGet]
+        [Route(nameof(GetAll))]
         public async Task<IList<FileDto>> GetAll(CancellationToken token)
         {
             return await _fileService.GetAllAsync(token);
         }
 
-        [HttpGet("{id}", Name = "GetFileUpload")]
-        public IActionResult GetById(long id, CancellationToken token)
+        [HttpGet]
+        [Route(nameof(GetById))]
+        public async Task<IActionResult> GetById(long id, CancellationToken token)
         {
-            var file = _fileService.GetByIdAsync(id, token);
+            var file = await _fileService.GetByIdAsync(id, token);
             if (file == null)
             {
                 return NotFound();
@@ -36,18 +39,20 @@ namespace ImageUploader.Gateway.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] FileDto file, CancellationToken token)
+        [Route(nameof(Create))]
+        public async Task<IActionResult> Create([FromBody] FileDto file, CancellationToken token)
         {
             if (file == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _fileService.AddAsync(file, token);
-            return CreatedAtRoute("GetFileUpload", new { id = file.Id }, file);
+            await _fileService.AddAsync(file, token);
+            return new NoContentResult();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route(nameof(Delete))]
         public async Task<IActionResult> Delete(long id, CancellationToken token)
         {
             var file = await _fileService.GetByIdAsync(id, token);
@@ -61,6 +66,7 @@ namespace ImageUploader.Gateway.Controllers
         }
 
         [HttpPost]
+        [Route(nameof(Update))]
         public async Task<IActionResult> Update(FileDto file, CancellationToken token)
         {
             if (file == null)

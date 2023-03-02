@@ -10,12 +10,14 @@ namespace ImageUploader.DesktopClient
 {
     public partial class MainWindow : Window
     {
+        private readonly FileSender _client;
         private readonly string _urlAddress = ConfigurationManager.AppSettings["serverUriString"];
         private byte[] _imageByteArray;
 
         public MainWindow()
         {
             InitializeComponent();
+            _client = new FileSender(_urlAddress);
         }
 
         private void OnOpenFileClick(object sender, RoutedEventArgs e)
@@ -44,7 +46,7 @@ namespace ImageUploader.DesktopClient
             }
         }
 
-        private void OnUploadClick(object sender, RoutedEventArgs e)
+        private async void OnUploadClick(object sender, RoutedEventArgs e)
         {
             var fileModel = new FileModel
             {
@@ -53,27 +55,43 @@ namespace ImageUploader.DesktopClient
                 Photo = _imageByteArray
             };
 
-            var client = new FileSender(_urlAddress);
-            client.AddFile(fileModel);
+            await _client.AddFileAsync(fileModel);
 
             MessageBox.Show("File has been uploaded");
         }
 
-
         private async void OnGetFilesClick(object sender, RoutedEventArgs e)
         {
-            var client = new FileSender(_urlAddress);
-
             try
             {
-                int.TryParse(txtId.Text, out var result);
-                var files = await client.GetFileAsync(result);
+                long.TryParse(txtId.Text, out var result);
+                var files = await _client.GetFileAsync(result);
                 imgPhoto.Source = ByteToImage(files.Photo);
             }
             catch (NullReferenceException err)
             {
                 MessageBox.Show(err.Message);
             }
+        }
+
+        private async void OnDeleteImageClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                long.TryParse(txtId.Text, out var id);
+                await _client.DeleteAsync(id);
+
+                MessageBox.Show("File has been deleted");
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+        }
+
+        private void OnClearImageClick(object sender, RoutedEventArgs e)
+        {
+            imgPhoto.Source = null;
         }
 
         private static BitmapImage ByteToImage(byte[] imageData)

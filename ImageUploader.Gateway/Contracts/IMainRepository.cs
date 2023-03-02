@@ -5,7 +5,7 @@ using ImageUploader.Gateway.Repository.Entity;
 
 namespace ImageUploader.Gateway.Contracts
 {
-    public interface IFileRepository<T> where T : BaseEntity, new()
+    public interface IMainRepository<T> where T : BaseEntity, new()
     {
         Task<IList<T>> GetAllAsync(CancellationToken token);
         Task<T> GetByIdAsync(long id, CancellationToken token);
