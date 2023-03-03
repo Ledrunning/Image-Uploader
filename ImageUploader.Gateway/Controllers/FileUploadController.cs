@@ -5,7 +5,6 @@ using ImageUploader.Gateway.Contracts;
 using ImageUploader.Gateway.Models;
 using Microsoft.AspNetCore.Mvc;
 
-//TODO Custom Exception!
 namespace ImageUploader.Gateway.Controllers
 {
     [Route("api/[controller]")]
@@ -16,6 +15,13 @@ namespace ImageUploader.Gateway.Controllers
         public FileUploadController(IFileService fileService)
         {
             _fileService = fileService;
+        }
+
+        [HttpGet]
+        [Route(nameof(Index))]
+        public IActionResult Index()
+        {
+            return Content("Welcome to Image Uploader web api server!");
         }
 
         [HttpGet]
