@@ -1,0 +1,56 @@
+﻿<Window x:Class="ImageUploader.DesktopClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="520" Width="500
+        ">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Image Name="imgPhoto" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Name="txtId" Background="LightGray" Height="30" Width="100" />
+                <Button Grid.Row="1" Height="30" Width="100" Content="Upload" FontFamily="Arial" FontSize="18"
+                        Click="OnUploadClick" />
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Height="30" Width="100" Content="Open" FontFamily="Arial" FontSize="18"
+                        Click="OnOpenFileClick" />
+                <Button Grid.Row="1" Height="30" Width="100" Content="Download" FontFamily="Arial" FontSize="18"
+                        Click="OnGetFilesClick" />
+            </Grid>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Height="30" Width="100" Content="Delete" FontFamily="Arial" FontSize="18"
+                        Click="OnDeleteImageClick" />
+                <Button Grid.Row="1" Height="30" Width="100" Content="Clear" FontFamily="Arial" FontSize="18"
+                        Click="OnClearImageClick" />
+            </Grid>
+        </Grid>
+
+    </Grid>
+
+</Window>
