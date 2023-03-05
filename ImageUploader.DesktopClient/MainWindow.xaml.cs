@@ -36,7 +36,7 @@ namespace ImageUploader.DesktopClient
             {
                 _imageByteArray = File.ReadAllBytes(openFileDialog.FileName);
 
-                imgPhoto.Source = ByteToImage(_imageByteArray);
+                ImgPhoto.Source = ByteToImage(_imageByteArray);
 
                 MessageBox.Show("File has been opened");
             }
@@ -60,13 +60,17 @@ namespace ImageUploader.DesktopClient
             MessageBox.Show("File has been uploaded");
         }
 
-        private async void OnGetFilesClick(object sender, RoutedEventArgs e)
+        private async void OnDownloadClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 long.TryParse(txtId.Text, out var result);
+
+                DownloadProgressBar.IsIndeterminate = true;
                 var files = await _client.GetFileAsync(result);
-                imgPhoto.Source = ByteToImage(files.Photo);
+                DownloadProgressBar.IsIndeterminate = false;
+
+                ImgPhoto.Source = ByteToImage(files.Photo);
             }
             catch (NullReferenceException err)
             {
@@ -91,7 +95,7 @@ namespace ImageUploader.DesktopClient
 
         private void OnClearImageClick(object sender, RoutedEventArgs e)
         {
-            imgPhoto.Source = null;
+            ImgPhoto.Source = null;
         }
 
         private static BitmapImage ByteToImage(byte[] imageData)

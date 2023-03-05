@@ -22,9 +22,8 @@ namespace ImageUploader.DesktopClient
             {
                 throw new Exception("Error getting the file!");
             }
-
-            var user = await response.Content.ReadAsAsync<FileModel>();
-            return user;
+            
+            return await response.Content.ReadAsAsync<FileModel>(); 
 
         }
 

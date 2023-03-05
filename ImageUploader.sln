@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageUploader.Gateway", "Im
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageUploader.DesktopClient", "ImageUploader.DesktopClient\ImageUploader.DesktopClient.csproj", "{FFA3ACEA-F3E7-4D03-A67E-D15CDED43DB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageUploader.ModernDesktopClient", "ImageUploader.ModernDesktopClient\ImageUploader.ModernDesktopClient.csproj", "{580FC0DB-E3BA-47C0-8A5F-EA18C7063ED8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FFA3ACEA-F3E7-4D03-A67E-D15CDED43DB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFA3ACEA-F3E7-4D03-A67E-D15CDED43DB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFA3ACEA-F3E7-4D03-A67E-D15CDED43DB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{580FC0DB-E3BA-47C0-8A5F-EA18C7063ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{580FC0DB-E3BA-47C0-8A5F-EA18C7063ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{580FC0DB-E3BA-47C0-8A5F-EA18C7063ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{580FC0DB-E3BA-47C0-8A5F-EA18C7063ED8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
