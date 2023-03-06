@@ -1,78 +1,75 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using ImageUploader.ModernDesktopClient.Views.Pages;
 using Wpf.Ui.Common;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 
-namespace ImageUploader.ModernDesktopClient.ViewModels
+namespace ImageUploader.ModernDesktopClient.ViewModels;
+
+public partial class MainWindowViewModel : ObservableObject
 {
-    public partial class MainWindowViewModel : ObservableObject
+    [ObservableProperty] private string _applicationTitle = string.Empty;
+
+    private bool _isInitialized;
+
+    [ObservableProperty] private ObservableCollection<INavigationControl> _navigationFooter = new();
+
+    [ObservableProperty] private ObservableCollection<INavigationControl> _navigationItems = new();
+
+    [ObservableProperty] private ObservableCollection<MenuItem> _trayMenuItems = new();
+
+    public MainWindowViewModel(INavigationService navigationService)
     {
-        private bool _isInitialized = false;
-
-        [ObservableProperty]
-        private string _applicationTitle = String.Empty;
-
-        [ObservableProperty]
-        private ObservableCollection<INavigationControl> _navigationItems = new();
-
-        [ObservableProperty]
-        private ObservableCollection<INavigationControl> _navigationFooter = new();
-
-        [ObservableProperty]
-        private ObservableCollection<MenuItem> _trayMenuItems = new();
-
-        public MainWindowViewModel(INavigationService navigationService)
+        if (!_isInitialized)
         {
-            if (!_isInitialized)
-                InitializeViewModel();
+            InitializeViewModel();
         }
+    }
 
-        private void InitializeViewModel()
+    private void InitializeViewModel()
+    {
+        ApplicationTitle = "ImageUploader.ModernDesktopClient";
+
+        NavigationItems = new ObservableCollection<INavigationControl>
         {
-            ApplicationTitle = "WPF UI - ImageUploader.ModernDesktopClient";
-
-            NavigationItems = new ObservableCollection<INavigationControl>
+            new NavigationItem
             {
-                new NavigationItem()
-                {
-                    Content = "Home",
-                    PageTag = "dashboard",
-                    Icon = SymbolRegular.Home24,
-                    PageType = typeof(Views.Pages.DashboardPage)
-                },
-                new NavigationItem()
-                {
-                    Content = "Data",
-                    PageTag = "data",
-                    Icon = SymbolRegular.DataHistogram24,
-                    PageType = typeof(Views.Pages.DataPage)
-                }
-            };
-
-            NavigationFooter = new ObservableCollection<INavigationControl>
+                Content = "Home",
+                PageTag = "dashboard",
+                Icon = SymbolRegular.Home24,
+                PageType = typeof(DashboardPage)
+            },
+            new NavigationItem
             {
-                new NavigationItem()
-                {
-                    Content = "Settings",
-                    PageTag = "settings",
-                    Icon = SymbolRegular.Settings24,
-                    PageType = typeof(Views.Pages.SettingsPage)
-                }
-            };
+                Content = "Data",
+                PageTag = "data",
+                Icon = SymbolRegular.Grid24,
+                PageType = typeof(DashboardPage)
+            },
+        };
 
-            TrayMenuItems = new ObservableCollection<MenuItem>
+        NavigationFooter = new ObservableCollection<INavigationControl>
+        {
+            new NavigationItem
             {
-                new MenuItem
-                {
-                    Header = "Home",
-                    Tag = "tray_home"
-                }
-            };
+                Content = "Settings",
+                PageTag = "settings",
+                Icon = SymbolRegular.Settings24,
+                PageType = typeof(SettingsPage)
+            }
+        };
 
-            _isInitialized = true;
-        }
+        TrayMenuItems = new ObservableCollection<MenuItem>
+        {
+            new()
+            {
+                Header = "Home",
+                Tag = "tray_home"
+            }
+        };
+
+        _isInitialized = true;
     }
 }
