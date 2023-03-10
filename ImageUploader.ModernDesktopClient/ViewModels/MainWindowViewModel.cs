@@ -10,6 +10,7 @@ namespace ImageUploader.ModernDesktopClient.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
+    private readonly INavigationService _navigationService;
     [ObservableProperty] private string _applicationTitle = string.Empty;
 
     private bool _isInitialized;
@@ -22,6 +23,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel(INavigationService navigationService)
     {
+        _navigationService = navigationService;
         if (!_isInitialized)
         {
             InitializeViewModel();
