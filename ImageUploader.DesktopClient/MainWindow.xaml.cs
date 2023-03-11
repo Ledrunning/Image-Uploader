@@ -2,22 +2,25 @@
 using System.Configuration;
 using System.IO;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using ImageUploader.DesktopClient.Model;
+
+using ImageUploader.DesktopCommon;
 using Microsoft.Win32;
+using ImageUploader.DesktopCommon.Models;
+using ImageUploader.DesktopCommon.Rest;
+using System.Windows.Media;
 
 namespace ImageUploader.DesktopClient
 {
     public partial class MainWindow : Window
     {
-        private readonly FileSender _client;
+        private readonly FileRestService _client;
         private readonly string _urlAddress = ConfigurationManager.AppSettings["serverUriString"];
         private byte[] _imageByteArray;
 
         public MainWindow()
         {
             InitializeComponent();
-            _client = new FileSender(_urlAddress);
+            _client = new FileRestService(_urlAddress);
         }
 
         private void OnOpenFileClick(object sender, RoutedEventArgs e)
@@ -36,7 +39,8 @@ namespace ImageUploader.DesktopClient
             {
                 _imageByteArray = File.ReadAllBytes(openFileDialog.FileName);
 
-                ImgPhoto.Source = ByteToImage(_imageByteArray);
+                var converter = new ImageSourceConverter();
+                ImgPhoto.Source = (ImageSource)converter.ConvertFrom(FileService.ByteToImage(_imageByteArray));
 
                 MessageBox.Show("File has been opened");
             }
@@ -70,7 +74,8 @@ namespace ImageUploader.DesktopClient
                 var files = await _client.GetFileAsync(result);
                 DownloadProgressBar.IsIndeterminate = false;
 
-                ImgPhoto.Source = ByteToImage(files.Photo);
+                var converter = new ImageSourceConverter();
+                ImgPhoto.Source = (ImageSource)converter.ConvertFrom(FileService.ByteToImage(files.Photo));
             }
             catch (NullReferenceException err)
             {
@@ -96,29 +101,6 @@ namespace ImageUploader.DesktopClient
         private void OnClearImageClick(object sender, RoutedEventArgs e)
         {
             ImgPhoto.Source = null;
-        }
-
-        private static BitmapImage ByteToImage(byte[] imageData)
-        {
-            if (imageData == null || imageData.Length == 0)
-            {
-                return null;
-            }
-
-            var image = new BitmapImage();
-            using (var memoryStream = new MemoryStream(imageData))
-            {
-                memoryStream.Position = 0;
-                image.BeginInit();
-                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.UriSource = null;
-                image.StreamSource = memoryStream;
-                image.EndInit();
-            }
-
-            image.Freeze();
-            return image;
         }
     }
 }

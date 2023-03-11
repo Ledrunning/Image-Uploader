@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ImageUploader.DesktopClient.Model
+namespace ImageUploader.DesktopCommon.Models
 {
     public class FileModel
     {

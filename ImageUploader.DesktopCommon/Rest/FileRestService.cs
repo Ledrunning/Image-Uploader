@@ -2,15 +2,15 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using ImageUploader.DesktopClient.Model;
+using ImageUploader.DesktopCommon.Models;
 
-namespace ImageUploader.DesktopClient
+namespace ImageUploader.DesktopCommon.Rest
 {
-    public class FileSender
+    public class FileRestService
     {
         private readonly string _baseAddress;
 
-        public FileSender(string baseAddress)
+        public FileRestService(string baseAddress)
         {
             _baseAddress = baseAddress;
         }

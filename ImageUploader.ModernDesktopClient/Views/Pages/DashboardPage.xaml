@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="500"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Image></Image>
+            <Image Grid.Column="0" Margin="16,-6,16,6"/>
             <Grid Grid.Column="1">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -36,24 +36,24 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <ui:TextBox Grid.Column="0" Text="{Binding ViewModel.Counter, Mode=OneWay}" Margin="0,0,10,0" />
-                        <ui:Button Grid.Row="0" Grid.Column="1" Width="120" HorizontalAlignment="Left" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Open" Icon="Fluent24" />
+                        <ui:TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ViewModel.Counter, Mode=OneWay}" Width="150" />
+                        <ui:Button Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Open" Width="87.02" />
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Upload" />
-                        <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Download" />
+                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Upload" Width="87.02" HorizontalAlignment="Stretch" />
+                        <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Download" Width="87.02" HorizontalAlignment="Stretch" />
                     </Grid>
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Delete" Icon="Fluent24" />
-                        <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Clear" Icon="Fluent24" />
+                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Delete" Width="87.02" HorizontalAlignment="Stretch" />
+                        <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Clear" Width="87.02" HorizontalAlignment="Stretch" />
                     </Grid>
 
                 </Grid>
