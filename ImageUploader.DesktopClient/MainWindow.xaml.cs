@@ -2,12 +2,11 @@
 using System.Configuration;
 using System.IO;
 using System.Windows;
-
-using ImageUploader.DesktopCommon;
-using Microsoft.Win32;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.DesktopCommon.Rest;
-using System.Windows.Media;
+using Microsoft.Win32;
 
 namespace ImageUploader.DesktopClient
 {
@@ -39,8 +38,7 @@ namespace ImageUploader.DesktopClient
             {
                 _imageByteArray = File.ReadAllBytes(openFileDialog.FileName);
 
-                var converter = new ImageSourceConverter();
-                ImgPhoto.Source = (ImageSource)converter.ConvertFrom(FileService.ByteToImage(_imageByteArray));
+                ImgPhoto.Source = ByteToImage(_imageByteArray);
 
                 MessageBox.Show("File has been opened");
             }
@@ -75,7 +73,7 @@ namespace ImageUploader.DesktopClient
                 DownloadProgressBar.IsIndeterminate = false;
 
                 var converter = new ImageSourceConverter();
-                ImgPhoto.Source = (ImageSource)converter.ConvertFrom(FileService.ByteToImage(files.Photo));
+                ImgPhoto.Source = ByteToImage(files.Photo);
             }
             catch (NullReferenceException err)
             {
@@ -101,6 +99,29 @@ namespace ImageUploader.DesktopClient
         private void OnClearImageClick(object sender, RoutedEventArgs e)
         {
             ImgPhoto.Source = null;
+        }
+
+        private static BitmapImage ByteToImage(byte[] imageData)
+        {
+            if (imageData == null || imageData.Length == 0)
+            {
+                return null;
+            }
+
+            var image = new BitmapImage();
+            using (var memoryStream = new MemoryStream(imageData))
+            {
+                memoryStream.Position = 0;
+                image.BeginInit();
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = null;
+                image.StreamSource = memoryStream;
+                image.EndInit();
+            }
+
+            image.Freeze();
+            return image;
         }
     }
 }

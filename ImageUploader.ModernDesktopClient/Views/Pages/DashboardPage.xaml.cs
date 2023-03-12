@@ -15,7 +15,7 @@ namespace ImageUploader.ModernDesktopClient.Views.Pages
         public DashboardPage(ViewModels.DashboardViewModel viewModel)
         {
             ViewModel = viewModel;
-
+            
             InitializeComponent();
         }
     }
