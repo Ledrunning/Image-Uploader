@@ -19,7 +19,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private int _counter;
 
-    [ObservableProperty] public Image _loadedImage;
+    [ObservableProperty] public Image _loadedImage = new ();
     
     private byte[]? ImageByteArray { get; set; }
 

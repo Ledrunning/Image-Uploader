@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="500"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Image Name="ImgPhoto" Grid.Column="0" Margin="16,-6,16,6" Source="{Binding ViewModel.LoadedImage, Mode=OneWay}"/>
+            <Image Grid.Column="0" Margin="16,-6,16,6" Stretch="Fill" Source="{Binding ViewModel.LoadedImage.Source, Mode=OneWay}"/>
             <Grid Grid.Column="1">
                 <Grid>
                     <Grid.RowDefinitions>
