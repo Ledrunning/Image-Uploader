@@ -2,11 +2,12 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
 
 namespace ImageUploader.DesktopCommon.Rest
 {
-    public class FileRestService
+    public class FileRestService : IFileRestService
     {
         private readonly string _baseAddress;
 
@@ -56,7 +57,7 @@ namespace ImageUploader.DesktopCommon.Rest
             }
         }
 
-        public HttpClient CreateHttpClient()
+        private HttpClient CreateHttpClient()
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseAddress);

@@ -1,4 +1,6 @@
-﻿using ImageUploader.ModernDesktopClient.Models;
+﻿using System;
+using ImageUploader.DesktopCommon.Rest;
+using ImageUploader.ModernDesktopClient.Models;
 using ImageUploader.ModernDesktopClient.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,8 +9,11 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using ImageUploader.DesktopCommon.Contracts;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
+using System.Configuration;
+using ImageUploader.ModernDesktopClient.Configuration;
 
 namespace ImageUploader.ModernDesktopClient
 {
@@ -17,6 +22,8 @@ namespace ImageUploader.ModernDesktopClient
     /// </summary>
     public partial class App
     {
+        private static IConfiguration? Configuration { get; set; }
+
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -24,11 +31,25 @@ namespace ImageUploader.ModernDesktopClient
         // https://docs.microsoft.com/dotnet/core/extensions/logging
         private static readonly IHost _host = Host
             .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
+            .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location));
+                Configuration = c.Build();
+            })
             .ConfigureServices((context, services) =>
             {
                 // App Host
                 services.AddHostedService<ApplicationHostService>();
+                
+                var gatewaySettings = Configuration?.GetSection(GatewaySettings.SectionName).Get<GatewaySettings>();
+
+                services.AddTransient<IFileRestService>(x =>
+                {
+                    if (gatewaySettings is { GatewayUrl: { } })
+                    {
+                        return new FileRestService(gatewaySettings.GatewayUrl);
+                    }
+
+                    throw new ApplicationException("Error to reading gateway settings!");
+                });
 
                 // Page resolver service
                 services.AddSingleton<IPageService, PageService>();
