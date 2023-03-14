@@ -50,15 +50,23 @@ namespace ImageUploader.DesktopClient
 
         private async void OnUploadClick(object sender, RoutedEventArgs e)
         {
-            var fileModel = new FileModel
+            try
             {
-                Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
-                DateTime = DateTimeOffset.Now,
-                Photo = _imageByteArray
-            };
+                var fileModel = new FileModel
+                {
+                    Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
+                    DateTime = DateTimeOffset.Now,
+                    Photo = _imageByteArray
+                };
 
-            await _client.AddFileAsync(fileModel);
+                await _client.AddFileAsync(fileModel);
 
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+
+            }
             MessageBox.Show("File has been uploaded");
         }
 
@@ -72,7 +80,6 @@ namespace ImageUploader.DesktopClient
                 var files = await _client.GetFileAsync(result);
                 DownloadProgressBar.IsIndeterminate = false;
 
-                var converter = new ImageSourceConverter();
                 ImgPhoto.Source = ByteToImage(files.Photo);
             }
             catch (NullReferenceException err)

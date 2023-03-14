@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,7 +10,7 @@ using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
 using Microsoft.Win32;
 using Wpf.Ui.Common.Interfaces;
-using Wpf.Ui.Controls;
+using MessageBox = Wpf.Ui.Controls.MessageBox;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
@@ -17,21 +18,25 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
 
-    public DashboardViewModel(IFileRestService fileRestService)
-    {
-        _fileRestService = fileRestService;
-    }
-
     private readonly MessageBox _messageBox = new()
     {
         ButtonLeftName = "Ok",
         ButtonRightName = "Cancel"
     };
 
-    [ObservableProperty] private int _counter;
+    [ObservableProperty] private long _fileId;
 
-    [ObservableProperty] private Image _loadedImage = new ();
-    
+    [ObservableProperty] private bool _isIndeterminate;
+
+    [ObservableProperty] private Image _loadedImage = new();
+
+    public DashboardViewModel(IFileRestService fileRestService)
+    {
+        _fileRestService = fileRestService;
+        _messageBox.ButtonLeftClick += OnMessageBoxButtonLeftClick;
+        _messageBox.ButtonRightClick += OnMessageBoxButtonRightClick;
+    }
+
     private byte[]? ImageByteArray { get; set; }
 
     public void OnNavigatedTo()
@@ -42,10 +47,14 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     {
     }
 
-    [RelayCommand]
-    private void OnCounterIncrement()
+    private void OnMessageBoxButtonRightClick(object sender, RoutedEventArgs e)
     {
-        Counter++;
+        _messageBox.Close();
+    }
+
+    private void OnMessageBoxButtonLeftClick(object sender, RoutedEventArgs e)
+    {
+        _messageBox.Close();
     }
 
     [RelayCommand]
@@ -68,9 +77,9 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             LoadedImage.Source = ByteToImage(ImageByteArray);
             _messageBox.Show("Information!", "File has been opened");
         }
-        catch (IOException e)
+        catch (IOException)
         {
-            _messageBox.Show("Error!", e.Message);
+            _messageBox.Show("Error!", "Could not load the file!");
         }
     }
 
@@ -83,21 +92,45 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task OnImageUpload()
     {
-        var fileModel = new FileModel
+        try
         {
-            Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
-            DateTime = DateTimeOffset.Now,
-            Photo = ImageByteArray
-        };
+            var fileModel = new FileModel
+            {
+                Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
+                DateTime = DateTimeOffset.Now,
+                Photo = ImageByteArray
+            };
 
-        if (ImageByteArray is { Length: 0 })
-        {
-            _messageBox.Show("Attention!", "Upload file first please!");
+            if (ImageByteArray is { Length: 0 })
+            {
+                _messageBox.Show("Attention!", "Upload file first please!");
+            }
+
+            await _fileRestService.AddFileAsync(fileModel);
+
+            _messageBox.Show("Information!", "File has been uploaded");
         }
+        catch (Exception)
+        {
+            _messageBox.Show("Error!", "Could not add the file into server!");
+        }
+    }
 
-        await _fileRestService.AddFileAsync(fileModel);
+    [RelayCommand]
+    private async Task OnImageDownload()
+    {
+        try
+        {
+            IsIndeterminate = true;
+            var files = await _fileRestService.GetFileAsync(FileId);
+            IsIndeterminate = false;
 
-        _messageBox.Show("Information!", "File has been uploaded");
+            LoadedImage.Source = ByteToImage(files.Photo);
+        }
+        catch (Exception)
+        {
+            _messageBox.Show("Error!", "Could not download the file from server!");
+        }
     }
 
     private static BitmapImage ByteToImage(byte[]? imageData)
