@@ -24,7 +24,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Image Grid.Column="0" Margin="16,-6,16,6" Stretch="Fill" Source="{Binding ViewModel.LoadedImage.Source, Mode=OneWay}"/>
-            <!-- <ui:ProgressRing Grid.Column="0" IsIndeterminate="{Binding ViewModel.IsIndeterminate}"></ui:ProgressRing> -->
+            <ui:ProgressRing Grid.Column="0" Visibility="{Binding ViewModel.IsVisible}" IsIndeterminate="{Binding ViewModel.IsIndeterminate}"></ui:ProgressRing> 
             <Grid Grid.Column="1">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -37,7 +37,7 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <ui:TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ViewModel.FileId, Mode=OneWay}" Width="150" />
+                        <ui:TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ViewModel.FileId, Mode=TwoWay}" Width="150" />
                         <ui:Button Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Command="{Binding ViewModel.FileOpenCommand, Mode=OneWay}" Content="Open" Width="87.02" />
                     </Grid>
                     <Grid Grid.Row="1">
@@ -46,14 +46,14 @@
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.ImageUploadCommand, Mode=OneWay}" Content="Upload" Width="87.02" HorizontalAlignment="Stretch" />
-                        <ui:Button Grid.Row="0" Grid.Column="1" Content="Download" Width="87.02" HorizontalAlignment="Stretch" />
+                        <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.ImageDownloadCommand, Mode=OneWay}" Content="Download" Width="87.02" HorizontalAlignment="Stretch" />
                     </Grid>
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Delete" Width="87.02" HorizontalAlignment="Stretch" />
+                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.ImageDeleteCommand, Mode=OneWay}" Content="Delete" Width="87.02" HorizontalAlignment="Stretch" />
                         <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.ImageClearCommand, Mode=OneWay}" Content="Clear" Width="87.02" HorizontalAlignment="Stretch" />
                     </Grid>
 
