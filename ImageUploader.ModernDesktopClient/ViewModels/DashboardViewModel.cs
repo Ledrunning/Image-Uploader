@@ -125,7 +125,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         {
             await ExecuteTask(async id =>
             {
-                var files = await _fileRestService.GetFileAsync(FileId);
+                var files = await _fileRestService.GetFileAsync(id);
                 LoadedImage.Source = ByteToImage(files.Photo);
             }, FileId);
         }
@@ -136,16 +136,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             IsVisible = Visibility.Hidden;
         }
     }
-
-    private async Task ExecuteTask<T>(Func<T, Task> function, T data)
-    {
-        IsVisible = Visibility.Visible;
-        IsIndeterminate = true;
-        await function(data);
-        IsIndeterminate = false;
-        IsVisible = Visibility.Hidden;
-    }
-
+    
     [RelayCommand]
     private async Task OnImageDelete()
     {
@@ -162,6 +153,15 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         {
             _messageBox.Show("Error!", "Could not delete the file from server!");
         }
+    }
+
+    private async Task ExecuteTask<T>(Func<T, Task> function, T data)
+    {
+        IsVisible = Visibility.Visible;
+        IsIndeterminate = true;
+        await function(data);
+        IsIndeterminate = false;
+        IsVisible = Visibility.Hidden;
     }
 
     private static BitmapImage ByteToImage(byte[]? imageData)
