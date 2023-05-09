@@ -3,7 +3,7 @@ using Wpf.Ui.Common.Interfaces;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
-public class ImageDataViewModel : ObservableObject, INavigationAware
+public partial class ImageDataViewModel : ObservableObject, INavigationAware
 {
     public void OnNavigatedTo()
     {

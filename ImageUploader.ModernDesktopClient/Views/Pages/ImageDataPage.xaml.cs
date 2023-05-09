@@ -3,16 +3,16 @@
 namespace ImageUploader.ModernDesktopClient.Views.Pages
 {
     /// <summary>
-    /// Interaction logic for DashboardPage.xaml
+    /// Interaction logic for ImageDataPage.xaml
     /// </summary>
-    public partial class DashboardPage : INavigableView<ViewModels.DashboardViewModel>
+    public partial class ImageDataPage : INavigableView<ViewModels.ImageDataViewModel>
     {
-        public ViewModels.DashboardViewModel ViewModel
+        public ViewModels.ImageDataViewModel ViewModel
         {
             get;
         }
 
-        public DashboardPage(ViewModels.DashboardViewModel viewModel)
+        public ImageDataPage(ViewModels.ImageDataViewModel viewModel)
         {
             ViewModel = viewModel;
             
