@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="DashboardPage"
-    d:DataContext="{d:DesignInstance local:DashboardPage, IsDesignTimeCreatable=False}"
+    d:DataContext="{d:DesignInstance local:ImageDataPage, IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     d:Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -14,59 +14,13 @@
     mc:Ignorable="d">
 
     <Grid Margin="56,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="300" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <Grid Margin="0,37,0,26">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="500"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Image Grid.Column="0" Margin="16,-6,16,6" Stretch="Fill" Source="{Binding ViewModel.LoadedImage.Source, Mode=OneWay}"/>
-            <ui:ProgressRing Grid.Column="0" Visibility="{Binding ViewModel.IsVisible}" IsIndeterminate="{Binding ViewModel.IsIndeterminate}"></ui:ProgressRing> 
-            <Grid Grid.Column="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <ui:TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ViewModel.FileId, Mode=TwoWay}" Width="150" />
-                        <ui:Button Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Command="{Binding ViewModel.FileOpenCommand, Mode=OneWay}" Content="Open" Width="87.02" />
-                    </Grid>
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.ImageUploadCommand, Mode=OneWay}" Content="Upload" Width="87.02" HorizontalAlignment="Stretch" />
-                        <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.ImageDownloadCommand, Mode=OneWay}" Content="Download" Width="87.02" HorizontalAlignment="Stretch" />
-                    </Grid>
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <ui:Button Grid.Row="0" Grid.Column="0" Command="{Binding ViewModel.ImageDeleteCommand, Mode=OneWay}" Content="Delete" Width="87.02" HorizontalAlignment="Stretch" />
-                        <ui:Button Grid.Row="0" Grid.Column="1" Command="{Binding ViewModel.ImageClearCommand, Mode=OneWay}" Content="Clear" Width="87.02" HorizontalAlignment="Stretch" />
-                    </Grid>
-
-                </Grid>
-            </Grid>
+            <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.LoadedData, Mode=OneWay}"></ui:DataGrid>
+            <Grid Grid.Column="1" Grid.RowSpan="2"/>
         </Grid>
     </Grid>
-    <!-- <Grid Margin="56,0" VerticalAlignment="Top"> -->
-    <!--     <Grid.ColumnDefinitions> -->
-    <!--         <ColumnDefinition Width="Auto" /> -->
-    <!--         <ColumnDefinition Width="Auto" /> -->
-    <!--     </Grid.ColumnDefinitions> -->
-    <!--     <ui:Button Grid.Column="0" Command="{Binding ViewModel.CounterIncrementCommand, Mode=OneWay}" Content="Click me!" Icon="Fluent24" /> -->
-    <!--     <TextBlock Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" Text="{Binding ViewModel.Counter, Mode=OneWay}" /> -->
-    <!-- </Grid> -->
 </ui:UiPage>

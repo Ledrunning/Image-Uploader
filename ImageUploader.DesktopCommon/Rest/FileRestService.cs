@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
@@ -14,6 +16,11 @@ namespace ImageUploader.DesktopCommon.Rest
         public FileRestService(string baseAddress)
         {
             _baseAddress = baseAddress;
+        }
+
+        public Task<IList<FileModel>> GetAllDataFromFilesAsync(CancellationToken token)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<FileModel> GetFileAsync(long id)
@@ -49,7 +56,7 @@ namespace ImageUploader.DesktopCommon.Rest
 
         public async Task UpdateAsync(FileModel fileModel)
         {
-            var response = await CreateHttpClient().PostAsJsonAsync($"api/FileUpload/Update", fileModel);
+            var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Update", fileModel);
 
             if (!response.IsSuccessStatusCode)
             {
