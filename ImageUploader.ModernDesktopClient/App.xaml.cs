@@ -13,6 +13,7 @@ using ImageUploader.DesktopCommon.Contracts;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
 using System.Configuration;
+using System.Threading;
 using ImageUploader.ModernDesktopClient.Configuration;
 
 namespace ImageUploader.ModernDesktopClient
@@ -72,6 +73,8 @@ namespace ImageUploader.ModernDesktopClient
                 services.AddScoped<ViewModels.DashboardViewModel>();
                 services.AddScoped<Views.Pages.SettingsPage>();
                 services.AddScoped<ViewModels.SettingsViewModel>();
+                services.AddScoped<Views.Pages.ImageDataPage>();
+                services.AddScoped<ViewModels.ImageDataViewModel>();
 
                 // Configuration
                 services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

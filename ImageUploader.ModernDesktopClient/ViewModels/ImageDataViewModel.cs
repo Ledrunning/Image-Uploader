@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ImageUploader.DesktopCommon.Contracts;
+using ImageUploader.DesktopCommon.Models;
 using Wpf.Ui.Common.Interfaces;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
@@ -9,21 +10,29 @@ namespace ImageUploader.ModernDesktopClient.ViewModels;
 public partial class ImageDataViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
-    [ObservableProperty] private List<string> _loadedData = new();
+    private bool _isInitialized;
+    [ObservableProperty] private List<FileModel> _loadedData = new();
 
     public ImageDataViewModel(IFileRestService fileRestService)
     {
         _fileRestService = fileRestService;
-        LoadedData = _fileRestService.GetFileAsync(1);
     }
 
     public void OnNavigatedTo()
     {
-        throw new System.NotImplementedException();
+        if (!_isInitialized)
+        {
+            InitializeViewModel();
+        }
     }
 
     public void OnNavigatedFrom()
     {
-        throw new System.NotImplementedException();
+    }
+
+    private void InitializeViewModel()
+    {
+        LoadedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
+        _isInitialized = true;
     }
 }

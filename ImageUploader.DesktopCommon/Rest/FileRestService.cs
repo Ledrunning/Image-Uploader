@@ -18,9 +18,15 @@ namespace ImageUploader.DesktopCommon.Rest
             _baseAddress = baseAddress;
         }
 
-        public Task<IList<FileModel>> GetAllDataFromFilesAsync(CancellationToken token)
+        public async Task<IList<FileModel>> GetAllDataFromFilesAsync()
         {
-            throw new NotImplementedException();
+            var response = await CreateHttpClient().GetAsync("api/FileUpload/GetAll");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error getting the files!");
+            }
+
+            return await response.Content.ReadAsAsync<IList<FileModel>>();
         }
 
         public async Task<FileModel> GetFileAsync(long id)
@@ -32,7 +38,6 @@ namespace ImageUploader.DesktopCommon.Rest
             }
             
             return await response.Content.ReadAsAsync<FileModel>(); 
-
         }
 
         public async Task AddFileAsync(FileModel fileModel)
