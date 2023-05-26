@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using ImageUploader.DesktopCommon.Contracts;
@@ -32,7 +33,8 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 
     private void InitializeViewModel()
     {
-        LoadedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
+        var receivedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
+        LoadedData = receivedData;
         _isInitialized = true;
     }
 }

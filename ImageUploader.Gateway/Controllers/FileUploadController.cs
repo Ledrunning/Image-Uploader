@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ImageUploader.DesktopCommon.Models;
 using ImageUploader.Gateway.Contracts;
 using ImageUploader.Gateway.Models;
 using Microsoft.AspNetCore.Mvc;
