@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageUploader.DesktopCommon.Models;
 using ImageUploader.Gateway.Contracts;
 using ImageUploader.Gateway.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +26,9 @@ namespace ImageUploader.Gateway.Controllers
 
         [HttpGet]
         [Route(nameof(GetAll))]
-        public async Task<IList<FileDto>> GetAll(CancellationToken token)
+        public async Task<IList<ShortFileDto>> GetAll(CancellationToken token)
         {
-            return await _fileService.GetAllAsync(token);
+            return await _fileService.GetAllAsync(token); 
         }
 
         [HttpGet]

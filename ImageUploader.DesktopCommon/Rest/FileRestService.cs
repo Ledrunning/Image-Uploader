@@ -19,7 +19,7 @@ namespace ImageUploader.DesktopCommon.Rest
 
         public async Task<IList<FileModel>> GetAllDataFromFilesAsync()
         {
-            var response = await CreateHttpClient().GetAsync("api/FileUpload/GetAll");
+            var response = await CreateHttpClient().GetAsync("api/FileUpload/GetAll").ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Error getting the files!");
@@ -35,13 +35,14 @@ namespace ImageUploader.DesktopCommon.Rest
             {
                 throw new Exception("Error getting the file!");
             }
-            
-            return await response.Content.ReadAsAsync<FileModel>(); 
+
+            return await response.Content.ReadAsAsync<FileModel>().ConfigureAwait(false);
         }
 
         public async Task AddFileAsync(FileModel fileModel)
         {
-            var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Create", fileModel);
+            var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Create", fileModel)
+                .ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Error when adding file!");
@@ -50,7 +51,7 @@ namespace ImageUploader.DesktopCommon.Rest
 
         public async Task DeleteAsync(long id)
         {
-            var response = await CreateHttpClient().DeleteAsync($"api/FileUpload/Delete?id={id}");
+            var response = await CreateHttpClient().DeleteAsync($"api/FileUpload/Delete?id={id}").ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -60,7 +61,8 @@ namespace ImageUploader.DesktopCommon.Rest
 
         public async Task UpdateAsync(FileModel fileModel)
         {
-            var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Update", fileModel);
+            var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Update", fileModel)
+                .ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {

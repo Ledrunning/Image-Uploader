@@ -2,11 +2,9 @@
 
 namespace ImageUploader.Gateway.Models
 {
-    public class FileDto : BaseDto
+    public class ShortFileDto : BaseDto
     {
         public string Name { get; set; }
         public DateTimeOffset DateTime { get; set; }
-        public byte[] Photo { get; set; }
-        public string PhotoPath { get; set; }
     }
 }
