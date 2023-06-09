@@ -52,7 +52,7 @@ namespace ImageUploader.DesktopClient
         {
             try
             {
-                var fileModel = new FileModel
+                var fileModel = new FileDto
                 {
                     Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
                     DateTime = DateTimeOffset.Now,

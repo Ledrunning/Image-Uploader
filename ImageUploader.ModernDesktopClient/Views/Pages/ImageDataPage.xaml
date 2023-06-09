@@ -19,7 +19,11 @@
                 <ColumnDefinition Width="500"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.LoadedData, Mode=OneWay}"></ui:DataGrid>
+            <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.LoadedData, Mode=OneWay }" IsReadOnly="True">
+                <ui:DataGrid.CellStyle>
+                    <Style/>
+                </ui:DataGrid.CellStyle>
+            </ui:DataGrid>
             <Grid Grid.Column="1" Grid.RowSpan="2"/>
         </Grid>
     </Grid>

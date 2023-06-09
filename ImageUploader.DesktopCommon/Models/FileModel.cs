@@ -2,11 +2,9 @@
 
 namespace ImageUploader.DesktopCommon.Models
 {
-    public class FileModel
+    public class FileModel : BaseFile
     {
-        public long Id { get; set; }
         public string Name { get; set; }
-        public DateTimeOffset DateTime { get; set; }
-        public byte[] Photo { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }

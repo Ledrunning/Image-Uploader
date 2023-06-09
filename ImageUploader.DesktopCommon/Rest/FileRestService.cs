@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -19,16 +20,23 @@ namespace ImageUploader.DesktopCommon.Rest
 
         public async Task<IList<FileModel>> GetAllDataFromFilesAsync()
         {
+            if (string.IsNullOrEmpty(_baseAddress))
+            {
+                throw new Exception("Empty or Incorrect base URL address!");
+            }
             var response = await CreateHttpClient().GetAsync("api/FileUpload/GetAll").ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Error getting the files!");
             }
 
-            return await response.Content.ReadAsAsync<IList<FileModel>>();
+            var requestedData = await response.Content.ReadAsAsync<IList<FileDto>>();
+            var fileModelList = requestedData.Select(fileDto => new FileModel { Id = fileDto.Id, Name = fileDto.Name, DateTime = fileDto.DateTime.LocalDateTime }).ToList();
+
+            return fileModelList;
         }
 
-        public async Task<FileModel> GetFileAsync(long id)
+        public async Task<FileDto> GetFileAsync(long id)
         {
             var response = await CreateHttpClient().GetAsync($"api/FileUpload/GetById?id={id}");
             if (!response.IsSuccessStatusCode)
@@ -36,10 +44,10 @@ namespace ImageUploader.DesktopCommon.Rest
                 throw new Exception("Error getting the file!");
             }
 
-            return await response.Content.ReadAsAsync<FileModel>().ConfigureAwait(false);
+            return await response.Content.ReadAsAsync<FileDto>().ConfigureAwait(false);
         }
 
-        public async Task AddFileAsync(FileModel fileModel)
+        public async Task AddFileAsync(FileDto fileModel)
         {
             var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Create", fileModel)
                 .ConfigureAwait(false);
@@ -59,7 +67,7 @@ namespace ImageUploader.DesktopCommon.Rest
             }
         }
 
-        public async Task UpdateAsync(FileModel fileModel)
+        public async Task UpdateAsync(FileDto fileModel)
         {
             var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Update", fileModel)
                 .ConfigureAwait(false);
