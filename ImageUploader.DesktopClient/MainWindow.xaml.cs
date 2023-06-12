@@ -2,22 +2,24 @@
 using System.Configuration;
 using System.IO;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ImageUploader.DesktopClient.Model;
+using ImageUploader.DesktopCommon.Models;
+using ImageUploader.DesktopCommon.Rest;
 using Microsoft.Win32;
 
 namespace ImageUploader.DesktopClient
 {
     public partial class MainWindow : Window
     {
-        private readonly FileSender _client;
+        private readonly FileRestService _client;
         private readonly string _urlAddress = ConfigurationManager.AppSettings["serverUriString"];
         private byte[] _imageByteArray;
 
         public MainWindow()
         {
             InitializeComponent();
-            _client = new FileSender(_urlAddress);
+            _client = new FileRestService(_urlAddress);
         }
 
         private void OnOpenFileClick(object sender, RoutedEventArgs e)
@@ -36,7 +38,7 @@ namespace ImageUploader.DesktopClient
             {
                 _imageByteArray = File.ReadAllBytes(openFileDialog.FileName);
 
-                imgPhoto.Source = ByteToImage(_imageByteArray);
+                ImgPhoto.Source = ByteToImage(_imageByteArray);
 
                 MessageBox.Show("File has been opened");
             }
@@ -48,25 +50,37 @@ namespace ImageUploader.DesktopClient
 
         private async void OnUploadClick(object sender, RoutedEventArgs e)
         {
-            var fileModel = new FileModel
+            try
             {
-                Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
-                DateTime = DateTimeOffset.Now,
-                Photo = _imageByteArray
-            };
+                var fileModel = new FileModel
+                {
+                    Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
+                    DateTime = DateTimeOffset.Now,
+                    Photo = _imageByteArray
+                };
 
-            await _client.AddFileAsync(fileModel);
+                await _client.AddFileAsync(fileModel);
 
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+
+            }
             MessageBox.Show("File has been uploaded");
         }
 
-        private async void OnGetFilesClick(object sender, RoutedEventArgs e)
+        private async void OnDownloadClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 long.TryParse(txtId.Text, out var result);
+
+                DownloadProgressBar.IsIndeterminate = true;
                 var files = await _client.GetFileAsync(result);
-                imgPhoto.Source = ByteToImage(files.Photo);
+                DownloadProgressBar.IsIndeterminate = false;
+
+                ImgPhoto.Source = ByteToImage(files.Photo);
             }
             catch (NullReferenceException err)
             {
@@ -91,7 +105,7 @@ namespace ImageUploader.DesktopClient
 
         private void OnClearImageClick(object sender, RoutedEventArgs e)
         {
-            imgPhoto.Source = null;
+            ImgPhoto.Source = null;
         }
 
         private static BitmapImage ByteToImage(byte[] imageData)

@@ -9,12 +9,16 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
+            <RowDefinition Height="15" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <Image Name="imgPhoto" />
+            <Image Name="ImgPhoto" />
         </Grid>
         <Grid Grid.Row="1">
+            <ProgressBar Name="DownloadProgressBar" />
+        </Grid>
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -37,7 +41,7 @@
                 <Button Grid.Row="0" Height="30" Width="100" Content="Open" FontFamily="Arial" FontSize="18"
                         Click="OnOpenFileClick" />
                 <Button Grid.Row="1" Height="30" Width="100" Content="Download" FontFamily="Arial" FontSize="18"
-                        Click="OnGetFilesClick" />
+                        Click="OnDownloadClick" />
             </Grid>
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
