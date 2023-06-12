@@ -19,12 +19,11 @@
                 <ColumnDefinition Width="500"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.LoadedData, Mode=OneWay }" IsReadOnly="True">
-                <ui:DataGrid.CellStyle>
-                    <Style/>
-                </ui:DataGrid.CellStyle>
-            </ui:DataGrid>
-            <Grid Grid.Column="1" Grid.RowSpan="2"/>
+            <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.LoadedData, Mode=OneWay }" IsReadOnly="True" 
+                         SelectedItem="{Binding Path=ViewModel.RowSelectedCommand, Mode=OneWay}"/>
+
+            <Grid Grid.Column="1" Margin="0,0,-28,0"/>
+            <Image Grid.Column="1" Margin="16,33,2,182" Stretch="Fill" Source="{Binding ViewModel.LoadedImage.Source, Mode=OneWay}"/>
         </Grid>
     </Grid>
 </ui:UiPage>

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
 using Wpf.Ui.Common.Interfaces;
@@ -11,7 +13,10 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
     private bool _isInitialized;
+
     [ObservableProperty] private List<FileModel> _loadedData = new();
+
+    [ObservableProperty] private Image _loadedImage = new();
 
     public ImageDataViewModel(IFileRestService fileRestService)
     {
@@ -35,5 +40,11 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         var receivedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
         LoadedData = receivedData;
         _isInitialized = true;
+    }
+
+    [RelayCommand]
+    public void OnRowSelected()
+    {
+
     }
 }
