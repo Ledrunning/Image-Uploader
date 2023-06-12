@@ -1,18 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
-using ImageUploader.DesktopClient.Model;
+using ImageUploader.DesktopCommon.Contracts;
+using ImageUploader.DesktopCommon.Models;
 
-namespace ImageUploader.DesktopClient
+namespace ImageUploader.DesktopCommon.Rest
 {
-    public class FileSender
+    public class FileRestService : IFileRestService
     {
         private readonly string _baseAddress;
 
-        public FileSender(string baseAddress)
+        public FileRestService(string baseAddress)
         {
             _baseAddress = baseAddress;
+        }
+
+        public async Task<IList<FileModel>> GetAllDataFromFilesAsync()
+        {
+            var response = await CreateHttpClient().GetAsync("api/FileUpload/GetAll");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error getting the files!");
+            }
+
+            return await response.Content.ReadAsAsync<IList<FileModel>>();
         }
 
         public async Task<FileModel> GetFileAsync(long id)
@@ -22,10 +36,8 @@ namespace ImageUploader.DesktopClient
             {
                 throw new Exception("Error getting the file!");
             }
-
-            var user = await response.Content.ReadAsAsync<FileModel>();
-            return user;
-
+            
+            return await response.Content.ReadAsAsync<FileModel>(); 
         }
 
         public async Task AddFileAsync(FileModel fileModel)
@@ -49,7 +61,7 @@ namespace ImageUploader.DesktopClient
 
         public async Task UpdateAsync(FileModel fileModel)
         {
-            var response = await CreateHttpClient().PostAsJsonAsync($"api/FileUpload/Update", fileModel);
+            var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Update", fileModel);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -57,7 +69,7 @@ namespace ImageUploader.DesktopClient
             }
         }
 
-        public HttpClient CreateHttpClient()
+        private HttpClient CreateHttpClient()
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(_baseAddress);
