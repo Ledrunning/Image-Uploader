@@ -3,11 +3,11 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
+using ImageUploader.ModernDesktopClient.Helpers;
 using Microsoft.Win32;
 using Wpf.Ui.Common.Interfaces;
 using MessageBox = Wpf.Ui.Controls.MessageBox;
@@ -76,7 +76,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         {
             ImageByteArray = File.ReadAllBytes(openFileDialog.FileName);
 
-            LoadedImage.Source = ByteToImage(ImageByteArray);
+            LoadedImage.Source = ImageConverter.ByteToImage(ImageByteArray);
             _messageBox.Show("Information!", "File has been opened");
         }
         catch (IOException)
@@ -126,7 +126,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             await ExecuteTask(async id =>
             {
                 var files = await _fileRestService.GetFileAsync(id);
-                LoadedImage.Source = ByteToImage(files.Photo);
+                LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
             }, FileId);
         }
         catch (Exception)
@@ -162,24 +162,5 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         await function(data);
         IsIndeterminate = false;
         IsVisible = Visibility.Hidden;
-    }
-
-    private static BitmapImage ByteToImage(byte[]? imageData)
-    {
-        var image = new BitmapImage();
-        if (imageData != null)
-        {
-            using var memoryStream = new MemoryStream(imageData);
-            memoryStream.Position = 0;
-            image.BeginInit();
-            image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = null;
-            image.StreamSource = memoryStream;
-            image.EndInit();
-        }
-
-        image.Freeze();
-        return image;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Wpf.Ui.Common.Interfaces;
+﻿using System.Windows;
+using Wpf.Ui.Common.Interfaces;
 
 namespace ImageUploader.ModernDesktopClient.Views.Pages
 {
