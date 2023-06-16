@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,6 +18,8 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private List<FileModel> _loadedData = new();
 
     [ObservableProperty] private Image _loadedImage = new();
+
+    [ObservableProperty] private DataRowView _selectedRow;
 
     public ImageDataViewModel(IFileRestService fileRestService)
     {
