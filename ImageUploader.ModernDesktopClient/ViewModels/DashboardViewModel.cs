@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
+using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
 using Microsoft.Win32;
 using Wpf.Ui.Common.Interfaces;
@@ -17,12 +18,7 @@ namespace ImageUploader.ModernDesktopClient.ViewModels;
 public partial class DashboardViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
-
-    private readonly MessageBox _messageBox = new()
-    {
-        ButtonLeftName = "Ok",
-        ButtonRightName = "Cancel"
-    };
+    private readonly MessageBox _messageBox;
 
     [ObservableProperty] private long _fileId;
 
@@ -32,11 +28,10 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private Image _loadedImage = new();
 
-    public DashboardViewModel(IFileRestService fileRestService)
+    public DashboardViewModel(IFileRestService fileRestService, IMessageBoxService messageBoxService)
     {
         _fileRestService = fileRestService;
-        _messageBox.ButtonLeftClick += OnMessageBoxButtonLeftClick;
-        _messageBox.ButtonRightClick += OnMessageBoxButtonRightClick;
+        _messageBox = messageBoxService.InitializeMessageBox();
     }
 
     private byte[]? ImageByteArray { get; set; }
@@ -48,16 +43,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     public void OnNavigatedFrom()
     {
     }
-
-    private void OnMessageBoxButtonRightClick(object sender, RoutedEventArgs e)
-    {
-        _messageBox.Visibility = Visibility.Hidden;
-    }
-
-    private void OnMessageBoxButtonLeftClick(object sender, RoutedEventArgs e)
-    {
-        _messageBox.Visibility = Visibility.Hidden;
-    }
+    
 
     [RelayCommand]
     private void OnFileOpen()

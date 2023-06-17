@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Data;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
+using ImageUploader.ModernDesktopClient.Contracts;
+using ImageUploader.ModernDesktopClient.Helpers;
 using Wpf.Ui.Common.Interfaces;
+using Wpf.Ui.Controls;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
@@ -14,16 +17,20 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
     private bool _isInitialized;
+    private readonly MessageBox _messageBox;
 
     [ObservableProperty] private List<FileModel> _loadedData = new();
 
     [ObservableProperty] private Image _loadedImage = new();
 
-    [ObservableProperty] private DataRowView _selectedRow;
+    [ObservableProperty] private ObservableCollection<FileModel> _rowCollection = new();
 
-    public ImageDataViewModel(IFileRestService fileRestService)
+    [ObservableProperty] private FileModel? _selectedItem;
+
+    public ImageDataViewModel(IFileRestService fileRestService, IMessageBoxService messageBoxService)
     {
         _fileRestService = fileRestService;
+        _messageBox = messageBoxService.InitializeMessageBox();
     }
 
     public void OnNavigatedTo()
@@ -41,13 +48,25 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     private void InitializeViewModel()
     {
         var receivedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
-        LoadedData = receivedData;
+
+        foreach (var fileModel in receivedData)
+        {
+            RowCollection.Add(fileModel);
+        }
+
         _isInitialized = true;
     }
 
-    [RelayCommand]
-    public void OnRowSelected()
+    public async Task DownloadImage()
     {
+        if (SelectedItem != null)
+        {
+            var downloadedFile = await _fileRestService.GetFileAsync(SelectedItem.Id);
+            LoadedImage.Source = ImageConverter.ByteToImage(downloadedFile.Photo);
+        }
+        else
+        {
 
+        }
     }
 }

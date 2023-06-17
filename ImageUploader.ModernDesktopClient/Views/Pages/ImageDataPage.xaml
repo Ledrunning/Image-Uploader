@@ -20,20 +20,15 @@
                 <ColumnDefinition Width="500"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.LoadedData, Mode=OneWay}"
-                         SelectedItem="{Binding ViewModel.SelectedRow, Mode=TwoWay}" 
+            <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.RowCollection, Mode=OneWay}"
+                         SelectedItem="{Binding ViewModel.SelectedItem, Mode=TwoWay}" 
                          AutoGenerateColumns="False" IsReadOnly="True"
-                         SelectionMode="Single" SelectionUnit="FullRow">
+                         SelectionMode="Single" SelectionUnit="FullRow"
+                         SelectionChanged="OnSelectionChanged">
                 <ui:DataGrid.Columns>
                     <DataGridTextColumn Header="Id" Width="*" Binding="{Binding Id}"/>
                     <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
                     <DataGridTextColumn Header="Date and time" Width="*" Binding="{Binding DateTime}"/>
-
-                    <!-- <i:Interaction.Triggers> -->
-                    <!--     <i:EventTrigger EventName="SelectionChanged"> -->
-                    <!--         <i:InvokeCommandAction Command="{Binding Path=ViewModel., RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}" /> -->
-                    <!--     </i:EventTrigger> -->
-                    <!-- </i:Interaction.Triggers> -->
                 </ui:DataGrid.Columns>
             </ui:DataGrid>
             <Grid Grid.Column="1" Margin="0,0,-28,0"/>
