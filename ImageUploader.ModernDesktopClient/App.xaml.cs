@@ -63,7 +63,7 @@ namespace ImageUploader.ModernDesktopClient
                 // Service containing navigation, same as INavigationWindow... but without window
                 services.AddSingleton<INavigationService, NavigationService>();
 
-                services.AddScoped<MessageBox>();
+                services.AddScoped<Wpf.Ui.Controls.MessageBox>();
                 services.AddScoped<IMessageBoxService, MessageBoxService>();
                 
                 // Main window with navigation

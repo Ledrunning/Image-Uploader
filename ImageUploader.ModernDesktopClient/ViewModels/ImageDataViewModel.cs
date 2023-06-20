@@ -66,7 +66,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         }
         else
         {
-
+            _messageBox.Show("Error!", "Could not load data!");
         }
     }
 }
