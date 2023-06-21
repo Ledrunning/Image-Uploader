@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
@@ -16,8 +18,11 @@ namespace ImageUploader.ModernDesktopClient.ViewModels;
 public partial class ImageDataViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
-    private bool _isInitialized;
+    private readonly IFileService _fileService;
     private readonly MessageBox _messageBox;
+
+    [ObservableProperty] private string? _fileName;
+    private bool _isInitialized;
 
     [ObservableProperty] private List<FileModel> _loadedData = new();
 
@@ -27,9 +32,12 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private FileModel? _selectedItem;
 
-    public ImageDataViewModel(IFileRestService fileRestService, IMessageBoxService messageBoxService)
+    public ImageDataViewModel(IFileRestService fileRestService,
+        IMessageBoxService messageBoxService,
+        IFileService fileService)
     {
         _fileRestService = fileRestService;
+        _fileService = fileService;
         _messageBox = messageBoxService.InitializeMessageBox();
     }
 
@@ -37,7 +45,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     {
         if (!_isInitialized)
         {
-            InitializeViewModel();
+            InitializeDataGrid();
         }
     }
 
@@ -45,7 +53,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     {
     }
 
-    private void InitializeViewModel()
+    private void InitializeDataGrid()
     {
         var receivedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
 
@@ -63,10 +71,49 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         {
             var downloadedFile = await _fileRestService.GetFileAsync(SelectedItem.Id);
             LoadedImage.Source = ImageConverter.ByteToImage(downloadedFile.Photo);
+            FileName = SelectedItem.Name;
         }
         else
         {
             _messageBox.Show("Error!", "Could not load data!");
         }
+    }
+
+    [RelayCommand]
+    private void OnFileOpen()
+    {
+        try
+        {
+            LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
+            _messageBox.Show("Information!", "File has been opened");
+        }
+        catch (IOException)
+        {
+            _messageBox.Show("Error!", "Could not load the file!");
+        }
+    }
+
+    [RelayCommand]
+    public async Task DeleteFile()
+    {
+        if (SelectedItem != null)
+        {
+            await _fileRestService.DeleteAsync(SelectedItem.Id);
+            RowCollection.Clear();
+            InitializeDataGrid();
+        }
+        else
+        {
+            _messageBox.Show("Error!", "Could not load data!");
+        }
+    }
+
+    [RelayCommand]
+    public async Task UpdateFile()
+    {
+        await _fileRestService.UpdateAsync(new FileDto()
+        {
+
+        });
     }
 }

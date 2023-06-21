@@ -35,21 +35,29 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Image Grid.Row="0" Source="{Binding ViewModel.LoadedImage.Source, Mode=OneWay}"/>
+                <Image Grid.Row="0" Source="{Binding ViewModel.LoadedImage.Source, Mode=OneWay}" />
                 <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <ui:TextBox Grid.Column="0" HorizontalAlignment="Stretch" Width="150"/>
+                    <ui:TextBox Grid.Column="0" Text="{Binding ViewModel.FileName, Mode=TwoWay}" Margin="10,0,0,0" />
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <ui:Button Grid.Column="0" Content="Open" Width="87.02" HorizontalAlignment="Stretch"/>
-                        <ui:Button Grid.Column="1" Content="Update" Width="87.02" HorizontalAlignment="Stretch"/>
+                        <ui:Button Grid.Column="0" Content="Open" Width="87.02"
+                                   Command="{Binding ViewModel.FileOpenCommand, Mode=OneWay}"
+                                   HorizontalAlignment="Stretch" />
+                        <ui:Button Grid.Column="1" Content="Update" Width="87.02"
+                                   Command="{Binding ViewModel.UpdateFileCommand, Mode=TwoWay}"
+                                   HorizontalAlignment="Stretch" />
                     </Grid>
+                    <ui:Button Grid.Row="2" Content="Delete" Width="87.02"
+                               Command="{Binding ViewModel.DeleteFileCommand, Mode=OneWay}"
+                               HorizontalAlignment="Stretch" />
                 </Grid>
             </Grid>
         </Grid>

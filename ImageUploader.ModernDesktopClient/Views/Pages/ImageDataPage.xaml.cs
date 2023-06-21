@@ -21,9 +21,9 @@ namespace ImageUploader.ModernDesktopClient.Views.Pages
         }
 
         //TODO: temporary solution
-        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ViewModel.DownloadImage();
+            await ViewModel.DownloadImage();
         }
     }
 }
