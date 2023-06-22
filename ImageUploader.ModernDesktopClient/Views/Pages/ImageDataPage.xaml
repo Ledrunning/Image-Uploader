@@ -52,7 +52,7 @@
                                    Command="{Binding ViewModel.FileOpenCommand, Mode=OneWay}"
                                    HorizontalAlignment="Stretch" />
                         <ui:Button Grid.Column="1" Content="Update" Width="87.02"
-                                   Command="{Binding ViewModel.UpdateFileCommand, Mode=TwoWay}"
+                                   Command="{Binding ViewModel.UpdateFileCommand, Mode=OneWay}"
                                    HorizontalAlignment="Stretch" />
                     </Grid>
                     <ui:Button Grid.Row="2" Content="Delete" Width="87.02"

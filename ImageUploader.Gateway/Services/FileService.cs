@@ -16,7 +16,7 @@ namespace ImageUploader.Gateway.Services
 {
     public class FileService : IFileService
     {
-        private const string FolderName = "EmployeePhoto";
+        private const string FolderName = "ImageFolder";
 
         private static readonly string PhotoDataPath = Path.GetDirectoryName(
                                                            Assembly.GetExecutingAssembly().Location) +
@@ -95,6 +95,12 @@ namespace ImageUploader.Gateway.Services
                 Name = file.Name,
                 DateTime = file.DateTime,
             };
+
+            if (file.IsUpdated)
+            {
+                File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
+                SaveImage(file);
+            }
 
             await _repository.UpdateAsync(fileEntity, token);
         }

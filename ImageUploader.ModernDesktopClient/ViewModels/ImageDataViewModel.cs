@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     private readonly MessageBox _messageBox;
 
     [ObservableProperty] private string? _fileName;
+    private bool _isImageChanged;
     private bool _isInitialized;
 
     [ObservableProperty] private List<FileModel> _loadedData = new();
@@ -79,6 +81,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         }
     }
 
+    //TODO an error occur when the open dialog is close 
     [RelayCommand]
     private void OnFileOpen()
     {
@@ -86,6 +89,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
             _messageBox.Show("Information!", "File has been opened");
+            _isImageChanged = true;
         }
         catch (IOException)
         {
@@ -111,9 +115,14 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     public async Task UpdateFile()
     {
-        await _fileRestService.UpdateAsync(new FileDto()
+        var fileDto = new FileDto
         {
-
-        });
+            Name = FileName,
+            LastPhotoName = SelectedItem?.Name,
+            DateTime = DateTimeOffset.UtcNow,
+            Photo = _fileService.ImageByteArray,
+            IsUpdated = _isImageChanged
+        };
+        await _fileRestService.UpdateAsync(fileDto);
     }
 }

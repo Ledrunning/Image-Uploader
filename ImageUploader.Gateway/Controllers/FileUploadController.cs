@@ -71,7 +71,7 @@ namespace ImageUploader.Gateway.Controllers
             return new NoContentResult();
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route(nameof(Update))]
         public async Task<IActionResult> Update(FileDto file, CancellationToken token)
         {
