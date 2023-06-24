@@ -69,15 +69,22 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 
     public async Task DownloadImage()
     {
-        if (SelectedItem != null)
+        try
         {
-            var downloadedFile = await _fileRestService.GetFileAsync(SelectedItem.Id);
-            LoadedImage.Source = ImageConverter.ByteToImage(downloadedFile.Photo);
-            FileName = SelectedItem.Name;
+            if (SelectedItem != null)
+            {
+                var downloadedFile = await _fileRestService.GetFileAsync(SelectedItem.Id);
+                LoadedImage.Source = ImageConverter.ByteToImage(downloadedFile.Photo);
+                FileName = SelectedItem.Name;
+            }
+            else
+            {
+                _messageBox.Show("Error!", "SelectedItem is null.");
+            }
         }
-        else
+        catch (Exception)
         {
-            _messageBox.Show("Error!", "Could not load data!");
+            _messageBox.Show("Title", "Could not load image data!");
         }
     }
 
@@ -93,36 +100,51 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         }
         catch (IOException)
         {
-            _messageBox.Show("Error!", "Could not load the file!");
+            _messageBox.Show("Error!", "Could not open the file!");
         }
     }
 
     [RelayCommand]
     public async Task DeleteFile()
     {
-        if (SelectedItem != null)
+        try
         {
-            await _fileRestService.DeleteAsync(SelectedItem.Id);
-            RowCollection.Clear();
-            InitializeDataGrid();
+            if (SelectedItem != null)
+            {
+                await _fileRestService.DeleteAsync(SelectedItem.Id);
+                RowCollection.Clear();
+                InitializeDataGrid();
+            }
+            else
+            {
+                _messageBox.Show("Error!", "SelectedItem is null.");
+            }
         }
-        else
+        catch (Exception)
         {
-            _messageBox.Show("Error!", "Could not load data!");
+            _messageBox.Show("Error!", "Could not delete the file");
         }
     }
 
     [RelayCommand]
     public async Task UpdateFile()
     {
-        var fileDto = new FileDto
+        try
         {
-            Name = FileName,
-            LastPhotoName = SelectedItem?.Name,
-            DateTime = DateTimeOffset.UtcNow,
-            Photo = _fileService.ImageByteArray,
-            IsUpdated = _isImageChanged
-        };
-        await _fileRestService.UpdateAsync(fileDto);
+            var fileDto = new FileDto
+            {
+                Id = SelectedItem!.Id,
+                Name = FileName,
+                LastPhotoName = SelectedItem?.Name,
+                DateTime = DateTimeOffset.UtcNow,
+                Photo = _fileService.ImageByteArray,
+                IsUpdated = _isImageChanged
+            };
+            await _fileRestService.UpdateAsync(fileDto);
+        }
+        catch (Exception)
+        {
+            _messageBox.Show("Error!", "Can not update the file");
+        }
     }
 }

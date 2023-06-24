@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
+using Newtonsoft.Json;
 
 namespace ImageUploader.DesktopCommon.Rest
 {

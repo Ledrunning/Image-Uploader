@@ -37,7 +37,7 @@ namespace ImageUploader.Gateway.Services
                 var allPhotos = await _repository.GetAllAsync(token);
 
                 return allPhotos.Select(photo => new ShortFileDto
-                { Id = photo.Id, Name = photo.Name, DateTime = photo.DateTime, }).ToList();
+                    { Id = photo.Id, Name = photo.Name, DateTime = photo.DateTime }).ToList();
             }
             catch (Exception e)
             {
@@ -94,6 +94,7 @@ namespace ImageUploader.Gateway.Services
                 Id = file.Id,
                 Name = file.Name,
                 DateTime = file.DateTime,
+                PhotoPath = $"{PhotoDataPath}\\{file.Name}"
             };
 
             if (file.IsUpdated)
