@@ -8,9 +8,9 @@ namespace ImageUploader.DesktopCommon.Contracts
     public interface IFileRestService
     {
         Task<IList<FileModel>> GetAllDataFromFilesAsync();
-        Task<FileModel> GetFileAsync(long id);
-        Task AddFileAsync(FileModel fileModel);
+        Task<FileDto> GetFileAsync(long id);
+        Task AddFileAsync(FileDto fileModel);
         Task DeleteAsync(long id);
-        Task UpdateAsync(FileModel fileModel);
+        Task UpdateAsync(FileDto fileModel);
     }
 }

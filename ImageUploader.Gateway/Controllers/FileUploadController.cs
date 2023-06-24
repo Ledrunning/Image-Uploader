@@ -26,9 +26,9 @@ namespace ImageUploader.Gateway.Controllers
 
         [HttpGet]
         [Route(nameof(GetAll))]
-        public async Task<IList<FileDto>> GetAll(CancellationToken token)
+        public async Task<IList<ShortFileDto>> GetAll(CancellationToken token)
         {
-            return await _fileService.GetAllAsync(token);
+            return await _fileService.GetAllAsync(token); 
         }
 
         [HttpGet]
@@ -73,7 +73,7 @@ namespace ImageUploader.Gateway.Controllers
 
         [HttpPost]
         [Route(nameof(Update))]
-        public async Task<IActionResult> Update(FileDto file, CancellationToken token)
+        public async Task<IActionResult> Update([FromBody] FileDto file, CancellationToken token)
         {
             if (file == null)
             {

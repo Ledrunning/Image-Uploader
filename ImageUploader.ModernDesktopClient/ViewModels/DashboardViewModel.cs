@@ -3,12 +3,12 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
-using Microsoft.Win32;
+using ImageUploader.ModernDesktopClient.Contracts;
+using ImageUploader.ModernDesktopClient.Helpers;
 using Wpf.Ui.Common.Interfaces;
 using MessageBox = Wpf.Ui.Controls.MessageBox;
 
@@ -17,12 +17,8 @@ namespace ImageUploader.ModernDesktopClient.ViewModels;
 public partial class DashboardViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
-
-    private readonly MessageBox _messageBox = new()
-    {
-        ButtonLeftName = "Ok",
-        ButtonRightName = "Cancel"
-    };
+    private readonly IFileService _fileService;
+    private readonly MessageBox _messageBox;
 
     [ObservableProperty] private long _fileId;
 
@@ -32,14 +28,14 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private Image _loadedImage = new();
 
-    public DashboardViewModel(IFileRestService fileRestService)
+    public DashboardViewModel(IFileRestService fileRestService,
+        IMessageBoxService messageBoxService,
+        IFileService fileService)
     {
         _fileRestService = fileRestService;
-        _messageBox.ButtonLeftClick += OnMessageBoxButtonLeftClick;
-        _messageBox.ButtonRightClick += OnMessageBoxButtonRightClick;
+        _fileService = fileService;
+        _messageBox = messageBoxService.InitializeMessageBox();
     }
-
-    private byte[]? ImageByteArray { get; set; }
 
     public void OnNavigatedTo()
     {
@@ -49,34 +45,13 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     {
     }
 
-    private void OnMessageBoxButtonRightClick(object sender, RoutedEventArgs e)
-    {
-        _messageBox.Visibility = Visibility.Hidden;
-    }
-
-    private void OnMessageBoxButtonLeftClick(object sender, RoutedEventArgs e)
-    {
-        _messageBox.Visibility = Visibility.Hidden;
-    }
-
+    //TODO an error occur when the open dialog is close 
     [RelayCommand]
     private void OnFileOpen()
     {
-        var openFileDialog = new OpenFileDialog
-        {
-            Filter = "JPEG(*.jpg)|*.jpg|All(*.*)|*"
-        };
-
-        if (openFileDialog.ShowDialog() != true)
-        {
-            return;
-        }
-
         try
         {
-            ImageByteArray = File.ReadAllBytes(openFileDialog.FileName);
-
-            LoadedImage.Source = ByteToImage(ImageByteArray);
+            LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
             _messageBox.Show("Information!", "File has been opened");
         }
         catch (IOException)
@@ -96,17 +71,17 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     {
         try
         {
-            var fileModel = new FileModel
-            {
-                Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
-                DateTime = DateTimeOffset.Now,
-                Photo = ImageByteArray
-            };
-
-            if (ImageByteArray is { Length: 0 })
+            if (_fileService.ImageByteArray is { Length: 0 })
             {
                 _messageBox.Show("Attention!", "Upload file first please!");
             }
+
+            var fileModel = new FileDto
+            {
+                Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
+                DateTime = DateTimeOffset.Now,
+                Photo = _fileService.ImageByteArray
+            };
 
             await _fileRestService.AddFileAsync(fileModel);
 
@@ -126,7 +101,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             await ExecuteTask(async id =>
             {
                 var files = await _fileRestService.GetFileAsync(id);
-                LoadedImage.Source = ByteToImage(files.Photo);
+                LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
             }, FileId);
         }
         catch (Exception)
@@ -136,16 +111,13 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             IsVisible = Visibility.Hidden;
         }
     }
-    
+
     [RelayCommand]
     private async Task OnImageDelete()
     {
         try
         {
-            await ExecuteTask(async id =>
-            {
-                await _fileRestService.DeleteAsync(id);
-            }, FileId);
+            await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
 
             _messageBox.Show("Information!", "File has been deleted");
         }
@@ -162,24 +134,5 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         await function(data);
         IsIndeterminate = false;
         IsVisible = Visibility.Hidden;
-    }
-
-    private static BitmapImage ByteToImage(byte[]? imageData)
-    {
-        var image = new BitmapImage();
-        if (imageData != null)
-        {
-            using var memoryStream = new MemoryStream(imageData);
-            memoryStream.Position = 0;
-            image.BeginInit();
-            image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = null;
-            image.StreamSource = memoryStream;
-            image.EndInit();
-        }
-
-        image.Freeze();
-        return image;
     }
 }

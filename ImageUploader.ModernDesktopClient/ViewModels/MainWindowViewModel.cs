@@ -48,7 +48,7 @@ public partial class MainWindowViewModel : ObservableObject
                 Content = "Data",
                 PageTag = "data",
                 Icon = SymbolRegular.Grid24,
-                PageType = typeof(DashboardPage)
+                PageType = typeof(ImageDataPage)
             },
         };
 
