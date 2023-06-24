@@ -12,9 +12,9 @@ using System.Windows.Threading;
 using ImageUploader.DesktopCommon.Contracts;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
-using System.Configuration;
-using System.Threading;
 using ImageUploader.ModernDesktopClient.Configuration;
+using ImageUploader.ModernDesktopClient.Contracts;
+using Microsoft.Win32;
 
 namespace ImageUploader.ModernDesktopClient
 {
@@ -64,6 +64,11 @@ namespace ImageUploader.ModernDesktopClient
                 // Service containing navigation, same as INavigationWindow... but without window
                 services.AddSingleton<INavigationService, NavigationService>();
 
+                services.AddScoped<OpenFileDialog>();
+                services.AddScoped<Wpf.Ui.Controls.MessageBox>();
+                services.AddScoped<IMessageBoxService, MessageBoxService>();
+                services.AddScoped<IFileService, FileService>();
+                
                 // Main window with navigation
                 services.AddScoped<INavigationWindow, Views.Windows.MainWindow>();
                 services.AddScoped<ViewModels.MainWindowViewModel>();

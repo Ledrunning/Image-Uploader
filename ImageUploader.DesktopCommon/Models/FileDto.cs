@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ImageUploader.Gateway.Models
+namespace ImageUploader.DesktopCommon.Models
 {
-    public class FileDto : BaseDto
+    public class FileDto : BaseFile
     {
         public string Name { get; set; }
         public DateTimeOffset DateTime { get; set; }

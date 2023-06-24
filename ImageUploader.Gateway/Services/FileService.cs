@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace ImageUploader.Gateway.Services
 {
     public class FileService : IFileService
     {
-        private const string FolderName = "EmployeePhoto";
+        private const string FolderName = "ImageFolder";
 
         private static readonly string PhotoDataPath = Path.GetDirectoryName(
                                                            Assembly.GetExecutingAssembly().Location) +
@@ -29,27 +30,14 @@ namespace ImageUploader.Gateway.Services
             CreateFolder();
         }
 
-        public async Task<IList<FileDto>> GetAllAsync(CancellationToken token)
+        public async Task<IList<ShortFileDto>> GetAllAsync(CancellationToken token)
         {
             try
             {
-                var fileDto = new List<FileDto>();
                 var allPhotos = await _repository.GetAllAsync(token);
 
-                foreach (var photo in allPhotos)
-                {
-                    var bufferImage = await File.ReadAllBytesAsync(photo.PhotoPath, token);
-
-                    fileDto.Add(new FileDto
-                    {
-                        Id = photo.Id,
-                        Name = photo.Name,
-                        DateTime = photo.DateTime,
-                        Photo = bufferImage
-                    });
-                }
-
-                return fileDto;
+                return allPhotos.Select(photo => new ShortFileDto
+                    { Id = photo.Id, Name = photo.Name, DateTime = photo.DateTime }).ToList();
             }
             catch (Exception e)
             {
@@ -106,8 +94,14 @@ namespace ImageUploader.Gateway.Services
                 Id = file.Id,
                 Name = file.Name,
                 DateTime = file.DateTime,
-
+                PhotoPath = $"{PhotoDataPath}\\{file.Name}"
             };
+
+            if (file.IsUpdated)
+            {
+                File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
+                SaveImage(file);
+            }
 
             await _repository.UpdateAsync(fileEntity, token);
         }

@@ -7,7 +7,7 @@ namespace ImageUploader.Gateway.Contracts
 {
     public interface IFileService
     {
-        Task<IList<FileDto>> GetAllAsync(CancellationToken token);
+        Task<IList<ShortFileDto>> GetAllAsync(CancellationToken token);
         Task AddAsync(FileDto file, CancellationToken token);
         Task<FileDto> GetByIdAsync(long id, CancellationToken token);
         Task UpdateAsync(FileDto file, CancellationToken token);

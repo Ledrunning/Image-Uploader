@@ -1,4 +1,5 @@
-﻿using Wpf.Ui.Common.Interfaces;
+﻿using System.Windows.Controls;
+using Wpf.Ui.Common.Interfaces;
 
 namespace ImageUploader.ModernDesktopClient.Views.Pages
 {
@@ -17,6 +18,12 @@ namespace ImageUploader.ModernDesktopClient.Views.Pages
             ViewModel = viewModel;
             
             InitializeComponent();
+        }
+
+        //TODO: temporary solution
+        private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            await ViewModel.DownloadImage();
         }
     }
 }
