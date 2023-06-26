@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="Exceptions\" />
+    <Folder Include="Configuration\" />
     <Folder Include="Services\" />
     <Folder Include="wwwroot\Files\" />
   </ItemGroup>

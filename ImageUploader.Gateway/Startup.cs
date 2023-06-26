@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ImageUploader.Gateway
 {
@@ -26,6 +27,7 @@ namespace ImageUploader.Gateway
         {
             var connectionString = Configuration.GetConnectionString(ConnectionString);
 
+            services.AddLogging();
             services.AddDbContext<MainDatabaseContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IMainRepository<FileEntity>, MainRepository<FileEntity>>();
             services.AddScoped<IFileService, FileService>();

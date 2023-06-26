@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
+using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
@@ -27,6 +28,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private Visibility _isVisible = Visibility.Hidden;
 
     [ObservableProperty] private Image _loadedImage = new();
+
+    public event TemplateEventHandler<bool>? FileEvent = delegate { };  
 
     public DashboardViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
@@ -66,6 +69,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         LoadedImage.Source = null;
     }
 
+    //TODO FIXME! Cannot update datagrid after file uploading
     [RelayCommand]
     private async Task OnImageUpload()
     {
@@ -84,6 +88,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             };
 
             await _fileRestService.AddFileAsync(fileModel);
+
+            FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
 
             _messageBox.Show("Information!", "File has been uploaded");
         }

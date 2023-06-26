@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -11,34 +12,45 @@ namespace ImageUploader.Gateway
     {
         public static void Main(string[] args)
         {
-            var loggerFactory = new LoggerFactory()
-                .AddConsole()
-                .AddFile("Logs/image_Uploader-{Date}.txt")
-                .AddEventSourceLogger()
-                .AddDebug();
-
-            var configuration = GetConfiguration();
-
-            var s = configuration.GetSection("").Get<>();
-
-            var logger = loggerFactory.CreateLogger<Program>();
+            ILogger logger = null;
 
             try
             {
+                var loggerFactory = CreateLogger();
+
+                logger = loggerFactory.CreateLogger<Program>();
+
                 logger.LogInformation("Service started successfully.");
                 BuildWebHost(args).Run();
             }
             catch (Exception e)
             {
+                Trace.Write(
+                    $"[{DateTime.Now:HH:mm:ss.fff}] Application startup error! Details {e.Message}");
                 logger.LogInformation("An error occurred when the service was running: {e}", e);
             }
+        }
+
+        private static ILoggerFactory CreateLogger()
+        {
+            var configuration = GetConfiguration();
+            var binPath = AppContext.BaseDirectory;
+            var filePath = configuration.GetSection("Logging")
+                .GetSection("File")["FilePath"];
+
+            var loggerFactory = new LoggerFactory()
+                .AddConsole()
+                .AddFile(Path.Combine(binPath, filePath))
+                .AddEventSourceLogger()
+                .AddDebug();
+            return loggerFactory;
         }
 
         private static IConfigurationRoot GetConfiguration()
         {
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", true, true)
                 .AddEnvironmentVariables();
 
             var configuration = configBuilder.Build();
