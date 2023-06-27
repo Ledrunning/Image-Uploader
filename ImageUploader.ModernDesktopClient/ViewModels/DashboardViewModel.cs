@@ -29,8 +29,6 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private Image _loadedImage = new();
 
-    public event TemplateEventHandler<bool>? FileEvent = delegate { };  
-
     public DashboardViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
         IFileService fileService)
@@ -47,6 +45,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     public void OnNavigatedFrom()
     {
     }
+
+    public event TemplateEventHandler<bool>? FileEvent = delegate { };
 
     //TODO an error occur when the open dialog is close 
     [RelayCommand]
@@ -69,7 +69,6 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         LoadedImage.Source = null;
     }
 
-    //TODO FIXME! Cannot update datagrid after file uploading
     [RelayCommand]
     private async Task OnImageUpload()
     {
@@ -124,7 +123,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         try
         {
             await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
-
+            FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
             _messageBox.Show("Information!", "File has been deleted");
         }
         catch (Exception)

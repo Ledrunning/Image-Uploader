@@ -24,7 +24,6 @@ namespace ImageUploader.Gateway.Services
                                                        $"\\{FolderName}";
 
         private readonly ILogger<FileService> _logger;
-
         private readonly IMainRepository<FileEntity> _repository;
 
         public FileService(IMainRepository<FileEntity> repository, ILogger<FileService> logger)

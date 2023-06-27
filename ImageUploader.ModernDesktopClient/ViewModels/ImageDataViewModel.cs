@@ -21,7 +21,6 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 {
     private readonly IFileRestService _fileRestService;
     private readonly IFileService _fileService;
-    private readonly DashboardViewModel _dashboardViewModel;
     private readonly MessageBox _messageBox;
 
     [ObservableProperty] private string? _fileName;
@@ -43,9 +42,8 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
-        _dashboardViewModel = dashboardViewModel;
         _messageBox = messageBoxService.InitializeMessageBox();
-        _dashboardViewModel.FileEvent += OnFileEvent;
+        dashboardViewModel.FileEvent += OnFileEvent;
     }
 
     private void OnFileEvent(TemplateEventArgs<bool>? eventArgs)
