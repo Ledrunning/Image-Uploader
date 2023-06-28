@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
+using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
@@ -44,6 +45,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     public void OnNavigatedFrom()
     {
     }
+
+    public event TemplateEventHandler<bool>? FileEvent = delegate { };
 
     //TODO an error occur when the open dialog is close 
     [RelayCommand]
@@ -85,6 +88,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 
             await _fileRestService.AddFileAsync(fileModel);
 
+            FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
+
             _messageBox.Show("Information!", "File has been uploaded");
         }
         catch (Exception)
@@ -118,7 +123,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         try
         {
             await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
-
+            FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
             _messageBox.Show("Information!", "File has been deleted");
         }
         catch (Exception)

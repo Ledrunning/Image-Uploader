@@ -11,6 +11,7 @@ using ImageUploader.Gateway.Contracts;
 using ImageUploader.Gateway.Exceptions;
 using ImageUploader.Gateway.Models;
 using ImageUploader.Gateway.Repository.Entity;
+using Microsoft.Extensions.Logging;
 
 namespace ImageUploader.Gateway.Services
 {
@@ -22,11 +23,13 @@ namespace ImageUploader.Gateway.Services
                                                            Assembly.GetExecutingAssembly().Location) +
                                                        $"\\{FolderName}";
 
+        private readonly ILogger<FileService> _logger;
         private readonly IMainRepository<FileEntity> _repository;
 
-        public FileService(IMainRepository<FileEntity> repository)
+        public FileService(IMainRepository<FileEntity> repository, ILogger<FileService> logger)
         {
             _repository = repository;
+            _logger = logger;
             CreateFolder();
         }
 
@@ -36,11 +39,14 @@ namespace ImageUploader.Gateway.Services
             {
                 var allPhotos = await _repository.GetAllAsync(token);
 
+                _logger.LogInformation("Getting all images from server");
+
                 return allPhotos.Select(photo => new ShortFileDto
                     { Id = photo.Id, Name = photo.Name, DateTime = photo.DateTime }).ToList();
             }
             catch (Exception e)
             {
+                _logger.LogError("Failed to get all images from server! Error: {e}", e);
                 throw new ImageUploaderException("Failed to get all images from server!", e);
             }
         }
@@ -57,9 +63,12 @@ namespace ImageUploader.Gateway.Services
                     DateTime = file.DateTime,
                     PhotoPath = $"{PhotoDataPath}\\{file.Name}"
                 }, token);
+
+                _logger.LogInformation("The image and details has been added on the server");
             }
             catch (Exception e)
             {
+                _logger.LogError("Failed to add the image file! Error: {e}", e);
                 throw new ImageUploaderException("Failed to add the image file!", e);
             }
         }
@@ -72,6 +81,8 @@ namespace ImageUploader.Gateway.Services
 
                 var bufferImage = await File.ReadAllBytesAsync(result.PhotoPath, token);
 
+                _logger.LogInformation("Getting the image from the server");
+
                 return new FileDto
                 {
                     Id = result.Id,
@@ -83,27 +94,37 @@ namespace ImageUploader.Gateway.Services
             }
             catch (Exception e)
             {
+                _logger.LogError("Failed to getting the image by Id! Error: {e}", e);
                 throw new ImageUploaderException("Failed to getting the image by Id!", e);
             }
         }
 
         public async Task UpdateAsync(FileDto file, CancellationToken token)
         {
-            var fileEntity = new FileEntity
+            try
             {
-                Id = file.Id,
-                Name = file.Name,
-                DateTime = file.DateTime,
-                PhotoPath = $"{PhotoDataPath}\\{file.Name}"
-            };
+                var fileEntity = new FileEntity
+                {
+                    Id = file.Id,
+                    Name = file.Name,
+                    DateTime = file.DateTime,
+                    PhotoPath = $"{PhotoDataPath}\\{file.Name}"
+                };
 
-            if (file.IsUpdated)
-            {
-                File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
-                SaveImage(file);
+                if (file.IsUpdated)
+                {
+                    File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
+                    SaveImage(file);
+                }
+
+                await _repository.UpdateAsync(fileEntity, token);
+                _logger.LogInformation("The image has been successfully updated in the server");
             }
-
-            await _repository.UpdateAsync(fileEntity, token);
+            catch (Exception e)
+            {
+                _logger.LogError("Failed to update the image! Error: {e}", e);
+                throw new ImageUploaderException("Failed to update the image!", e);
+            }
         }
 
         public async Task DeleteAsync(FileDto file, CancellationToken token)
@@ -119,16 +140,18 @@ namespace ImageUploader.Gateway.Services
             try
             {
                 File.Delete($"{PhotoDataPath}\\{file.Name}");
-
                 await _repository.DeleteAsync(fileEntity, token);
+
+                _logger.LogInformation("The image and details have been deleted successfully");
             }
             catch (Exception e)
             {
+                _logger.LogError("Error while deleting image file in the server folder! Error: {e}", e);
                 throw new ImageUploaderException("Error while deleting image file in the server folder!", e);
             }
         }
 
-        private static void SaveImage(FileDto file)
+        private void SaveImage(FileDto file)
         {
             try
             {
@@ -140,11 +163,16 @@ namespace ImageUploader.Gateway.Services
             }
             catch (Exception e)
             {
+                _logger.LogError("Error while saving image file into server folder! Error: {e}", e);
                 throw new ImageUploaderException("Error while saving image file into server folder!", e);
             }
         }
 
-        private static void CreateFolder()
+        /// <summary>
+        ///     Creating a folder only for the first time the app running
+        /// </summary>
+        /// <exception cref="ImageUploaderException">Error while creating the image folder</exception>
+        private void CreateFolder()
         {
             try
             {
@@ -155,7 +183,8 @@ namespace ImageUploader.Gateway.Services
             }
             catch (Exception e)
             {
-                throw new ImageUploaderException("Error while creating the folder", e);
+                _logger.LogError("Error while saving image file into server folder! Error: {e}", e);
+                throw new ImageUploaderException("Error while creating the image folder", e);
             }
         }
     }

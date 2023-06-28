@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
+using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
@@ -36,11 +37,21 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 
     public ImageDataViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
-        IFileService fileService)
+        IFileService fileService,
+        DashboardViewModel dashboardViewModel)
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
         _messageBox = messageBoxService.InitializeMessageBox();
+        dashboardViewModel.FileEvent += OnFileEvent;
+    }
+
+    private void OnFileEvent(TemplateEventArgs<bool>? eventArgs)
+    {
+        if (eventArgs is { GenericObject: true })
+        {
+            InitializeDataGrid();
+        }
     }
 
     public void OnNavigatedTo()
