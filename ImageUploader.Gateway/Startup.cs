@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
+using NLog.Extensions.Logging;
 
 namespace ImageUploader.Gateway
 {
@@ -27,14 +27,7 @@ namespace ImageUploader.Gateway
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration.GetConnectionString(ConnectionString);
-
-            services.AddLogging(loggingBuilder =>
-            {
-                loggingBuilder.AddConfiguration(Configuration.GetSection("Logging"));
-                loggingBuilder.ClearProviders();
-                loggingBuilder.AddSerilog();
-            });
-
+            
             services.AddDbContext<MainDatabaseContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IMainRepository<FileEntity>, MainRepository<FileEntity>>();
             services.AddScoped<IFileService, FileService>();
