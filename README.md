@@ -1,9 +1,55 @@
 # Image-Uploader 
 
-- It's a client-server application for uploading an image to the server and related information into the database via WPF Client
+This repository contains an image uploader application developed using C# and .NET.
+The application allows users to upload images to the server and view them on a desktop application.
+The desktop application is written using modern UI
 
-- Client was written in C# WPF
+Features
+Upload images to the server.
+View uploaded images on a desktop application.
+Delete uploaded images.
+Update image and image details 
 
-- Server-side was written by ASP .NET Core
+## Getting Started
+To get started with the Image Uploader, follow these steps:
 
-## Application is under construction
+Clone the repository:
+
+`git clone https://github.com/Ledrunning/Image-Uploader.git`
+
+Open the project in Visual Studio 2022.
+
+Build the solution to restore the required NuGet packages.
+
+Configure the database connection string in the appsettings.json file. Modify the following section to match your database setup:
+
+`"ConnectionStrings": {
+  "DefaultConnection": "YOUR_DATABASE_CONNECTION_STRING"
+}`
+
+Run the application.
+
+Uploading Images
+To upload an image, follow these steps:
+
+Click on the "Open File" button.
+Select the image file you want to upload from your local machine.
+Click the "Upload" button to start the upload process.
+Viewing Images
+After uploading an image, it will be displayed on the image view page. You can select a row in Datagrid and click to view it on the left side.
+
+Deleting Images
+To delete an uploaded image, follow these steps:
+
+Hover over the image you want to delete.
+Put the Id
+Click on the delete button.
+
+Contributing
+Contributions to the Image Uploader are welcome. If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
+
+License
+The Image Uploader is licensed under the MIT License. Feel free to modify and distribute the code as per the terms of the license.
+
+Acknowledgments
+The Image Uploader was developed by Ledrunning. 
