@@ -8,11 +8,12 @@ The repository also contains two versions of desktop applications:
 1- Simple WPF-client application called: **ImageUploader.DesktopClient**
 2 - WPF application with more functionality and modern design: **ImageUploader.ModernDesktopClient**
 
-Features
-Upload images to the server.
-View uploaded images on a desktop application.
-Delete uploaded images.
-Update image and image details 
+## Features
+
+- Upload images to the server.
+- View uploaded images on a desktop application.
+- Delete uploaded images.
+- Update image and image details 
 
 ## UI layout
 
