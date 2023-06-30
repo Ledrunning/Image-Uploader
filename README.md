@@ -35,22 +35,28 @@ Configure the database connection string in the appsettings.json file. Modify th
   "DefaultConnection": "YOUR_DATABASE_CONNECTION_STRING"
 }`
 
-Run the application.
+## Run the application.
 
-Uploading Images
+- Uploading Images
+
 To upload an image, follow these steps:
 
 Click on the "Open File" button.
 Select the image file you want to upload from your local machine.
 Click the "Upload" button to start the upload process.
-Viewing Images
+
+- Viewing Images
+
 After uploading an image, it will be displayed on the image view page. You can select a row in Datagrid and click to view it on the left side.
 
-Deleting Images
+- Deleting Images
+
 To delete an uploaded image, follow these steps:
 
 Hover over the image you want to delete.
+
 Put the Id
+
 Click on the delete button.
 
 ## Contributing
