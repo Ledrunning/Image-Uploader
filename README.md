@@ -57,7 +57,7 @@ Click on the delete button.
 
 Contributions to the Image Uploader are welcome. If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
 
-##License
+## License
 
 The Image Uploader is licensed under the MIT License. Feel free to modify and distribute the code as per the terms of the license.
 
