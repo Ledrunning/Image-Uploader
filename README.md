@@ -14,6 +14,10 @@ View uploaded images on a desktop application.
 Delete uploaded images.
 Update image and image details 
 
+## UI layout
+
+ ![](imageUploader.gif)
+
 ## Getting Started
 To get started with the Image Uploader, follow these steps:
 
