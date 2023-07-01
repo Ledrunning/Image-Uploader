@@ -30,12 +30,16 @@
                     <DataGridTextColumn Header="Date and time" Width="*" Binding="{Binding DateTime}" />
                 </ui:DataGrid.Columns>
             </ui:DataGrid>
+            <ui:ProgressRing Grid.Column="0" Visibility="{Binding ViewModel.IsDataLoadVisible}"
+                             IsIndeterminate="{Binding ViewModel.IsDataLoadIndeterminate}" />
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <Image Grid.Row="0" Source="{Binding ViewModel.LoadedImage.Source, Mode=OneWay}" />
+                <ui:ProgressRing Grid.Row="0" Visibility="{Binding ViewModel.IsVisible}"
+                                 IsIndeterminate="{Binding ViewModel.IsIndeterminate}" />
                 <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition />

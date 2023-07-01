@@ -22,8 +22,7 @@ public class MessageBoxService : IMessageBoxService
         
         return _messageBox;
     }
-
-
+    
     private void OnMessageBoxButtonRightClick(object sender, RoutedEventArgs e)
     {
         _messageBox.Visibility = Visibility.Hidden;

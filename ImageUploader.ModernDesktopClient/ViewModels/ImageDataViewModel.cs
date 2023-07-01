@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,9 +11,10 @@ using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
+using ImageUploader.ModernDesktopClient.Enums;
 using ImageUploader.ModernDesktopClient.Helpers;
 using Wpf.Ui.Common.Interfaces;
-using Wpf.Ui.Controls;
+using MessageBox = Wpf.Ui.Controls.MessageBox;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
@@ -25,7 +26,13 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private string? _fileName;
     private bool _isImageChanged;
+
+    [ObservableProperty] private bool _isIndeterminate;
+    [ObservableProperty] private bool _isDataLoadIndeterminate;
     private bool _isInitialized;
+
+    [ObservableProperty] private Visibility _isVisible = Visibility.Hidden;
+    [ObservableProperty] private Visibility _isDataLoadVisible = Visibility.Hidden;
 
     [ObservableProperty] private List<FileModel> _loadedData = new();
 
@@ -46,14 +53,6 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         dashboardViewModel.FileEvent += OnFileEvent;
     }
 
-    private void OnFileEvent(TemplateEventArgs<bool>? eventArgs)
-    {
-        if (eventArgs is { GenericObject: true })
-        {
-            InitializeDataGrid();
-        }
-    }
-
     public void OnNavigatedTo()
     {
         if (!_isInitialized)
@@ -66,9 +65,19 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     {
     }
 
-    private void InitializeDataGrid()
+    private void OnFileEvent(TemplateEventArgs<bool>? eventArgs)
     {
-        var receivedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
+        if (eventArgs is { GenericObject: true })
+        {
+            InitializeDataGrid();
+        }
+    }
+
+    private async void InitializeDataGrid()
+    {
+        IsDataLoadVisible = Visibility.Visible;
+        IsDataLoadIndeterminate = true;
+        var receivedData = await _fileRestService.GetAllDataFromFilesAsync();
 
         foreach (var fileModel in receivedData)
         {
@@ -76,17 +85,24 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         }
 
         _isInitialized = true;
+
+        IsDataLoadVisible = Visibility.Hidden;
+        IsDataLoadIndeterminate = false;
     }
 
+    //BUG after deleting Fix me!
     public async Task DownloadImage()
     {
         try
         {
             if (SelectedItem != null)
             {
-                var downloadedFile = await _fileRestService.GetFileAsync(SelectedItem.Id);
-                LoadedImage.Source = ImageConverter.ByteToImage(downloadedFile.Photo);
-                FileName = SelectedItem.Name;
+                await ExecuteTask(async id =>
+                {
+                    var files = await _fileRestService.GetFileAsync(id);
+                    LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
+                    FileName = SelectedItem.Name;
+                }, SelectedItem.Id);
             }
             else
             {
@@ -99,7 +115,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         }
     }
 
-    //TODO an error occur when the open dialog is close 
+    //BUG an error occur when the open dialog is close 
     [RelayCommand]
     private void OnFileOpen()
     {
@@ -118,22 +134,33 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     public async Task DeleteFile()
     {
-        try
+        if (_messageBox.ButtonLeftName == ButtonName.Ok.ToString())
         {
-            if (SelectedItem != null)
+            if (SelectedItem == null)
             {
-                await _fileRestService.DeleteAsync(SelectedItem.Id);
-                RowCollection.Clear();
-                InitializeDataGrid();
+                _messageBox.Show("Attention!", "Selected row has incorrect or no data.");
+                return;
             }
-            else
+
+            if (SelectedItem.Id is 0 or < 0)
             {
-                _messageBox.Show("Error!", "SelectedItem is null.");
+                _messageBox.Show("Attention!", "Selected Id is incorrect.");
+                return;
             }
-        }
-        catch (Exception)
-        {
-            _messageBox.Show("Error!", "Could not delete the file");
+
+            try
+            {
+                await ExecuteTask(async id =>
+                {
+                    await _fileRestService.DeleteAsync(id);
+                    RowCollection.Clear();
+                    InitializeDataGrid();
+                }, SelectedItem.Id);
+            }
+            catch (Exception)
+            {
+                _messageBox.Show("Error!", "Could not delete the file");
+            }
         }
     }
 
@@ -151,11 +178,21 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
                 Photo = _fileService.ImageByteArray,
                 IsUpdated = _isImageChanged
             };
-            await _fileRestService.UpdateAsync(fileDto);
+
+            await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), fileDto);
         }
         catch (Exception)
         {
             _messageBox.Show("Error!", "Can not update the file");
         }
+    }
+
+    private async Task ExecuteTask<T>(Func<T, Task> function, T data)
+    {
+        IsVisible = Visibility.Visible;
+        IsIndeterminate = true;
+        await function(data);
+        IsIndeterminate = false;
+        IsVisible = Visibility.Hidden;
     }
 }

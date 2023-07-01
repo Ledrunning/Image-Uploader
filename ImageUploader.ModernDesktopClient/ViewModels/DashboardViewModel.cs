@@ -9,6 +9,7 @@ using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
+using ImageUploader.ModernDesktopClient.Enums;
 using ImageUploader.ModernDesktopClient.Helpers;
 using Wpf.Ui.Common.Interfaces;
 using MessageBox = Wpf.Ui.Controls.MessageBox;
@@ -86,8 +87,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
                 Photo = _fileService.ImageByteArray
             };
 
-            await _fileRestService.AddFileAsync(fileModel);
-
+            await ExecuteTask(async fileDto => { await _fileRestService.AddFileAsync(fileDto); }, fileModel);
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
 
             _messageBox.Show("Information!", "File has been uploaded");
@@ -120,15 +120,25 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task OnImageDelete()
     {
-        try
+        if (_messageBox.ButtonLeftName == ButtonName.Ok.ToString())
         {
-            await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
-            FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
-            _messageBox.Show("Information!", "File has been deleted");
-        }
-        catch (Exception)
-        {
-            _messageBox.Show("Error!", "Could not delete the file from server!");
+            if (FileId is 0 or < 0)
+            {
+                _messageBox.Show("Attention!", "Please enter correct Id.");
+                return;
+            }
+
+            try
+            {
+                await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
+                FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
+                _messageBox.Show("Information!", "File has been deleted");
+                FileId = 0;
+            }
+            catch (Exception)
+            {
+                _messageBox.Show("Error!", "Could not delete the file from server!");
+            }
         }
     }
 
