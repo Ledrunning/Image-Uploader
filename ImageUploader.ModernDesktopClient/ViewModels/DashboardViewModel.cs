@@ -36,7 +36,7 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
-        _messageBox = messageBoxService.InitializeMessageBox();
+        _messageBox = messageBoxService.ModernMessageBox;
     }
 
     public void OnNavigatedTo()

@@ -49,7 +49,7 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
-        _messageBox = messageBoxService.InitializeMessageBox();
+        _messageBox = messageBoxService.ModernMessageBox;
         dashboardViewModel.FileEvent += OnFileEvent;
     }
 
@@ -103,10 +103,6 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
                     LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
                     FileName = SelectedItem.Name;
                 }, SelectedItem.Id);
-            }
-            else
-            {
-                _messageBox.Show("Error!", "SelectedItem is null.");
             }
         }
         catch (Exception)

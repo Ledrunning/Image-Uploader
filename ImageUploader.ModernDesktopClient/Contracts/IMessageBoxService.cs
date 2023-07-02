@@ -1,8 +1,13 @@
-﻿using Wpf.Ui.Controls;
+﻿using ImageUploader.DesktopCommon.Events;
+using ImageUploader.ModernDesktopClient.Enums;
+using Wpf.Ui.Controls;
 
 namespace ImageUploader.ModernDesktopClient.Contracts;
 
 public interface IMessageBoxService
 {
-    MessageBox InitializeMessageBox();
+    MessageBox ModernMessageBox { get; }
+
+    event TemplateEventHandler<ButtonName> OkButtonEvent;
+    event TemplateEventHandler<ButtonName> CancelButtonEvent;
 }
