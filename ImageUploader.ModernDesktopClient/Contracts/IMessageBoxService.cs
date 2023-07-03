@@ -8,6 +8,5 @@ public interface IMessageBoxService
 {
     MessageBox ModernMessageBox { get; }
 
-    event TemplateEventHandler<ButtonName> OkButtonEvent;
-    event TemplateEventHandler<ButtonName> CancelButtonEvent;
+    event TemplateEventHandler<ButtonName> ButtonEvent;
 }

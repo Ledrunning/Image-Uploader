@@ -19,12 +19,12 @@ public class FileService : IFileService
         _openFileDialog = openFileDialog;
         _mesaBoxService = mesaBoxService;
         _openFileDialog.Filter = Filter;
-        _mesaBoxService.OkButtonEvent += OnOkButtonEvent;
+        _mesaBoxService.ButtonEvent += OnOkButtonEvent;
     }
 
     private void OnOkButtonEvent(DesktopCommon.Events.TemplateEventArgs<ButtonName> templateEventArgs)
     {
-        throw new System.NotImplementedException();
+        
     }
 
     public byte[]? ImageByteArray { get; set; }

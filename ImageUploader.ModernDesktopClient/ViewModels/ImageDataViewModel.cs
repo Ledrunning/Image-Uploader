@@ -11,28 +11,23 @@ using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
-using ImageUploader.ModernDesktopClient.Enums;
 using ImageUploader.ModernDesktopClient.Helpers;
-using Wpf.Ui.Common.Interfaces;
 using MessageBox = Wpf.Ui.Controls.MessageBox;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
-public partial class ImageDataViewModel : ObservableObject, INavigationAware
+public partial class ImageDataViewModel : BaseViewModel
 {
     private readonly IFileRestService _fileRestService;
     private readonly IFileService _fileService;
     private readonly MessageBox _messageBox;
 
     [ObservableProperty] private string? _fileName;
-    private bool _isImageChanged;
-
-    [ObservableProperty] private bool _isIndeterminate;
     [ObservableProperty] private bool _isDataLoadIndeterminate;
-    private bool _isInitialized;
-
-    [ObservableProperty] private Visibility _isVisible = Visibility.Hidden;
     [ObservableProperty] private Visibility _isDataLoadVisible = Visibility.Hidden;
+    private bool _isImageChanged;
+    
+    private bool _isInitialized;
 
     [ObservableProperty] private List<FileModel> _loadedData = new();
 
@@ -53,16 +48,12 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         dashboardViewModel.FileEvent += OnFileEvent;
     }
 
-    public void OnNavigatedTo()
+    public override void OnNavigatedTo()
     {
         if (!_isInitialized)
         {
             InitializeDataGrid();
         }
-    }
-
-    public void OnNavigatedFrom()
-    {
     }
 
     private void OnFileEvent(TemplateEventArgs<bool>? eventArgs)
@@ -130,33 +121,30 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     public async Task DeleteFile()
     {
-        if (_messageBox.ButtonLeftName == ButtonName.Ok.ToString())
+        if (SelectedItem == null)
         {
-            if (SelectedItem == null)
-            {
-                _messageBox.Show("Attention!", "Selected row has incorrect or no data.");
-                return;
-            }
+            _messageBox.Show("Attention!", "Selected row has incorrect or no data.");
+            return;
+        }
 
-            if (SelectedItem.Id is 0 or < 0)
-            {
-                _messageBox.Show("Attention!", "Selected Id is incorrect.");
-                return;
-            }
+        if (SelectedItem.Id is 0 or < 0)
+        {
+            _messageBox.Show("Attention!", "Selected Id is incorrect.");
+            return;
+        }
 
-            try
+        try
+        {
+            await ExecuteTask(async id =>
             {
-                await ExecuteTask(async id =>
-                {
-                    await _fileRestService.DeleteAsync(id);
-                    RowCollection.Clear();
-                    InitializeDataGrid();
-                }, SelectedItem.Id);
-            }
-            catch (Exception)
-            {
-                _messageBox.Show("Error!", "Could not delete the file");
-            }
+                await _fileRestService.DeleteAsync(id);
+                RowCollection.Clear();
+                InitializeDataGrid();
+            }, SelectedItem.Id);
+        }
+        catch (Exception)
+        {
+            _messageBox.Show("Error!", "Could not delete the file");
         }
     }
 
