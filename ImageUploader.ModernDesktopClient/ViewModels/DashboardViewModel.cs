@@ -18,25 +18,15 @@ public partial class DashboardViewModel : BaseViewModel
 {
     private readonly IFileRestService _fileRestService;
     private readonly IFileService _fileService;
-    private readonly IMessageBoxService _messageBoxService;
-    private ButtonName _buttonName;
 
     [ObservableProperty] private long _fileId;
     [ObservableProperty] private Image _loadedImage = new();
 
-    public DashboardViewModel(IFileRestService fileRestService,
-        IMessageBoxService messageBoxService,
-        IFileService fileService)
+    public DashboardViewModel(IFileRestService fileRestService, IFileService fileService,
+        IMessageBoxService messageBoxService) : base(messageBoxService)
     {
         _fileRestService = fileRestService;
-        _messageBoxService = messageBoxService;
         _fileService = fileService;
-        _messageBoxService.ButtonEvent += OnOkButtonClick;
-    }
-    
-    private void OnOkButtonClick(TemplateEventArgs<ButtonName> e)
-    {
-        _buttonName = e.GenericObject;
     }
 
     public event TemplateEventHandler<bool>? FileEvent = delegate { };
@@ -48,11 +38,11 @@ public partial class DashboardViewModel : BaseViewModel
         try
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
-            _messageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
         }
         catch (IOException)
         {
-            _messageBoxService.ModernMessageBox.Show("Error!", "Could not load the file!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not load the file!");
         }
     }
 
@@ -69,7 +59,7 @@ public partial class DashboardViewModel : BaseViewModel
         {
             if (_fileService.ImageByteArray is { Length: 0 })
             {
-                _messageBoxService.ModernMessageBox.Show("Attention!", "Upload file first please!");
+                MessageBoxService.ModernMessageBox.Show("Attention!", "Upload file first please!");
             }
 
             var fileModel = new FileDto
@@ -82,11 +72,11 @@ public partial class DashboardViewModel : BaseViewModel
             await ExecuteTask(async fileDto => { await _fileRestService.AddFileAsync(fileDto); }, fileModel);
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
 
-            _messageBoxService.ModernMessageBox.Show("Information!", "File has been uploaded");
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been uploaded");
         }
         catch (Exception)
         {
-            _messageBoxService.ModernMessageBox.Show("Error!", "Could not add the file into server!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not add the file into server!");
         }
     }
 
@@ -103,7 +93,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            _messageBoxService.ModernMessageBox.Show("Error!", "Could not download the file from server!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not download the file from server!");
             IsIndeterminate = false;
             IsVisible = Visibility.Hidden;
         }
@@ -114,24 +104,28 @@ public partial class DashboardViewModel : BaseViewModel
     {
         if (FileId is 0 or < 0)
         {
-            _messageBoxService.ModernMessageBox.Show("Attention!", "Please enter correct Id.");
+            MessageBoxService.ModernMessageBox.Show("Attention!", "Please enter correct Id.");
             return;
         }
 
-        _messageBoxService.ModernMessageBox.Show("Attention!", "Are you sure you want to delete this file?");
-        
-        if (_buttonName == ButtonName.Ok)
+        await Task.Run(() => MessageBoxService.ModernMessageBox.Show("Attention!", "Are you sure you want to delete this file?"));
+
+        if (ButtonName == ButtonName.Ok)
         {
             try
             {
-                await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
+                await ExecuteTask(async id =>
+                {
+                    await _fileRestService.DeleteAsync(id); 
+
+                }, FileId);
                 FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
-                _messageBoxService.ModernMessageBox.Show("Information!", "File has been deleted");
+                MessageBoxService.ModernMessageBox.Show("Information!", "File has been deleted");
                 FileId = 0;
             }
             catch (Exception)
             {
-                _messageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file from server!");
+                MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file from server!");
             }
         }
     }

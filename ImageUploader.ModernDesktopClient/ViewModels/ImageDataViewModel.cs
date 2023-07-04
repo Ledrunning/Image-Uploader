@@ -12,7 +12,7 @@ using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
-using MessageBox = Wpf.Ui.Controls.MessageBox;
+using ImageUploader.ModernDesktopClient.Enums;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
@@ -20,13 +20,12 @@ public partial class ImageDataViewModel : BaseViewModel
 {
     private readonly IFileRestService _fileRestService;
     private readonly IFileService _fileService;
-    private readonly MessageBox _messageBox;
 
     [ObservableProperty] private string? _fileName;
     [ObservableProperty] private bool _isDataLoadIndeterminate;
     [ObservableProperty] private Visibility _isDataLoadVisible = Visibility.Hidden;
     private bool _isImageChanged;
-    
+
     private bool _isInitialized;
 
     [ObservableProperty] private List<FileModel> _loadedData = new();
@@ -40,11 +39,10 @@ public partial class ImageDataViewModel : BaseViewModel
     public ImageDataViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
         IFileService fileService,
-        DashboardViewModel dashboardViewModel)
+        DashboardViewModel dashboardViewModel) : base(messageBoxService)
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
-        _messageBox = messageBoxService.ModernMessageBox;
         dashboardViewModel.FileEvent += OnFileEvent;
     }
 
@@ -98,7 +96,7 @@ public partial class ImageDataViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            _messageBox.Show("Title", "Could not load image data!");
+            MessageBoxService.ModernMessageBox.Show("Title", "Could not load image data!");
         }
     }
 
@@ -109,12 +107,12 @@ public partial class ImageDataViewModel : BaseViewModel
         try
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
-            _messageBox.Show("Information!", "File has been opened");
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
             _isImageChanged = true;
         }
         catch (IOException)
         {
-            _messageBox.Show("Error!", "Could not open the file!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not open the file!");
         }
     }
 
@@ -123,29 +121,37 @@ public partial class ImageDataViewModel : BaseViewModel
     {
         if (SelectedItem == null)
         {
-            _messageBox.Show("Attention!", "Selected row has incorrect or no data.");
+            MessageBoxService.ModernMessageBox.Show("Attention!", "Selected row has incorrect or no data.");
             return;
         }
 
         if (SelectedItem.Id is 0 or < 0)
         {
-            _messageBox.Show("Attention!", "Selected Id is incorrect.");
+            MessageBoxService.ModernMessageBox.Show("Attention!", "Selected Id is incorrect.");
             return;
         }
 
-        try
+        MessageBoxService.ModernMessageBox.Show("Attention!", "Are you sure you want to delete this file?"));
+            
+        if (ButtonName == ButtonName.Ok)
         {
-            await ExecuteTask(async id =>
+            try
             {
-                await _fileRestService.DeleteAsync(id);
+                await ExecuteTask(async id =>
+                {
+                    await _fileRestService.DeleteAsync(id);
+                    
+                }, SelectedItem.Id);
+
                 RowCollection.Clear();
                 InitializeDataGrid();
-            }, SelectedItem.Id);
+            }
+            catch (Exception)
+            {
+                MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file");
+            }
         }
-        catch (Exception)
-        {
-            _messageBox.Show("Error!", "Could not delete the file");
-        }
+           
     }
 
     [RelayCommand]
@@ -167,16 +173,7 @@ public partial class ImageDataViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            _messageBox.Show("Error!", "Can not update the file");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Can not update the file");
         }
-    }
-
-    private async Task ExecuteTask<T>(Func<T, Task> function, T data)
-    {
-        IsVisible = Visibility.Visible;
-        IsIndeterminate = true;
-        await function(data);
-        IsIndeterminate = false;
-        IsVisible = Visibility.Hidden;
     }
 }

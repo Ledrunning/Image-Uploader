@@ -2,6 +2,7 @@
 
 public enum ButtonName
 {
+    None,
     Ok,
     Cancel,
 }
