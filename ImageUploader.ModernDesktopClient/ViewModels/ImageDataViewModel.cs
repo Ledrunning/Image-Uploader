@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
@@ -130,28 +131,22 @@ public partial class ImageDataViewModel : BaseViewModel
             MessageBoxService.ModernMessageBox.Show("Attention!", "Selected Id is incorrect.");
             return;
         }
-
-        MessageBoxService.ModernMessageBox.Show("Attention!", "Are you sure you want to delete this file?"));
-            
-        if (ButtonName == ButtonName.Ok)
+        
+        try
         {
-            try
+            await ExecuteTask(async id =>
             {
-                await ExecuteTask(async id =>
-                {
-                    await _fileRestService.DeleteAsync(id);
-                    
-                }, SelectedItem.Id);
+                await _fileRestService.DeleteAsync(id);
 
-                RowCollection.Clear();
-                InitializeDataGrid();
-            }
-            catch (Exception)
-            {
-                MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file");
-            }
+            }, SelectedItem.Id);
+
+            RowCollection.Clear();
+            InitializeDataGrid();
         }
-           
+        catch (Exception)
+        {
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file");
+        }
     }
 
     [RelayCommand]

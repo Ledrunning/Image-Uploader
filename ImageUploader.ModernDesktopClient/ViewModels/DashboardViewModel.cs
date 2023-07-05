@@ -9,7 +9,6 @@ using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
-using ImageUploader.ModernDesktopClient.Enums;
 using ImageUploader.ModernDesktopClient.Helpers;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
@@ -107,26 +106,17 @@ public partial class DashboardViewModel : BaseViewModel
             MessageBoxService.ModernMessageBox.Show("Attention!", "Please enter correct Id.");
             return;
         }
-
-        await Task.Run(() => MessageBoxService.ModernMessageBox.Show("Attention!", "Are you sure you want to delete this file?"));
-
-        if (ButtonName == ButtonName.Ok)
+        
+        try
         {
-            try
-            {
-                await ExecuteTask(async id =>
-                {
-                    await _fileRestService.DeleteAsync(id); 
-
-                }, FileId);
-                FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
-                MessageBoxService.ModernMessageBox.Show("Information!", "File has been deleted");
-                FileId = 0;
-            }
-            catch (Exception)
-            {
-                MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file from server!");
-            }
+            await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
+            FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been deleted");
+            FileId = 0;
+        }
+        catch (Exception)
+        {
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file from server!");
         }
     }
 }
