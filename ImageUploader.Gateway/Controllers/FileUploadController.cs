@@ -28,7 +28,7 @@ namespace ImageUploader.Gateway.Controllers
         [Route(nameof(GetAll))]
         public async Task<IList<ShortFileDto>> GetAll(CancellationToken token)
         {
-            return await _fileService.GetAllAsync(token); 
+            return await _fileService.GetAllAsync(token);
         }
 
         [HttpGet]

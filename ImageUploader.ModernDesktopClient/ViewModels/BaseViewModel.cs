@@ -9,7 +9,7 @@ using Wpf.Ui.Common.Interfaces;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
-public partial class BaseViewModel : ObservableObject, INavigationAware
+public abstract partial class BaseViewModel : ObservableObject, INavigationAware
 {
     protected readonly IMessageBoxService MessageBoxService;
     [ObservableProperty] private bool _isIndeterminate;
@@ -17,7 +17,7 @@ public partial class BaseViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private Visibility _isVisible = Visibility.Hidden;
     protected ButtonName ButtonName;
 
-    public BaseViewModel(IMessageBoxService messageBoxService)
+    protected BaseViewModel(IMessageBoxService messageBoxService)
     {
         MessageBoxService = messageBoxService;
         MessageBoxService.ButtonEvent += OnButtonEvent;
@@ -36,12 +36,23 @@ public partial class BaseViewModel : ObservableObject, INavigationAware
         ButtonName = eventArgs.GenericObject;
     }
 
+    protected abstract void OnFileOpen();
+
     protected async Task ExecuteTask<T>(Func<T, Task> function, T data)
     {
-        IsVisible = Visibility.Visible;
-        IsIndeterminate = true;
-        await function(data).ConfigureAwait(false);
-        IsIndeterminate = false;
-        IsVisible = Visibility.Hidden;
+        try
+        {
+            IsVisible = Visibility.Visible;
+            IsIndeterminate = true;
+            await function(data).ConfigureAwait(false);
+            IsIndeterminate = false;
+            IsVisible = Visibility.Hidden;
+        }
+        catch (Exception)
+        {
+            IsIndeterminate = false;
+            IsVisible = Visibility.Hidden;
+            throw;
+        }
     }
 }

@@ -5,7 +5,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ImageUploader.DesktopCommon.Contracts;
@@ -13,7 +12,6 @@ using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
-using ImageUploader.ModernDesktopClient.Enums;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
@@ -51,7 +49,7 @@ public partial class ImageDataViewModel : BaseViewModel
     {
         if (!_isInitialized)
         {
-            InitializeDataGrid();
+            UpdateDataGrid();
         }
     }
 
@@ -59,11 +57,11 @@ public partial class ImageDataViewModel : BaseViewModel
     {
         if (eventArgs is { GenericObject: true })
         {
-            InitializeDataGrid();
+            UpdateDataGrid();
         }
     }
 
-    private async void InitializeDataGrid()
+    private async void UpdateDataGrid()
     {
         IsDataLoadVisible = Visibility.Visible;
         IsDataLoadIndeterminate = true;
@@ -80,7 +78,6 @@ public partial class ImageDataViewModel : BaseViewModel
         IsDataLoadIndeterminate = false;
     }
 
-    //BUG after deleting Fix me!
     public async Task DownloadImage()
     {
         try
@@ -103,7 +100,7 @@ public partial class ImageDataViewModel : BaseViewModel
 
     //BUG an error occur when the open dialog is close 
     [RelayCommand]
-    private void OnFileOpen()
+    protected override void OnFileOpen()
     {
         try
         {
@@ -131,17 +128,13 @@ public partial class ImageDataViewModel : BaseViewModel
             MessageBoxService.ModernMessageBox.Show("Attention!", "Selected Id is incorrect.");
             return;
         }
-        
+
         try
         {
-            await ExecuteTask(async id =>
-            {
-                await _fileRestService.DeleteAsync(id);
-
-            }, SelectedItem.Id);
+            await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, SelectedItem.Id);
 
             RowCollection.Clear();
-            InitializeDataGrid();
+            UpdateDataGrid();
         }
         catch (Exception)
         {
@@ -149,20 +142,27 @@ public partial class ImageDataViewModel : BaseViewModel
         }
     }
 
+    //TODO need to sorted out problem without opening dialog window
     [RelayCommand]
     public async Task UpdateFile()
     {
         try
         {
+            var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
+
             var fileDto = new FileDto
             {
                 Id = SelectedItem!.Id,
                 Name = FileName,
                 LastPhotoName = SelectedItem?.Name,
                 DateTime = DateTimeOffset.UtcNow,
+                CreationTime = fileInfo.creationData,
+                FileSize = fileInfo.fileSize,
                 Photo = _fileService.ImageByteArray,
                 IsUpdated = _isImageChanged
             };
+
+            UpdateDataGrid();
 
             await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), fileDto);
         }

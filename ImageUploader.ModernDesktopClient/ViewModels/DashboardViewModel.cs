@@ -32,7 +32,7 @@ public partial class DashboardViewModel : BaseViewModel
 
     //TODO an error occur when the open dialog is close 
     [RelayCommand]
-    private void OnFileOpen()
+    protected override void OnFileOpen()
     {
         try
         {
@@ -61,14 +61,19 @@ public partial class DashboardViewModel : BaseViewModel
                 MessageBoxService.ModernMessageBox.Show("Attention!", "Upload file first please!");
             }
 
+            var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
+
             var fileModel = new FileDto
             {
                 Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
                 DateTime = DateTimeOffset.Now,
+                CreationTime = fileInfo.creationData,
+                FileSize = fileInfo.fileSize,
                 Photo = _fileService.ImageByteArray
             };
 
             await ExecuteTask(async fileDto => { await _fileRestService.AddFileAsync(fileDto); }, fileModel);
+
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
 
             MessageBoxService.ModernMessageBox.Show("Information!", "File has been uploaded");
@@ -106,7 +111,7 @@ public partial class DashboardViewModel : BaseViewModel
             MessageBoxService.ModernMessageBox.Show("Attention!", "Please enter correct Id.");
             return;
         }
-        
+
         try
         {
             await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);

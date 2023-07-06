@@ -37,12 +37,15 @@ namespace ImageUploader.Gateway.Services
         {
             try
             {
-                var allPhotos = await _repository.GetAllAsync(token);
+                var allImages = await _repository.GetAllAsync(token);
 
                 _logger.LogInformation("Getting all images from server");
 
-                return allPhotos.Select(photo => new ShortFileDto
-                    { Id = photo.Id, Name = photo.Name, DateTime = photo.DateTime }).ToList();
+                return allImages.Select(image => new ShortFileDto
+                {
+                    Id = image.Id, Name = image.Name, DateTime = image.DateTime, CreationTime = image.CreationTime,
+                    FileSize = image.FileSize
+                }).ToList();
             }
             catch (Exception e)
             {
@@ -61,6 +64,8 @@ namespace ImageUploader.Gateway.Services
                 {
                     Name = file.Name,
                     DateTime = file.DateTime,
+                    CreationTime = file.CreationTime,
+                    FileSize = file.FileSize,
                     PhotoPath = $"{PhotoDataPath}\\{file.Name}"
                 }, token);
 
@@ -77,19 +82,21 @@ namespace ImageUploader.Gateway.Services
         {
             try
             {
-                var result = await _repository.GetByIdAsync(id, token);
+                var imageEntity = await _repository.GetByIdAsync(id, token);
 
-                var bufferImage = await File.ReadAllBytesAsync(result.PhotoPath, token);
+                var bufferImage = await File.ReadAllBytesAsync(imageEntity.PhotoPath, token);
 
                 _logger.LogInformation("Getting the image from the server");
 
                 return new FileDto
                 {
-                    Id = result.Id,
-                    Name = result.Name,
-                    DateTime = result.DateTime,
+                    Id = imageEntity.Id,
+                    Name = imageEntity.Name,
+                    DateTime = imageEntity.DateTime,
+                    CreationTime = imageEntity.CreationTime,
+                    FileSize = imageEntity.FileSize,
                     Photo = bufferImage,
-                    PhotoPath = result.PhotoPath
+                    PhotoPath = imageEntity.PhotoPath
                 };
             }
             catch (Exception e)
@@ -108,6 +115,8 @@ namespace ImageUploader.Gateway.Services
                     Id = file.Id,
                     Name = file.Name,
                     DateTime = file.DateTime,
+                    CreationTime = file.CreationTime,
+                    FileSize = file.FileSize,
                     PhotoPath = $"{PhotoDataPath}\\{file.Name}"
                 };
 
@@ -134,6 +143,8 @@ namespace ImageUploader.Gateway.Services
                 Id = file.Id,
                 Name = file.Name,
                 DateTime = file.DateTime,
+                CreationTime = file.CreationTime,
+                FileSize = file.FileSize,
                 PhotoPath = file.PhotoPath
             };
 

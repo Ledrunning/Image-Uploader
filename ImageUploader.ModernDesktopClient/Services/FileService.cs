@@ -1,8 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Interop;
 using System.Windows.Media;
 using ImageUploader.ModernDesktopClient.Contracts;
-using ImageUploader.ModernDesktopClient.Enums;
 using ImageUploader.ModernDesktopClient.Helpers;
 using Microsoft.Win32;
 
@@ -11,35 +11,39 @@ namespace ImageUploader.ModernDesktopClient.Services;
 public class FileService : IFileService
 {
     private const string Filter = "JPEG(*.jpg)|*.jpg|All(*.*)|*";
-    private readonly IMessageBoxService _mesaBoxService;
+    private const double ByteToMegabyteCoefficient = 0.000001;
     private readonly OpenFileDialog _openFileDialog;
 
-    public FileService(OpenFileDialog openFileDialog, IMessageBoxService mesaBoxService)
+    public FileService(OpenFileDialog openFileDialog)
     {
         _openFileDialog = openFileDialog;
-        _mesaBoxService = mesaBoxService;
         _openFileDialog.Filter = Filter;
-        _mesaBoxService.ButtonEvent += OnOkButtonEvent;
-    }
-
-    private void OnOkButtonEvent(DesktopCommon.Events.TemplateEventArgs<ButtonName> templateEventArgs)
-    {
-        
     }
 
     public byte[]? ImageByteArray { get; set; }
 
     public ImageSource OpenFileAndGetImageSource()
     {
-        _openFileDialog.ShowDialog();
-
-        if (_mesaBoxService.ModernMessageBox.ButtonLeftName == ButtonName.Ok.ToString())
+        if (!_openFileDialog.ShowDialog().HasValue)
         {
-            ImageByteArray = File.ReadAllBytes(_openFileDialog.FileName);
-
-            return ImageConverter.ByteToImage(ImageByteArray);
+            return new D3DImage();
         }
 
-        return new D3DImage();
+        ImageByteArray = File.ReadAllBytes(_openFileDialog.FileName);
+
+        return ImageConverter.ByteToImage(ImageByteArray);
+    }
+
+    public (DateTime creationData, double fileSize) GetFileData(string filePath)
+    {
+        var creationTime = File.GetCreationTime(filePath);
+        var fileLength = new FileInfo(filePath).Length * ByteToMegabyteCoefficient;
+
+        return (creationTime, fileLength);
+    }
+
+    public string GetFilepath()
+    {
+        return _openFileDialog.FileName;
     }
 }
