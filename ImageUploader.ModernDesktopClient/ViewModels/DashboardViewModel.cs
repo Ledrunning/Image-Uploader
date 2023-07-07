@@ -63,7 +63,7 @@ public partial class DashboardViewModel : BaseViewModel
 
             var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
 
-            var fileModel = new FileDto
+            var imageDto = new ImageDto
             {
                 Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
                 DateTime = DateTimeOffset.Now,
@@ -72,7 +72,7 @@ public partial class DashboardViewModel : BaseViewModel
                 Photo = _fileService.ImageByteArray
             };
 
-            await ExecuteTask(async fileDto => { await _fileRestService.AddFileAsync(fileDto); }, fileModel);
+            await ExecuteTask(async image => { await _fileRestService.AddFileAsync(image); }, imageDto);
 
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
 
@@ -91,8 +91,8 @@ public partial class DashboardViewModel : BaseViewModel
         {
             await ExecuteTask(async id =>
             {
-                var files = await _fileRestService.GetFileAsync(id);
-                LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
+                var imageDto = await _fileRestService.GetFileAsync(id);
+                LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
             }, FileId);
         }
         catch (Exception)

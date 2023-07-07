@@ -27,13 +27,13 @@ public partial class ImageDataViewModel : BaseViewModel
 
     private bool _isInitialized;
 
-    [ObservableProperty] private List<FileModel> _loadedData = new();
+    [ObservableProperty] private List<ImageModel> _loadedData = new();
 
     [ObservableProperty] private Image _loadedImage = new();
 
-    [ObservableProperty] private ObservableCollection<FileModel> _rowCollection = new();
+    [ObservableProperty] private ObservableCollection<ImageModel> _rowCollection = new();
 
-    [ObservableProperty] private FileModel? _selectedItem;
+    [ObservableProperty] private ImageModel? _selectedItem;
 
     public ImageDataViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
@@ -150,7 +150,7 @@ public partial class ImageDataViewModel : BaseViewModel
         {
             var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
 
-            var fileDto = new FileDto
+            var imageDto = new ImageDto
             {
                 Id = SelectedItem!.Id,
                 Name = FileName,
@@ -164,7 +164,7 @@ public partial class ImageDataViewModel : BaseViewModel
 
             UpdateDataGrid();
 
-            await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), fileDto);
+            await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), imageDto);
         }
         catch (Exception)
         {

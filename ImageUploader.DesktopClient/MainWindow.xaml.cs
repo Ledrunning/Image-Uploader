@@ -52,14 +52,14 @@ namespace ImageUploader.DesktopClient
         {
             try
             {
-                var fileModel = new FileDto
+                var imageDto = new ImageDto
                 {
                     Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
                     DateTime = DateTimeOffset.Now,
                     Photo = _imageByteArray
                 };
 
-                await _client.AddFileAsync(fileModel);
+                await _client.AddFileAsync(imageDto);
 
             }
             catch (Exception err)
