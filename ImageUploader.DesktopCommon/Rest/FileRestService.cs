@@ -24,6 +24,7 @@ namespace ImageUploader.DesktopCommon.Rest
             {
                 throw new Exception("Empty or Incorrect base URL address!");
             }
+
             var response = await CreateHttpClient().GetAsync("api/FileUpload/GetAll").ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
@@ -31,7 +32,11 @@ namespace ImageUploader.DesktopCommon.Rest
             }
 
             var requestedData = await response.Content.ReadAsAsync<IList<ImageDto>>();
-            var fileModelList = requestedData.Select(fileDto => new ImageModel { Id = fileDto.Id, Name = fileDto.Name, DateTime = fileDto.DateTime.LocalDateTime }).ToList();
+            var fileModelList = requestedData.Select(imageDto => new ImageModel
+            {
+                Id = imageDto.Id, Name = imageDto.Name, DateTime = imageDto.DateTime.LocalDateTime,
+                CreationTime = imageDto.CreationTime.LocalDateTime, FileSize = imageDto.FileSize
+            }).ToList();
 
             return fileModelList;
         }

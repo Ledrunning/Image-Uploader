@@ -142,29 +142,29 @@ public partial class ImageDataViewModel : BaseViewModel
         }
     }
 
-    //TODO need to sorted out problem without opening dialog window
     [RelayCommand]
     public async Task UpdateFile()
     {
         try
         {
-            var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
-
-            var imageDto = new ImageDto
+            if (SelectedItem != null)
             {
-                Id = SelectedItem!.Id,
-                Name = FileName,
-                LastPhotoName = SelectedItem?.Name,
-                DateTime = DateTimeOffset.UtcNow,
-                CreationTime = fileInfo.creationData,
-                FileSize = fileInfo.fileSize,
-                Photo = _fileService.ImageByteArray,
-                IsUpdated = _isImageChanged
-            };
+                var imageDto = new ImageDto
+                {
+                    Id = SelectedItem.Id,
+                    Name = FileName,
+                    LastPhotoName = SelectedItem.Name,
+                    DateTime = DateTimeOffset.UtcNow,
+                    CreationTime = SelectedItem.CreationTime,
+                    FileSize = SelectedItem.FileSize,
+                    Photo = _fileService.ImageByteArray,
+                    IsUpdated = _isImageChanged
+                };
 
-            UpdateDataGrid();
+                UpdateDataGrid();
 
-            await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), imageDto);
+                await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), imageDto);
+            }
         }
         catch (Exception)
         {
