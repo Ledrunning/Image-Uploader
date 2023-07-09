@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ImageUploader.Gateway.Contracts;
+using ImageUploader.Gateway.Enum;
 using ImageUploader.Gateway.Exceptions;
 using ImageUploader.Gateway.Models;
 using ImageUploader.Gateway.Repository.Entity;
@@ -120,12 +121,22 @@ namespace ImageUploader.Gateway.Services
                     PhotoPath = $"{PhotoDataPath}\\{file.Name}"
                 };
 
-                if (file.IsUpdated)
+                switch (file.FileUpdate)
                 {
-                    File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
-                    SaveImage(file);
-                }
+                    case FileUpdate.NoOperation:
+                        return;
+                    case FileUpdate.DeleteAndSave:
+                        File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
+                        SaveImage(file);
+                        break;
+                    case FileUpdate.Rewrite:
+                        File.Move($"{PhotoDataPath}\\{file.LastPhotoName}", $"{PhotoDataPath}\\{file.Name}");
 
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+ 
                 await _repository.UpdateAsync(fileEntity, token);
                 _logger.LogInformation("The image has been successfully updated in the server");
             }

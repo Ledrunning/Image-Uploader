@@ -1,4 +1,5 @@
 ﻿using System;
+using ImageUploader.Gateway.Enum;
 
 namespace ImageUploader.Gateway.Models
 {
@@ -11,6 +12,6 @@ namespace ImageUploader.Gateway.Models
         public byte[] Photo { get; set; }
         public string PhotoPath { get; set; }
         public string LastPhotoName { get; set; }
-        public bool IsUpdated { get; set; }
+        public FileUpdate FileUpdate { get; set; }
     }
 }

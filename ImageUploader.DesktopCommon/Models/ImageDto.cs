@@ -11,6 +11,6 @@ namespace ImageUploader.DesktopCommon.Models
         public byte[] Photo { get; set; }
         public string PhotoPath { get; set; }
         public string LastPhotoName { get; set; }
-        public bool IsUpdated { get; set; }
+        public FileUpdate FileUpdate { get; set; }
     }
 }

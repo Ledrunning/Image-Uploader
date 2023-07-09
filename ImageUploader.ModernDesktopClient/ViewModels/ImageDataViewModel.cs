@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ImageUploader.DesktopCommon;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
@@ -21,9 +22,9 @@ public partial class ImageDataViewModel : BaseViewModel
     private readonly IFileService _fileService;
 
     [ObservableProperty] private string? _fileName;
+    private FileUpdate _fileUpdate = FileUpdate.NoOperation;
     [ObservableProperty] private bool _isDataLoadIndeterminate;
     [ObservableProperty] private Visibility _isDataLoadVisible = Visibility.Hidden;
-    private bool _isImageChanged;
 
     private bool _isInitialized;
 
@@ -106,7 +107,7 @@ public partial class ImageDataViewModel : BaseViewModel
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
             MessageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
-            _isImageChanged = true;
+            _fileUpdate = FileUpdate.DeleteAndSave;
         }
         catch (IOException)
         {
@@ -149,6 +150,11 @@ public partial class ImageDataViewModel : BaseViewModel
         {
             if (SelectedItem != null)
             {
+                if (SelectedItem.Name != FileName)
+                {
+                    _fileUpdate = FileUpdate.Rewrite;
+                }
+
                 var imageDto = new ImageDto
                 {
                     Id = SelectedItem.Id,
@@ -158,17 +164,21 @@ public partial class ImageDataViewModel : BaseViewModel
                     CreationTime = SelectedItem.CreationTime,
                     FileSize = SelectedItem.FileSize,
                     Photo = _fileService.ImageByteArray,
-                    IsUpdated = _isImageChanged
+                    FileUpdate = _fileUpdate
                 };
 
-                UpdateDataGrid();
-
                 await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), imageDto);
+
+                UpdateDataGrid();
             }
         }
         catch (Exception)
         {
             MessageBoxService.ModernMessageBox.Show("Error!", "Can not update the file");
+        }
+        finally
+        {
+            _fileUpdate = FileUpdate.NoOperation;
         }
     }
 }
