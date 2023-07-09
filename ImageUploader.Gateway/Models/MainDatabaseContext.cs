@@ -14,6 +14,6 @@ namespace ImageUploader.Gateway.Models
         {
         }
 
-        public DbSet<FileEntity> Files { get; set; }
+        public DbSet<ImageEntity> Files { get; set; }
     }
 }

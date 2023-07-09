@@ -2,73 +2,71 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ImageUploader.DesktopCommon;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
-using Wpf.Ui.Common.Interfaces;
-using Wpf.Ui.Controls;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
-public partial class ImageDataViewModel : ObservableObject, INavigationAware
+public partial class ImageDataViewModel : BaseViewModel
 {
     private readonly IFileRestService _fileRestService;
     private readonly IFileService _fileService;
-    private readonly MessageBox _messageBox;
 
     [ObservableProperty] private string? _fileName;
-    private bool _isImageChanged;
+    private FileUpdate _fileUpdate = FileUpdate.NoOperation;
+    [ObservableProperty] private bool _isDataLoadIndeterminate;
+    [ObservableProperty] private Visibility _isDataLoadVisible = Visibility.Hidden;
+
     private bool _isInitialized;
 
-    [ObservableProperty] private List<FileModel> _loadedData = new();
+    [ObservableProperty] private List<ImageModel> _loadedData = new();
 
     [ObservableProperty] private Image _loadedImage = new();
 
-    [ObservableProperty] private ObservableCollection<FileModel> _rowCollection = new();
+    [ObservableProperty] private ObservableCollection<ImageModel> _rowCollection = new();
 
-    [ObservableProperty] private FileModel? _selectedItem;
+    [ObservableProperty] private ImageModel? _selectedItem;
 
     public ImageDataViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
         IFileService fileService,
-        DashboardViewModel dashboardViewModel)
+        DashboardViewModel dashboardViewModel) : base(messageBoxService)
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
-        _messageBox = messageBoxService.InitializeMessageBox();
         dashboardViewModel.FileEvent += OnFileEvent;
+    }
+
+    public override void OnNavigatedTo()
+    {
+        if (!_isInitialized)
+        {
+            UpdateDataGrid();
+        }
     }
 
     private void OnFileEvent(TemplateEventArgs<bool>? eventArgs)
     {
         if (eventArgs is { GenericObject: true })
         {
-            InitializeDataGrid();
+            UpdateDataGrid();
         }
     }
 
-    public void OnNavigatedTo()
+    private async void UpdateDataGrid()
     {
-        if (!_isInitialized)
-        {
-            InitializeDataGrid();
-        }
-    }
-
-    public void OnNavigatedFrom()
-    {
-    }
-
-    private void InitializeDataGrid()
-    {
-        var receivedData = _fileRestService.GetAllDataFromFilesAsync().Result.ToList();
+        IsDataLoadVisible = Visibility.Visible;
+        IsDataLoadIndeterminate = true;
+        var receivedData = await _fileRestService.GetAllDataFromFilesAsync();
 
         foreach (var fileModel in receivedData)
         {
@@ -76,6 +74,9 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         }
 
         _isInitialized = true;
+
+        IsDataLoadVisible = Visibility.Hidden;
+        IsDataLoadIndeterminate = false;
     }
 
     public async Task DownloadImage()
@@ -84,56 +85,61 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
         {
             if (SelectedItem != null)
             {
-                var downloadedFile = await _fileRestService.GetFileAsync(SelectedItem.Id);
-                LoadedImage.Source = ImageConverter.ByteToImage(downloadedFile.Photo);
-                FileName = SelectedItem.Name;
-            }
-            else
-            {
-                _messageBox.Show("Error!", "SelectedItem is null.");
+                await ExecuteTask(async id =>
+                {
+                    var files = await _fileRestService.GetFileAsync(id);
+                    LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
+                    FileName = SelectedItem.Name;
+                }, SelectedItem.Id);
             }
         }
         catch (Exception)
         {
-            _messageBox.Show("Title", "Could not load image data!");
+            MessageBoxService.ModernMessageBox.Show("Title", "Could not load image data!");
         }
     }
 
-    //TODO an error occur when the open dialog is close 
+    //BUG an error occur when the open dialog is close 
     [RelayCommand]
-    private void OnFileOpen()
+    protected override void OnFileOpen()
     {
         try
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
-            _messageBox.Show("Information!", "File has been opened");
-            _isImageChanged = true;
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
+            _fileUpdate = FileUpdate.DeleteAndSave;
         }
         catch (IOException)
         {
-            _messageBox.Show("Error!", "Could not open the file!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not open the file!");
         }
     }
 
     [RelayCommand]
     public async Task DeleteFile()
     {
+        if (SelectedItem == null)
+        {
+            MessageBoxService.ModernMessageBox.Show("Attention!", "Selected row has incorrect or no data.");
+            return;
+        }
+
+        if (SelectedItem.Id is 0 or < 0)
+        {
+            MessageBoxService.ModernMessageBox.Show("Attention!", "Selected Id is incorrect.");
+            return;
+        }
+
         try
         {
-            if (SelectedItem != null)
-            {
-                await _fileRestService.DeleteAsync(SelectedItem.Id);
-                RowCollection.Clear();
-                InitializeDataGrid();
-            }
-            else
-            {
-                _messageBox.Show("Error!", "SelectedItem is null.");
-            }
+            await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, SelectedItem.Id);
+
+            RowCollection.Clear();
+            UpdateDataGrid();
         }
         catch (Exception)
         {
-            _messageBox.Show("Error!", "Could not delete the file");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file");
         }
     }
 
@@ -142,20 +148,37 @@ public partial class ImageDataViewModel : ObservableObject, INavigationAware
     {
         try
         {
-            var fileDto = new FileDto
+            if (SelectedItem != null)
             {
-                Id = SelectedItem!.Id,
-                Name = FileName,
-                LastPhotoName = SelectedItem?.Name,
-                DateTime = DateTimeOffset.UtcNow,
-                Photo = _fileService.ImageByteArray,
-                IsUpdated = _isImageChanged
-            };
-            await _fileRestService.UpdateAsync(fileDto);
+                if (SelectedItem.Name != FileName)
+                {
+                    _fileUpdate = FileUpdate.Rewrite;
+                }
+
+                var imageDto = new ImageDto
+                {
+                    Id = SelectedItem.Id,
+                    Name = FileName,
+                    LastPhotoName = SelectedItem.Name,
+                    DateTime = DateTimeOffset.UtcNow,
+                    CreationTime = SelectedItem.CreationTime,
+                    FileSize = SelectedItem.FileSize,
+                    Photo = _fileService.ImageByteArray,
+                    FileUpdate = _fileUpdate
+                };
+
+                await ExecuteTask(async model => await _fileRestService.UpdateAsync(model), imageDto);
+
+                UpdateDataGrid();
+            }
         }
         catch (Exception)
         {
-            _messageBox.Show("Error!", "Can not update the file");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Can not update the file");
+        }
+        finally
+        {
+            _fileUpdate = FileUpdate.NoOperation;
         }
     }
 }

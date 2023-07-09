@@ -10,56 +10,38 @@ using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
-using Wpf.Ui.Common.Interfaces;
-using MessageBox = Wpf.Ui.Controls.MessageBox;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
-public partial class DashboardViewModel : ObservableObject, INavigationAware
+public partial class DashboardViewModel : BaseViewModel
 {
     private readonly IFileRestService _fileRestService;
     private readonly IFileService _fileService;
-    private readonly MessageBox _messageBox;
 
     [ObservableProperty] private long _fileId;
-
-    [ObservableProperty] private bool _isIndeterminate;
-
-    [ObservableProperty] private Visibility _isVisible = Visibility.Hidden;
-
     [ObservableProperty] private Image _loadedImage = new();
 
-    public DashboardViewModel(IFileRestService fileRestService,
-        IMessageBoxService messageBoxService,
-        IFileService fileService)
+    public DashboardViewModel(IFileRestService fileRestService, IFileService fileService,
+        IMessageBoxService messageBoxService) : base(messageBoxService)
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
-        _messageBox = messageBoxService.InitializeMessageBox();
-    }
-
-    public void OnNavigatedTo()
-    {
-    }
-
-    public void OnNavigatedFrom()
-    {
     }
 
     public event TemplateEventHandler<bool>? FileEvent = delegate { };
 
     //TODO an error occur when the open dialog is close 
     [RelayCommand]
-    private void OnFileOpen()
+    protected override void OnFileOpen()
     {
         try
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
-            _messageBox.Show("Information!", "File has been opened");
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
         }
         catch (IOException)
         {
-            _messageBox.Show("Error!", "Could not load the file!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not load the file!");
         }
     }
 
@@ -76,25 +58,29 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         {
             if (_fileService.ImageByteArray is { Length: 0 })
             {
-                _messageBox.Show("Attention!", "Upload file first please!");
+                MessageBoxService.ModernMessageBox.Show("Attention!", "Upload file first please!");
             }
 
-            var fileModel = new FileDto
+            var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
+
+            var imageDto = new ImageDto
             {
                 Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
                 DateTime = DateTimeOffset.Now,
+                CreationTime = fileInfo.creationData,
+                FileSize = fileInfo.fileSize,
                 Photo = _fileService.ImageByteArray
             };
 
-            await _fileRestService.AddFileAsync(fileModel);
+            await ExecuteTask(async image => { await _fileRestService.AddFileAsync(image); }, imageDto);
 
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
 
-            _messageBox.Show("Information!", "File has been uploaded");
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been uploaded");
         }
         catch (Exception)
         {
-            _messageBox.Show("Error!", "Could not add the file into server!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not add the file into server!");
         }
     }
 
@@ -105,13 +91,13 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         {
             await ExecuteTask(async id =>
             {
-                var files = await _fileRestService.GetFileAsync(id);
-                LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
+                var imageDto = await _fileRestService.GetFileAsync(id);
+                LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
             }, FileId);
         }
         catch (Exception)
         {
-            _messageBox.Show("Error!", "Could not download the file from server!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not download the file from server!");
             IsIndeterminate = false;
             IsVisible = Visibility.Hidden;
         }
@@ -120,24 +106,22 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task OnImageDelete()
     {
+        if (FileId is 0 or < 0)
+        {
+            MessageBoxService.ModernMessageBox.Show("Attention!", "Please enter correct Id.");
+            return;
+        }
+
         try
         {
             await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
-            _messageBox.Show("Information!", "File has been deleted");
+            MessageBoxService.ModernMessageBox.Show("Information!", "File has been deleted");
+            FileId = 0;
         }
         catch (Exception)
         {
-            _messageBox.Show("Error!", "Could not delete the file from server!");
+            MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file from server!");
         }
-    }
-
-    private async Task ExecuteTask<T>(Func<T, Task> function, T data)
-    {
-        IsVisible = Visibility.Visible;
-        IsIndeterminate = true;
-        await function(data);
-        IsIndeterminate = false;
-        IsVisible = Visibility.Hidden;
     }
 }
