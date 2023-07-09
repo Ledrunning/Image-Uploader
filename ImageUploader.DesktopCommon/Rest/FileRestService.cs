@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ImageUploader.DesktopCommon.Contracts;
 using ImageUploader.DesktopCommon.Models;
-using Newtonsoft.Json;
 
 namespace ImageUploader.DesktopCommon.Rest
 {
@@ -19,25 +18,30 @@ namespace ImageUploader.DesktopCommon.Rest
             _baseAddress = baseAddress;
         }
 
-        public async Task<IList<FileModel>> GetAllDataFromFilesAsync()
+        public async Task<IList<ImageModel>> GetAllDataFromFilesAsync()
         {
             if (string.IsNullOrEmpty(_baseAddress))
             {
                 throw new Exception("Empty or Incorrect base URL address!");
             }
+
             var response = await CreateHttpClient().GetAsync("api/FileUpload/GetAll").ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Error getting the files!");
             }
 
-            var requestedData = await response.Content.ReadAsAsync<IList<FileDto>>();
-            var fileModelList = requestedData.Select(fileDto => new FileModel { Id = fileDto.Id, Name = fileDto.Name, DateTime = fileDto.DateTime.LocalDateTime }).ToList();
+            var requestedData = await response.Content.ReadAsAsync<IList<ImageDto>>();
+            var fileModelList = requestedData.Select(imageDto => new ImageModel
+            {
+                Id = imageDto.Id, Name = imageDto.Name, DateTime = imageDto.DateTime.LocalDateTime,
+                CreationTime = imageDto.CreationTime.LocalDateTime, FileSize = imageDto.FileSize
+            }).ToList();
 
             return fileModelList;
         }
 
-        public async Task<FileDto> GetFileAsync(long id)
+        public async Task<ImageDto> GetFileAsync(long id)
         {
             var response = await CreateHttpClient().GetAsync($"api/FileUpload/GetById?id={id}");
             if (!response.IsSuccessStatusCode)
@@ -45,10 +49,10 @@ namespace ImageUploader.DesktopCommon.Rest
                 throw new Exception("Error getting the file!");
             }
 
-            return await response.Content.ReadAsAsync<FileDto>().ConfigureAwait(false);
+            return await response.Content.ReadAsAsync<ImageDto>().ConfigureAwait(false);
         }
 
-        public async Task AddFileAsync(FileDto fileModel)
+        public async Task AddFileAsync(ImageDto fileModel)
         {
             var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Create", fileModel)
                 .ConfigureAwait(false);
@@ -68,7 +72,7 @@ namespace ImageUploader.DesktopCommon.Rest
             }
         }
 
-        public async Task UpdateAsync(FileDto fileModel)
+        public async Task UpdateAsync(ImageDto fileModel)
         {
             var response = await CreateHttpClient().PostAsJsonAsync("api/FileUpload/Update", fileModel)
                 .ConfigureAwait(false);

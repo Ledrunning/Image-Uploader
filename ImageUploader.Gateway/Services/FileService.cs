@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using ImageUploader.Gateway.Contracts;
+using ImageUploader.Gateway.Enum;
 using ImageUploader.Gateway.Exceptions;
 using ImageUploader.Gateway.Models;
 using ImageUploader.Gateway.Repository.Entity;
@@ -24,25 +25,28 @@ namespace ImageUploader.Gateway.Services
                                                        $"\\{FolderName}";
 
         private readonly ILogger<FileService> _logger;
-        private readonly IMainRepository<FileEntity> _repository;
+        private readonly IMainRepository<ImageEntity> _repository;
 
-        public FileService(IMainRepository<FileEntity> repository, ILogger<FileService> logger)
+        public FileService(IMainRepository<ImageEntity> repository, ILogger<FileService> logger)
         {
             _repository = repository;
             _logger = logger;
             CreateFolder();
         }
 
-        public async Task<IList<ShortFileDto>> GetAllAsync(CancellationToken token)
+        public async Task<IList<ShortImageDto>> GetAllAsync(CancellationToken token)
         {
             try
             {
-                var allPhotos = await _repository.GetAllAsync(token);
+                var allImages = await _repository.GetAllAsync(token);
 
                 _logger.LogInformation("Getting all images from server");
 
-                return allPhotos.Select(photo => new ShortFileDto
-                    { Id = photo.Id, Name = photo.Name, DateTime = photo.DateTime }).ToList();
+                return allImages.Select(image => new ShortImageDto
+                {
+                    Id = image.Id, Name = image.Name, DateTime = image.DateTime, CreationTime = image.CreationTime,
+                    FileSize = image.FileSize
+                }).ToList();
             }
             catch (Exception e)
             {
@@ -51,45 +55,49 @@ namespace ImageUploader.Gateway.Services
             }
         }
 
-        public async Task AddAsync(FileDto file, CancellationToken token)
+        public async Task AddAsync(ImageDto imageDto, CancellationToken token)
         {
-            SaveImage(file);
+            SaveImage(imageDto);
 
             try
             {
-                await _repository.AddAsync(new FileEntity
+                await _repository.AddAsync(new ImageEntity
                 {
-                    Name = file.Name,
-                    DateTime = file.DateTime,
-                    PhotoPath = $"{PhotoDataPath}\\{file.Name}"
+                    Name = imageDto.Name,
+                    DateTime = imageDto.DateTime,
+                    CreationTime = imageDto.CreationTime,
+                    FileSize = imageDto.FileSize,
+                    PhotoPath = $"{PhotoDataPath}\\{imageDto.Name}"
                 }, token);
 
                 _logger.LogInformation("The image and details has been added on the server");
             }
             catch (Exception e)
             {
-                _logger.LogError("Failed to add the image file! Error: {e}", e);
-                throw new ImageUploaderException("Failed to add the image file!", e);
+                _logger.LogError("Failed to add the image imageDto! Error: {e}", e);
+                throw new ImageUploaderException("Failed to add the image imageDto!", e);
             }
         }
 
-        public async Task<FileDto> GetByIdAsync(long id, CancellationToken token)
+        public async Task<ImageDto> GetByIdAsync(long id, CancellationToken token)
         {
             try
             {
-                var result = await _repository.GetByIdAsync(id, token);
+                var imageEntity = await _repository.GetByIdAsync(id, token);
 
-                var bufferImage = await File.ReadAllBytesAsync(result.PhotoPath, token);
+                var bufferImage = await File.ReadAllBytesAsync(imageEntity.PhotoPath, token);
 
                 _logger.LogInformation("Getting the image from the server");
 
-                return new FileDto
+                return new ImageDto
                 {
-                    Id = result.Id,
-                    Name = result.Name,
-                    DateTime = result.DateTime,
+                    Id = imageEntity.Id,
+                    Name = imageEntity.Name,
+                    DateTime = imageEntity.DateTime,
+                    CreationTime = imageEntity.CreationTime,
+                    FileSize = imageEntity.FileSize,
                     Photo = bufferImage,
-                    PhotoPath = result.PhotoPath
+                    PhotoPath = imageEntity.PhotoPath
                 };
             }
             catch (Exception e)
@@ -99,24 +107,36 @@ namespace ImageUploader.Gateway.Services
             }
         }
 
-        public async Task UpdateAsync(FileDto file, CancellationToken token)
+        public async Task UpdateAsync(ImageDto file, CancellationToken token)
         {
             try
             {
-                var fileEntity = new FileEntity
+                var fileEntity = new ImageEntity
                 {
                     Id = file.Id,
                     Name = file.Name,
                     DateTime = file.DateTime,
+                    CreationTime = file.CreationTime,
+                    FileSize = file.FileSize,
                     PhotoPath = $"{PhotoDataPath}\\{file.Name}"
                 };
 
-                if (file.IsUpdated)
+                switch (file.FileUpdate)
                 {
-                    File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
-                    SaveImage(file);
-                }
+                    case FileUpdate.NoOperation:
+                        return;
+                    case FileUpdate.DeleteAndSave:
+                        File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
+                        SaveImage(file);
+                        break;
+                    case FileUpdate.Rewrite:
+                        File.Move($"{PhotoDataPath}\\{file.LastPhotoName}", $"{PhotoDataPath}\\{file.Name}");
 
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+ 
                 await _repository.UpdateAsync(fileEntity, token);
                 _logger.LogInformation("The image has been successfully updated in the server");
             }
@@ -127,13 +147,15 @@ namespace ImageUploader.Gateway.Services
             }
         }
 
-        public async Task DeleteAsync(FileDto file, CancellationToken token)
+        public async Task DeleteAsync(ImageDto file, CancellationToken token)
         {
-            var fileEntity = new FileEntity
+            var fileEntity = new ImageEntity
             {
                 Id = file.Id,
                 Name = file.Name,
                 DateTime = file.DateTime,
+                CreationTime = file.CreationTime,
+                FileSize = file.FileSize,
                 PhotoPath = file.PhotoPath
             };
 
@@ -146,12 +168,12 @@ namespace ImageUploader.Gateway.Services
             }
             catch (Exception e)
             {
-                _logger.LogError("Error while deleting image file in the server folder! Error: {e}", e);
-                throw new ImageUploaderException("Error while deleting image file in the server folder!", e);
+                _logger.LogError("Error while deleting image imageDto in the server folder! Error: {e}", e);
+                throw new ImageUploaderException("Error while deleting image imageDto in the server folder!", e);
             }
         }
 
-        private void SaveImage(FileDto file)
+        private void SaveImage(ImageDto file)
         {
             try
             {
@@ -163,8 +185,8 @@ namespace ImageUploader.Gateway.Services
             }
             catch (Exception e)
             {
-                _logger.LogError("Error while saving image file into server folder! Error: {e}", e);
-                throw new ImageUploaderException("Error while saving image file into server folder!", e);
+                _logger.LogError("Error while saving image imageDto into server folder! Error: {e}", e);
+                throw new ImageUploaderException("Error while saving image imageDto into server folder!", e);
             }
         }
 
@@ -183,7 +205,7 @@ namespace ImageUploader.Gateway.Services
             }
             catch (Exception e)
             {
-                _logger.LogError("Error while saving image file into server folder! Error: {e}", e);
+                _logger.LogError("Error while saving image imageDto into server folder! Error: {e}", e);
                 throw new ImageUploaderException("Error while creating the image folder", e);
             }
         }

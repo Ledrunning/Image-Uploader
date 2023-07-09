@@ -26,34 +26,34 @@ namespace ImageUploader.Gateway.Controllers
 
         [HttpGet]
         [Route(nameof(GetAll))]
-        public async Task<IList<ShortFileDto>> GetAll(CancellationToken token)
+        public async Task<IList<ShortImageDto>> GetAll(CancellationToken token)
         {
-            return await _fileService.GetAllAsync(token); 
+            return await _fileService.GetAllAsync(token);
         }
 
         [HttpGet]
         [Route(nameof(GetById))]
         public async Task<IActionResult> GetById(long id, CancellationToken token)
         {
-            var file = await _fileService.GetByIdAsync(id, token);
-            if (file == null)
+            var imageDto = await _fileService.GetByIdAsync(id, token);
+            if (imageDto == null)
             {
                 return NotFound();
             }
 
-            return new ObjectResult(file);
+            return new ObjectResult(imageDto);
         }
 
         [HttpPost]
         [Route(nameof(Create))]
-        public async Task<IActionResult> Create([FromBody] FileDto file, CancellationToken token)
+        public async Task<IActionResult> Create([FromBody] ImageDto imageDto, CancellationToken token)
         {
-            if (file == null)
+            if (imageDto == null)
             {
                 return NotFound();
             }
 
-            await _fileService.AddAsync(file, token);
+            await _fileService.AddAsync(imageDto, token);
             return new NoContentResult();
         }
 
@@ -61,26 +61,26 @@ namespace ImageUploader.Gateway.Controllers
         [Route(nameof(Delete))]
         public async Task<IActionResult> Delete(long id, CancellationToken token)
         {
-            var file = await _fileService.GetByIdAsync(id, token);
-            if (file == null)
+            var imageDto = await _fileService.GetByIdAsync(id, token);
+            if (imageDto == null)
             {
                 return NotFound();
             }
 
-            await _fileService.DeleteAsync(file, token);
+            await _fileService.DeleteAsync(imageDto, token);
             return new NoContentResult();
         }
 
         [HttpPost]
         [Route(nameof(Update))]
-        public async Task<IActionResult> Update([FromBody] FileDto file, CancellationToken token)
+        public async Task<IActionResult> Update([FromBody] ImageDto imageDto, CancellationToken token)
         {
-            if (file == null)
+            if (imageDto == null)
             {
                 return BadRequest();
             }
 
-            await _fileService.UpdateAsync(file, token);
+            await _fileService.UpdateAsync(imageDto, token);
 
             return new NoContentResult();
         }

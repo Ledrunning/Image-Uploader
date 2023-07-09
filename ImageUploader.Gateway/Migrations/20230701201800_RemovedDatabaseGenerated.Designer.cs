@@ -11,9 +11,10 @@ using System;
 namespace FileUploadWebApiTest.Migrations
 {
     [DbContext(typeof(MainDatabaseContext))]
-    partial class FileModelContextModelSnapshot : ModelSnapshot
+    [Migration("20230701201800_RemovedDatabaseGenerated")]
+    partial class RemovedDatabaseGenerated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,11 +26,7 @@ namespace FileUploadWebApiTest.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTimeOffset>("CreationTime");
-
                     b.Property<DateTimeOffset>("DateTime");
-
-                    b.Property<double>("FileSize");
 
                     b.Property<string>("Name");
 

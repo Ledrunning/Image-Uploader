@@ -65,9 +65,9 @@ namespace ImageUploader.ModernDesktopClient
                 services.AddSingleton<INavigationService, NavigationService>();
 
                 services.AddScoped<OpenFileDialog>();
-                services.AddScoped<Wpf.Ui.Controls.MessageBox>();
-                services.AddScoped<IMessageBoxService, MessageBoxService>();
-                services.AddScoped<IFileService, FileService>();
+                services.AddTransient<Wpf.Ui.Controls.MessageBox>();
+                services.AddTransient<IMessageBoxService, MessageBoxService>();
+                services.AddTransient<IFileService, FileService>();
                 
                 // Main window with navigation
                 services.AddScoped<INavigationWindow, Views.Windows.MainWindow>();
