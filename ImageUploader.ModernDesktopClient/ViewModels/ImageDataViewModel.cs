@@ -26,6 +26,8 @@ public partial class ImageDataViewModel : BaseViewModel
     [ObservableProperty] private bool _isDataLoadIndeterminate;
     [ObservableProperty] private Visibility _isDataLoadVisible = Visibility.Hidden;
 
+    private byte[] _imageBuffer;
+
     private bool _isInitialized;
 
     [ObservableProperty] private List<ImageModel> _loadedData = new();
@@ -87,8 +89,9 @@ public partial class ImageDataViewModel : BaseViewModel
             {
                 await ExecuteTask(async id =>
                 {
-                    var files = await _fileRestService.GetFileAsync(id);
-                    LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
+                    var imageDto = await _fileRestService.GetFileAsync(id);
+                    _imageBuffer = imageDto.Photo;
+                    LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
                     FileName = SelectedItem.Name;
                 }, SelectedItem.Id);
             }
@@ -140,6 +143,19 @@ public partial class ImageDataViewModel : BaseViewModel
         catch (Exception)
         {
             MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file");
+        }
+    }
+
+    [RelayCommand]
+    public void SaveFileToLocalStorage()
+    {
+        try
+        {
+            _fileService.SaveImage(SelectedItem.Name, _imageBuffer);
+        }
+        catch (Exception)
+        {
+            MessageBoxService.ModernMessageBox.Show("Error!", "Can not save image to local storage");
         }
     }
 
