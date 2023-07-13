@@ -11,15 +11,19 @@ namespace ImageUploader.ModernDesktopClient.ViewModels;
 
 public abstract partial class BaseViewModel : ObservableObject, INavigationAware
 {
+    private readonly IFileService _fileService;
     protected readonly IMessageBoxService MessageBoxService;
     [ObservableProperty] private bool _isIndeterminate;
 
     [ObservableProperty] private Visibility _isVisible = Visibility.Hidden;
     protected ButtonName ButtonName;
+    protected byte[]? ImageBuffer;
+    protected string? ImageName;
 
-    protected BaseViewModel(IMessageBoxService messageBoxService)
+    protected BaseViewModel(IMessageBoxService messageBoxService, IFileService fileService)
     {
         MessageBoxService = messageBoxService;
+        _fileService = fileService;
         MessageBoxService.ButtonEvent += OnButtonEvent;
     }
 
@@ -54,5 +58,16 @@ public abstract partial class BaseViewModel : ObservableObject, INavigationAware
             IsVisible = Visibility.Hidden;
             throw;
         }
+    }
+
+    protected void SaveImage()
+    {
+        if (ImageName == null || ImageBuffer == null || ImageBuffer.Length == 0)
+        {
+            MessageBoxService.ModernMessageBox.Show("Error!", "Please select the image");
+            return;
+        }
+
+        _fileService.SaveImage(ImageName, ImageBuffer);
     }
 }
