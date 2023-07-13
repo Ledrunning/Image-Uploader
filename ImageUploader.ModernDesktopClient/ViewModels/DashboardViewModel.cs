@@ -22,7 +22,7 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] private Image _loadedImage = new();
 
     public DashboardViewModel(IFileRestService fileRestService, IFileService fileService,
-        IMessageBoxService messageBoxService) : base(messageBoxService)
+        IMessageBoxService messageBoxService) : base(messageBoxService, fileService)
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
@@ -92,6 +92,8 @@ public partial class DashboardViewModel : BaseViewModel
             await ExecuteTask(async id =>
             {
                 var imageDto = await _fileRestService.GetFileAsync(id);
+                ImageBuffer = imageDto.Photo;
+                ImageName = imageDto.Name;
                 LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
             }, FileId);
         }
@@ -122,6 +124,19 @@ public partial class DashboardViewModel : BaseViewModel
         catch (Exception)
         {
             MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file from server!");
+        }
+    }
+
+    [RelayCommand]
+    private void SaveFileToLocalStorage()
+    {
+        try
+        {
+            SaveImage();
+        }
+        catch (Exception)
+        {
+            MessageBoxService.ModernMessageBox.Show("Error!", "Can not save image to local storage");
         }
     }
 }

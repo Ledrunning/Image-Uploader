@@ -13,7 +13,7 @@ namespace ImageUploader.ModernDesktopClient.Services;
 public class FileService : IFileService
 {
     private const string Filter = "JPEG(*.jpg)|*.jpg|All(*.*)|*";
-    private const string SaveFilter = "PNG(*.png)";
+    private const string SaveFilter = "JPEG(*.jpg)|*.jpg|All(*.*)|*";
     private const double ByteToMegabyteCoefficient = 0.000001;
     private readonly OpenFileDialog _openFileDialog;
     private readonly SaveFileDialog _saveFileDialog;
@@ -23,6 +23,7 @@ public class FileService : IFileService
         _openFileDialog = openFileDialog;
         _saveFileDialog = saveFileDialog;
         _openFileDialog.Filter = Filter;
+        _saveFileDialog.Filter = SaveFilter;
     }
 
     public byte[]? ImageByteArray { get; set; }
@@ -54,15 +55,14 @@ public class FileService : IFileService
 
     public void SaveImage(string fileName, byte[] imageBuffer)
     {
+        _saveFileDialog.FileName = fileName;
         if (!_saveFileDialog.ShowDialog().HasValue)
         {
             return;
         }
 
-        _saveFileDialog.FileName = fileName;
-        
         using var memoryStream = new MemoryStream(imageBuffer);
         var image = Image.FromStream(memoryStream);
-        image.Save($"{GetFilepath()}\\{fileName}", ImageFormat.Png);
+        image.Save(_saveFileDialog.FileName, ImageFormat.Jpeg);
     }
 }

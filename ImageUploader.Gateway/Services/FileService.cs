@@ -180,7 +180,7 @@ namespace ImageUploader.Gateway.Services
                 using (var memoryStream = new MemoryStream(file.Photo))
                 {
                     var image = Image.FromStream(memoryStream);
-                    image.Save($"{PhotoDataPath}\\{file.Name}", ImageFormat.Png);
+                    image.Save($"{PhotoDataPath}\\{file.Name}", ImageFormat.Jpeg);
                 }
             }
             catch (Exception e)

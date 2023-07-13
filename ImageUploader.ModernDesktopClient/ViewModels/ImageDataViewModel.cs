@@ -26,8 +26,6 @@ public partial class ImageDataViewModel : BaseViewModel
     [ObservableProperty] private bool _isDataLoadIndeterminate;
     [ObservableProperty] private Visibility _isDataLoadVisible = Visibility.Hidden;
 
-    private byte[] _imageBuffer;
-
     private bool _isInitialized;
 
     [ObservableProperty] private List<ImageModel> _loadedData = new();
@@ -41,7 +39,7 @@ public partial class ImageDataViewModel : BaseViewModel
     public ImageDataViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
         IFileService fileService,
-        DashboardViewModel dashboardViewModel) : base(messageBoxService)
+        DashboardViewModel dashboardViewModel) : base(messageBoxService, fileService)
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
@@ -90,7 +88,8 @@ public partial class ImageDataViewModel : BaseViewModel
                 await ExecuteTask(async id =>
                 {
                     var imageDto = await _fileRestService.GetFileAsync(id);
-                    _imageBuffer = imageDto.Photo;
+                    ImageBuffer = imageDto.Photo;
+                    ImageName = imageDto.Name;
                     LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
                     FileName = SelectedItem.Name;
                 }, SelectedItem.Id);
@@ -151,7 +150,7 @@ public partial class ImageDataViewModel : BaseViewModel
     {
         try
         {
-            _fileService.SaveImage(SelectedItem.Name, _imageBuffer);
+            SaveImage();
         }
         catch (Exception)
         {
