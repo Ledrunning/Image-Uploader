@@ -39,7 +39,7 @@ public partial class ImageDataViewModel : BaseViewModel
     public ImageDataViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
         IFileService fileService,
-        DashboardViewModel dashboardViewModel) : base(messageBoxService)
+        DashboardViewModel dashboardViewModel) : base(messageBoxService, fileService)
     {
         _fileRestService = fileRestService;
         _fileService = fileService;
@@ -87,8 +87,10 @@ public partial class ImageDataViewModel : BaseViewModel
             {
                 await ExecuteTask(async id =>
                 {
-                    var files = await _fileRestService.GetFileAsync(id);
-                    LoadedImage.Source = ImageConverter.ByteToImage(files.Photo);
+                    var imageDto = await _fileRestService.GetFileAsync(id);
+                    ImageBuffer = imageDto.Photo;
+                    ImageName = imageDto.Name;
+                    LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
                     FileName = SelectedItem.Name;
                 }, SelectedItem.Id);
             }
@@ -140,6 +142,19 @@ public partial class ImageDataViewModel : BaseViewModel
         catch (Exception)
         {
             MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file");
+        }
+    }
+
+    [RelayCommand]
+    public void SaveFileToLocalStorage()
+    {
+        try
+        {
+            SaveImage();
+        }
+        catch (Exception)
+        {
+            MessageBoxService.ModernMessageBox.Show("Error!", "Can not save image to local storage");
         }
     }
 

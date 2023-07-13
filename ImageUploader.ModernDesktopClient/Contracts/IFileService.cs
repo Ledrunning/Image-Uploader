@@ -9,4 +9,6 @@ public interface IFileService
     ImageSource OpenFileAndGetImageSource();
     (DateTime creationData, double fileSize) GetFileData(string filePath);
     string GetFilepath();
+
+    void SaveImage(string fileName, byte[] imageBuffer);
 }

@@ -61,9 +61,18 @@
                                    Command="{Binding ViewModel.UpdateFileCommand, Mode=OneWay}"
                                    HorizontalAlignment="Stretch" />
                     </Grid>
-                    <ui:Button Grid.Row="2" Content="Delete" Width="87.02"
-                               Command="{Binding ViewModel.DeleteFileCommand, Mode=OneWay}"
-                               HorizontalAlignment="Stretch" />
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <ui:Button Grid.Column="1" Content="Delete" Width="87.02"
+                                   Command="{Binding ViewModel.DeleteFileCommand, Mode=OneWay}"
+                                   HorizontalAlignment="Stretch" />
+                        <ui:Button Grid.Column="0" Content="Save" Width="87.02"
+                                   Command="{Binding ViewModel.SaveFileToLocalStorageCommand, Mode=OneWay}"
+                                   HorizontalAlignment="Stretch" />
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
