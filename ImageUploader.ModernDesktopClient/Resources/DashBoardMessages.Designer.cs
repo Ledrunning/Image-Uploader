@@ -61,6 +61,42 @@ namespace ImageUploader.ModernDesktopClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please enter correct Id..
+        /// </summary>
+        internal static string CorrectIdMessage {
+            get {
+                return ResourceManager.GetString("CorrectIdMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File has been deleted.
+        /// </summary>
+        internal static string FileDeletedMessage {
+            get {
+                return ResourceManager.GetString("FileDeletedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not delete the file from server!.
+        /// </summary>
+        internal static string FileDeleteErrorMessage {
+            get {
+                return ResourceManager.GetString("FileDeleteErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not download the file from server!.
+        /// </summary>
+        internal static string FileDownloadFailMessage {
+            get {
+                return ResourceManager.GetString("FileDownloadFailMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not load the file!.
         /// </summary>
         internal static string FileLoadFailMessage {
@@ -75,6 +111,33 @@ namespace ImageUploader.ModernDesktopClient.Resources {
         internal static string FileOpenedMessage {
             get {
                 return ResourceManager.GetString("FileOpenedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can not save image to local storage.
+        /// </summary>
+        internal static string FileSaveErrorMessage {
+            get {
+                return ResourceManager.GetString("FileSaveErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File has been uploaded.
+        /// </summary>
+        internal static string FileUploadedMessage {
+            get {
+                return ResourceManager.GetString("FileUploadedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not update the file!.
+        /// </summary>
+        internal static string UploadedFailMessage {
+            get {
+                return ResourceManager.GetString("UploadedFailMessage", resourceCulture);
             }
         }
         

@@ -117,11 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CorrectIdMessage" xml:space="preserve">
+    <value>Please enter correct Id.</value>
+  </data>
+  <data name="FileDeletedMessage" xml:space="preserve">
+    <value>File has been deleted</value>
+  </data>
+  <data name="FileDeleteErrorMessage" xml:space="preserve">
+    <value>Could not delete the file from server!</value>
+  </data>
+  <data name="FileDownloadFailMessage" xml:space="preserve">
+    <value>Could not download the file from server!</value>
+  </data>
   <data name="FileLoadFailMessage" xml:space="preserve">
     <value>Could not load the file!</value>
   </data>
   <data name="FileOpenedMessage" xml:space="preserve">
     <value>File has been opened</value>
+  </data>
+  <data name="FileSaveErrorMessage" xml:space="preserve">
+    <value>Can not save image to local storage</value>
+  </data>
+  <data name="FileUploadedMessage" xml:space="preserve">
+    <value>File has been uploaded</value>
+  </data>
+  <data name="UploadedFailMessage" xml:space="preserve">
+    <value>Could not update the file!</value>
   </data>
   <data name="UploadFileMessage" xml:space="preserve">
     <value>Upload file first please!</value>

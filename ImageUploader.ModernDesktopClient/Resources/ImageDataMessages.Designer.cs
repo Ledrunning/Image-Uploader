@@ -59,5 +59,59 @@ namespace ImageUploader.ModernDesktopClient.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not delete the file..
+        /// </summary>
+        internal static string DeleteErrorMessage {
+            get {
+                return ResourceManager.GetString("DeleteErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load image data!.
+        /// </summary>
+        internal static string FileLoadErrorMessage {
+            get {
+                return ResourceManager.GetString("FileLoadErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File has been opened..
+        /// </summary>
+        internal static string FileOpenedMessage {
+            get {
+                return ResourceManager.GetString("FileOpenedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not open the file!.
+        /// </summary>
+        internal static string FileOpenErrorMessage {
+            get {
+                return ResourceManager.GetString("FileOpenErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected Id is incorrect..
+        /// </summary>
+        internal static string SelectedIdError {
+            get {
+                return ResourceManager.GetString("SelectedIdError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected row has incorrect or no data..
+        /// </summary>
+        internal static string SelectedRowErrorMessage {
+            get {
+                return ResourceManager.GetString("SelectedRowErrorMessage", resourceCulture);
+            }
+        }
     }
 }
