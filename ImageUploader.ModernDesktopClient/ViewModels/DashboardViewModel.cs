@@ -10,6 +10,7 @@ using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
+using ImageUploader.ModernDesktopClient.Resources;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
@@ -37,11 +38,11 @@ public partial class DashboardViewModel : BaseViewModel
         try
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
-            MessageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, "File has been opened");
         }
         catch (IOException)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Could not load the file!");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, "Could not load the file!");
         }
     }
 
@@ -58,7 +59,7 @@ public partial class DashboardViewModel : BaseViewModel
         {
             if (_fileService.ImageByteArray is { Length: 0 })
             {
-                MessageBoxService.ModernMessageBox.Show("Attention!", "Upload file first please!");
+                MessageBoxService.ModernMessageBox.Show(BaseMessages.Attention, DashBoardMessages.UploadFileMessage);
             }
 
             var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
@@ -76,11 +77,11 @@ public partial class DashboardViewModel : BaseViewModel
 
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
 
-            MessageBoxService.ModernMessageBox.Show("Information!", "File has been uploaded");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, DashBoardMessages.FileUploadedMessage);
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Could not add the file into server!");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, DashBoardMessages.UploadedFailMessage);
         }
     }
 
@@ -99,7 +100,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Could not download the file from server!");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, DashBoardMessages.FileDownloadFailMessage);
             IsIndeterminate = false;
             IsVisible = Visibility.Hidden;
         }
@@ -110,7 +111,7 @@ public partial class DashboardViewModel : BaseViewModel
     {
         if (FileId is 0 or < 0)
         {
-            MessageBoxService.ModernMessageBox.Show("Attention!", "Please enter correct Id.");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Attention, DashBoardMessages.CorrectIdMessage);
             return;
         }
 
@@ -118,12 +119,12 @@ public partial class DashboardViewModel : BaseViewModel
         {
             await ExecuteTask(async id => { await _fileRestService.DeleteAsync(id); }, FileId);
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
-            MessageBoxService.ModernMessageBox.Show("Information!", "File has been deleted");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, DashBoardMessages.FileDeletedMessage);
             FileId = 0;
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file from server!");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, DashBoardMessages.FileDeleteErrorMessage);
         }
     }
 
@@ -136,7 +137,7 @@ public partial class DashboardViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Can not save image to local storage");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, DashBoardMessages.FileSaveErrorMessage);
         }
     }
 }
