@@ -1,7 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <ImageDataTable msg="Welcome to Your Vue.js + TypeScript App" />
+    <ImageDataTable msg="Welcome to Image Uploader app" />
   </div>
 </template>
 

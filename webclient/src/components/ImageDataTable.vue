@@ -1,5 +1,11 @@
 <template>
-  <EasyDataTable :headers="headers" :items="items" />
+  <div>
+    <EasyDataTable :headers="headers" :items="items" width="50%" />
+    <div>
+      <img class="uploading-image" />
+      <input type="file" accept="image/jpeg" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -53,3 +59,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.uploading-image {
+  display: flex;
+}
+</style>
