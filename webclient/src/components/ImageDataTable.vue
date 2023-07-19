@@ -1,6 +1,12 @@
 <template>
   <div>
-    <EasyDataTable :headers="headers" :items="items" width="50%" />
+    <EasyDataTable
+      id="data-table-container"
+      buttons-pagination
+      :headers="headers"
+      :items="items"
+      alternative
+    />
     <div>
       <img class="uploading-image" />
       <input type="file" accept="image/jpeg" />
@@ -63,5 +69,13 @@ export default defineComponent({
 <style>
 .uploading-image {
   display: flex;
+  margin-bottom: 10%;
+}
+
+#data-table-container {
+  width: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 </style>
