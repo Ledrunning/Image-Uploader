@@ -1,12 +1,7 @@
 import IImageDto from "@/model/ImageDto";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-//"api/FileUpload/GetAll"
-//"api/FileUpload/GetById?id={id}"
-//"api/FileUpload/Create"
-//"api/FileUpload/Delete?id={id}"
-//"api/FileUpload/Update"
-export default class ImageApiservice {
+export default class ImageApiService {
   private axiousInstance: AxiosInstance;
 
   constructor() {
@@ -24,23 +19,41 @@ export default class ImageApiservice {
     }
   }
 
-  // TODO: model needed!
-  async getImage(imageId: number) {
+  async getAllImages() {
     return this.axiosCall<IImageDto>({
+      method: "get",
+      url: `api/FileUpload/GetAll`,
+    });
+  }
+
+  async getImage(imageId: number) {
+    return this.axiosCall<IImageDto[]>({
       method: "get",
       url: `api/FileUpload/GetById?id=${imageId}`,
     });
   }
 
-  async updateImage(userId: number, image: Partial<IImageDto>) {
+  async addImage(imageDto: IImageDto) {
     return this.axiosCall<IImageDto>({
       method: "put",
-      url: `/${userId}`,
-      data: image,
+      url: `api/FileUpload/Create`,
+      data: imageDto,
+    });
+  }
+
+  //TODO: what about Id?
+  async updateImage(imageId: number, imageDto: Partial<IImageDto>) {
+    return this.axiosCall<IImageDto>({
+      method: "put",
+      url: `api/FileUpload/Update/${imageDto}`,
+      data: imageDto,
     });
   }
 
   async deleteImage(imageId: number) {
-    return this.axiosCall<void>({ method: "delete", url: `/${imageId}` });
+    return this.axiosCall<void>({
+      method: "delete",
+      url: `api/FileUpload/Delete?id=${imageId}`,
+    });
   }
 }
