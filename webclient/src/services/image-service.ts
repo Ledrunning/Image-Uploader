@@ -1,4 +1,5 @@
 import IImageDto from "@/model/ImageDto";
+import IImageLoadDto from "@/model/ImageLoadDto";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 export default class ImageApiService {
@@ -10,24 +11,20 @@ export default class ImageApiService {
     });
   }
 
-  private async axiosCall<T>(config: AxiosRequestConfig) {
-    try {
-      const { data } = await this.axiousInstance.request<T>(config);
-      return [null, data];
-    } catch (error) {
-      return [error];
-    }
+  async axiosCall<T>(config: AxiosRequestConfig): Promise<T> {
+    const response = await this.axiousInstance.request<T>(config);
+    return response.data;
   }
 
-  async getAllImages() {
-    return this.axiosCall<IImageDto>({
+  async getAllImages(): Promise<IImageLoadDto[]> {
+    return this.axiosCall<IImageLoadDto[]>({
       method: "get",
       url: `api/FileUpload/GetAll`,
     });
   }
 
   async getImage(imageId: number) {
-    return this.axiosCall<IImageDto[]>({
+    return this.axiosCall<IImageDto>({
       method: "get",
       url: `api/FileUpload/GetById?id=${imageId}`,
     });
