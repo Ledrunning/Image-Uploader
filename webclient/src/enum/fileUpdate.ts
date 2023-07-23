@@ -1,4 +1,4 @@
-enum FileUpdate {
+export enum FileUpdate {
   NoOperation,
   DeleteAndSave,
   Rewrite,

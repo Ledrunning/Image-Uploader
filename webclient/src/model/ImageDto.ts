@@ -1,5 +1,7 @@
+import { FileUpdate } from "@/enum/FileUpdate";
+
 export default interface IImageDto {
-  id: number;
+  id?: number;
   name: string;
   dateTime: Date;
   creationTime: Date;
