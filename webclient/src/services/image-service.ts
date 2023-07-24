@@ -32,7 +32,7 @@ export default class ImageApiService {
 
   async addImage(imageDto: IImageDto) {
     return this.axiosCall<IImageDto>({
-      method: "put",
+      method: "post",
       url: `api/FileUpload/Create`,
       data: imageDto,
     });
@@ -41,7 +41,7 @@ export default class ImageApiService {
   //TODO: what about Id?
   async updateImage(imageId: number, imageDto: Partial<IImageDto>) {
     return this.axiosCall<IImageDto>({
-      method: "put",
+      method: "post",
       url: `api/FileUpload/Update/${imageDto}`,
       data: imageDto,
     });

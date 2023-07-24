@@ -6,8 +6,8 @@ export default interface IImageDto {
   dateTime: Date;
   creationTime: Date;
   fileSize: number;
-  photo: Uint8Array[];
-  photoPath: string;
-  lastPhotoName: string;
-  fileUpdate: FileUpdate;
+  photo: number[];
+  photoPath?: string;
+  lastPhotoName?: string;
+  fileUpdate?: FileUpdate;
 }
