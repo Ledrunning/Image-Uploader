@@ -31,6 +31,8 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { TimeType } from "@/enum/TimeType";
 
+import "@/styles/addimage.css";
+
 export default {
   setup() {
     const userService = new ImageApiService();
@@ -113,35 +115,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.container {
-  display: flex;
-}
-
-.image-container {
-  flex: 1;
-}
-
-.content {
-  flex: 1;
-}
-
-.uploaded-image {
-  width: 600px;
-  height: 600px;
-  object-fit: cover;
-  font-size: 1em;
-}
-
-.buttons {
-  width: 100px;
-  height: 25px;
-  margin-left: 30px;
-}
-
-.input-file {
-  width: 80%;
-  height: 30px;
-}
-</style>
