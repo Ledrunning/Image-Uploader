@@ -1,19 +1,25 @@
 <template>
   <div>
     <EasyDataTable
+      v-model:items-selected="itemsSelected"
+      show-index
       buttons-pagination
       :headers="headers"
       :items="items"
+      @click-row="showRow"
       alternative
     />
+    row clicked:<br />
+    <div id="row-clicked"></div>
   </div>
 </template>
 
 <script lang="ts">
-import type { Header, Item } from "vue3-easy-data-table";
+import type { Header, Item, ClickRowArgument } from "vue3-easy-data-table";
 import { defineComponent, ref, onMounted } from "vue";
 import ImageApiService from "@/services/image-service";
 import dayjs from "dayjs";
+import "@/styles/spinnerloader.css";
 
 export default defineComponent({
   setup() {
@@ -27,6 +33,11 @@ export default defineComponent({
     ];
 
     const items = ref<Item[]>([]);
+
+    const showRow = (item: ClickRowArgument) => {
+      document!.getElementById("row-clicked")!.innerHTML = JSON.stringify(item);
+      console.log("I've been clicked!");
+    };
 
     onMounted(async () => {
       try {

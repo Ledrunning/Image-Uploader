@@ -18,6 +18,7 @@
     <div class="content">
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
+      <div v-if="loading" class="spinner"></div>
     </div>
   </div>
 </template>
@@ -32,12 +33,14 @@ import timezone from "dayjs/plugin/timezone";
 import { TimeType } from "@/enum/TimeType";
 
 import "@/styles/addimage.css";
+import "@/styles/spinnerloader.css";
 
 export default {
   setup() {
     const userService = new ImageApiService();
     const image = ref("");
     const fileInput = ref(null);
+    const loading = ref(false);
     const byteToMegabyteCoefficient = 0.000001;
     let selectedFile: File | null = null;
     dayjs.extend(utc);
@@ -66,32 +69,49 @@ export default {
       selectedFile = null;
     }
 
-    function uploadImage() {
+    // Upload Image Function
+    async function uploadImage() {
       if (!selectedFile) {
         alert("Please select a file first.");
         return;
       }
-      const reader = new FileReader();
 
-      reader.onload = async function (e) {
-        const byteArray = new Uint8Array(e.target?.result as ArrayBuffer);
-        try {
-          let imageDto: IImageDto = {
-            name: `MyPhoto_${getUtcDateTimeNow(TimeType.FileNameDateTime)}.jpg`,
-            dateTime: dayjs().tz().toDate(),
-            creationTime: selectedFile
-              ? new Date(selectedFile.lastModified)
-              : new Date(), // Check if selectedFile is not null
-            fileSize: byteArray.byteLength * byteToMegabyteCoefficient,
-            photo: Array.from(byteArray),
-          };
-          const response = await userService.addImage(imageDto);
-          console.log(response);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      reader.readAsArrayBuffer(selectedFile);
+      try {
+        const imageDto = await createImageDto(selectedFile);
+
+        loading.value = true; // Start loading
+
+        const response = await userService.addImage(imageDto);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        loading.value = false; // Stop loading
+      }
+    }
+
+    // Convert file to ByteArray
+    function fileToByteArray(file: File) {
+      return new Promise<Uint8Array>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          resolve(new Uint8Array(e.target?.result as ArrayBuffer));
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
+    }
+
+    // Create DTO from File
+    async function createImageDto(file: File) {
+      const byteArray = await fileToByteArray(file);
+      return {
+        name: `MyPhoto_${getUtcDateTimeNow(TimeType.FileNameDateTime)}.jpg`,
+        dateTime: dayjs().tz().toDate(),
+        creationTime: new Date(file.lastModified),
+        fileSize: byteArray.byteLength * byteToMegabyteCoefficient,
+        photo: Array.from(byteArray),
+      } as IImageDto;
     }
 
     function getUtcDateTimeNow(timeType: TimeType) {
@@ -111,6 +131,7 @@ export default {
       deleteImage,
       uploadImage,
       fileInput,
+      loading,
     };
   },
 };
