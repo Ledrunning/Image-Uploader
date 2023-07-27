@@ -1,7 +1,6 @@
 <template>
   <div>
     <EasyDataTable
-      v-model:items-selected="itemsSelected"
       show-index
       buttons-pagination
       :headers="headers"
@@ -15,6 +14,7 @@
 </template>
 
 <script lang="ts">
+import { useRouter } from "vue-router";
 import type { Header, Item, ClickRowArgument } from "vue3-easy-data-table";
 import { defineComponent, ref, onMounted } from "vue";
 import ImageApiService from "@/services/image-service";
@@ -23,6 +23,7 @@ import "@/styles/spinnerloader.css";
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
     const userService = new ImageApiService();
     const headers: Header[] = [
       { text: "Id", value: "id" },
@@ -35,7 +36,10 @@ export default defineComponent({
     const items = ref<Item[]>([]);
 
     const showRow = (item: ClickRowArgument) => {
-      document!.getElementById("row-clicked")!.innerHTML = JSON.stringify(item);
+      router.push({
+        name: "editimage",
+        params: { id: item.id },
+      });
       console.log("I've been clicked!");
     };
 
@@ -56,6 +60,7 @@ export default defineComponent({
     return {
       headers,
       items,
+      showRow,
     };
   },
 });

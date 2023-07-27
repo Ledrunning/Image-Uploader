@@ -7,12 +7,15 @@
         alt="User selected image"
         class="uploaded-image"
       />
+      <label class="buttons" for="fileInput">Upload</label>
       <input
         type="file"
         @change="onFileChange"
+        id="fileInput"
         ref="fileInput"
         class="input-file"
         accept="image/jpeg"
+        hidden
       />
     </div>
     <div class="content">
@@ -33,6 +36,7 @@ import timezone from "dayjs/plugin/timezone";
 import { TimeType } from "@/enum/TimeType";
 
 import "@/styles/addimage.css";
+import "@/styles/genstyle.css";
 import "@/styles/spinnerloader.css";
 
 export default {

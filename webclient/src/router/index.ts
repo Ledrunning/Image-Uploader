@@ -21,6 +21,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "addimage",
     component: () => import("../views/AddImageView.vue"),
   },
+  {
+    path: "/editimage/:id", // "id" is a route parameter
+    name: "editimage",
+    component: () => import("../views/EditImageView.vue"),
+  },
 ];
 
 const router = createRouter({
