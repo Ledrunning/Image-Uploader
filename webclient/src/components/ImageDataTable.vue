@@ -8,8 +8,6 @@
       @click-row="showRow"
       alternative
     />
-    row clicked:<br />
-    <div id="row-clicked"></div>
   </div>
 </template>
 
@@ -17,7 +15,8 @@
 import { useRouter } from "vue-router";
 import type { Header, Item, ClickRowArgument } from "vue3-easy-data-table";
 import { defineComponent, ref, onMounted } from "vue";
-import ImageApiService from "@/services/image-service";
+import ImageApiService from "@/services/ImageService";
+import DateTimeHelper from "@/helpers/DateTimeHelper";
 import dayjs from "dayjs";
 import "@/styles/spinnerloader.css";
 
@@ -40,7 +39,6 @@ export default defineComponent({
         name: "editimage",
         params: { id: item.id },
       });
-      console.log("I've been clicked!");
     };
 
     onMounted(async () => {
@@ -49,7 +47,7 @@ export default defineComponent({
 
         items.value = res.map((item) => ({
           ...item,
-          dateTime: dayjs(item.dateTime).format("YYYY-MM-DD HH:mm:ss"),
+          dateTime: DateTimeHelper.formatDateToLocalString(item.dateTime),
           creationTime: dayjs(item.creationTime).format("YYYY-MM-DD HH:mm:ss"),
         }));
       } catch (error) {

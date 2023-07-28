@@ -1,7 +1,7 @@
 export default interface IImageLoadDto {
   id: number;
   name: string;
-  dateTime: string;
-  creationTime: string;
+  dateTime: Date;
+  creationTime: Date;
   fileSize: number;
 }

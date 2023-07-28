@@ -7,6 +7,8 @@
         alt="User selected image"
         class="uploaded-image"
       />
+    </div>
+    <div class="content">
       <label class="buttons" for="fileInput">Upload</label>
       <input
         type="file"
@@ -17,8 +19,6 @@
         accept="image/jpeg"
         hidden
       />
-    </div>
-    <div class="content">
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
       <div v-if="loading" class="spinner"></div>
@@ -28,12 +28,13 @@
 
 <script lang="ts">
 import { ref } from "vue";
-import ImageApiService from "@/services/image-service";
+import ImageApiService from "@/services/ImageService";
 import IImageDto from "@/model/ImageDto";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { TimeType } from "@/enum/TimeType";
+import DateTimeHelper from "@/helpers/DateTimeHelper";
 
 import "@/styles/addimage.css";
 import "@/styles/genstyle.css";
@@ -110,23 +111,14 @@ export default {
     async function createImageDto(file: File) {
       const byteArray = await fileToByteArray(file);
       return {
-        name: `MyPhoto_${getUtcDateTimeNow(TimeType.FileNameDateTime)}.jpg`,
+        name: `MyPhoto_${DateTimeHelper.getUtcDateTimeNow(
+          TimeType.FileNameDateTime
+        )}.jpg`,
         dateTime: dayjs().tz().toDate(),
         creationTime: new Date(file.lastModified),
         fileSize: byteArray.byteLength * byteToMegabyteCoefficient,
         photo: Array.from(byteArray),
       } as IImageDto;
-    }
-
-    function getUtcDateTimeNow(timeType: TimeType) {
-      const nowUTC = dayjs.utc();
-
-      switch (timeType) {
-        case TimeType.CurrentStandart:
-          return nowUTC.format("DD-MM-YYYY HH:mm:ss");
-        case TimeType.FileNameDateTime:
-          return nowUTC.format("MMDDYYYY_HHmmss");
-      }
     }
 
     return {

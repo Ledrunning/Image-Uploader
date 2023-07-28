@@ -25,10 +25,26 @@
 }
 
 .styled-textbox {
-  width: 200px;
-  height: 25px;
+  width: 365px;
+  height: 30px;
   border: 1px solid #32b983;
+  text-align: justify;
   border-radius: 5px;
-  padding: 2px 5px;
-  margin-bottom: 20px; /* Add this to create space between the input and the buttons */
+  font-size: 16px;
+  margin-bottom: 30px; /* Add this to create space between the input and the buttons */
 }
+
+.labelz {
+  display: inline-block;
+  font-size: 16px;
+  margin-bottom: 5px;
+  margin-right: auto;
+}
+
+.labelz-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+  gap: 20px;
+}
+

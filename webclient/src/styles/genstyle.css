@@ -7,8 +7,7 @@
   .buttons {
     display: inline-block;
     width: 100px;
-    height: 25px;
-    margin-left: 30px;
+    height: 30px;
     border: 1px solid #32b983;
     border-radius: 5px;
     text-align: center;
@@ -16,4 +15,5 @@
     line-height: 25px; /* Match this with the button height */
     cursor: pointer;
     background-color: #ffffff;
+    margin-right: 15px;
   }
