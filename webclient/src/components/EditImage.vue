@@ -1,7 +1,7 @@
 <template>
   <div class="image-frame-container">
     <div class="image-frame">
-      <img alt="Description of the image" />
+      <img :src="imageSrc" class="image-size" alt="Description of the image" />
     </div>
     <div class="controls">
       <label class="labelz">File name</label>
@@ -36,6 +36,7 @@ import DateTimeHelper from "@/helpers/DateTimeHelper";
 
 import "@/styles/genstyle.css";
 import "@/styles/editImage.css";
+import IImageDto from "@/model/ImageDto";
 
 export default defineComponent({
   setup() {
@@ -46,23 +47,27 @@ export default defineComponent({
     const dateTimeText = ref("");
     const createdTimeText = ref("");
     const fileSizeText = ref("");
+    const imageSrc = ref("");
     const userService = new ImageApiService();
-    // Now you can fetch the item with this id
-    // or if the item data is already in a global state, access it from there
 
     onMounted(async () => {
       // Suppose fetchFileName is a method that gets the file name based on the id
       const fetchedData = await userService.getImage(id);
-      fileName.value = fetchedData.name;
-      idText.value = fetchedData.id!.toString();
-      dateTimeText.value = DateTimeHelper.formatDateToLocalString(
-        fetchedData.dateTime
-      );
-      createdTimeText.value = DateTimeHelper.formatDateToLocalString(
-        fetchedData.creationTime
-      );
-      fileSizeText.value = fetchedData.fileSize.toString();
+      fillData(fetchedData);
     });
+
+    async function fillData(dto: IImageDto) {
+      fileName.value = dto.name;
+      idText.value = dto.id !== undefined ? dto.id?.toString() : "";
+      dateTimeText.value = DateTimeHelper.formatDateToLocalString(dto.dateTime);
+      createdTimeText.value = DateTimeHelper.formatDateToLocalString(
+        dto.creationTime
+      );
+      fileSizeText.value = dto.fileSize.toString();
+
+      // Updating the image source
+      imageSrc.value = `data:image/png;base64,${dto.photo}`;
+    }
 
     return {
       fileName,
@@ -70,6 +75,7 @@ export default defineComponent({
       dateTimeText,
       createdTimeText,
       fileSizeText,
+      imageSrc,
     };
   },
 });

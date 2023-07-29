@@ -86,8 +86,7 @@ export default {
 
         loading.value = true; // Start loading
 
-        const response = await userService.addImage(imageDto);
-        console.log(response);
+        await userService.addImage(imageDto);
       } catch (error) {
         console.log(error);
       } finally {

@@ -17,7 +17,6 @@ import type { Header, Item, ClickRowArgument } from "vue3-easy-data-table";
 import { defineComponent, ref, onMounted } from "vue";
 import ImageApiService from "@/services/ImageService";
 import DateTimeHelper from "@/helpers/DateTimeHelper";
-import dayjs from "dayjs";
 import "@/styles/spinnerloader.css";
 
 export default defineComponent({
@@ -48,7 +47,9 @@ export default defineComponent({
         items.value = res.map((item) => ({
           ...item,
           dateTime: DateTimeHelper.formatDateToLocalString(item.dateTime),
-          creationTime: dayjs(item.creationTime).format("YYYY-MM-DD HH:mm:ss"),
+          creationTime: DateTimeHelper.formatDateToLocalString(
+            item.creationTime
+          ),
         }));
       } catch (error) {
         console.error("Error fetching images:", error);
