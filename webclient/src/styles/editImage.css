@@ -1,0 +1,55 @@
+.image-frame-container {
+  display: flex;
+}
+
+.image-frame {
+  width: 800px;
+  height: 500px;
+  border: 2px solid #32b983; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 150px; /* Add margin to create space between the image and controls */
+}
+
+.image-size {
+  width: 800px;
+  height: 500px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: top; /* Add this to center controls vertically */
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.styled-textbox {
+  width: 365px;
+  height: 30px;
+  border: 1px solid #32b983;
+  text-align: justify;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-bottom: 30px; /* Add this to create space between the input and the buttons */
+}
+
+.labelz {
+  display: inline-block;
+  font-size: 16px;
+  margin-bottom: 5px;
+  margin-right: auto;
+}
+
+.labelz-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+  gap: 20px;
+}
+

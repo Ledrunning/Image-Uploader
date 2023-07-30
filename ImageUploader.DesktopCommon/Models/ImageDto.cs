@@ -1,4 +1,5 @@
 ﻿using System;
+using ImageUploader.DesktopCommon.Enum;
 
 namespace ImageUploader.DesktopCommon.Models
 {

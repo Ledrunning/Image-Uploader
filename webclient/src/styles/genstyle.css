@@ -1,0 +1,19 @@
+.about-underline {
+    width: 250px;
+    border: 0;
+    border-top: 2px solid #32b983;
+  }
+
+  .buttons {
+    display: inline-block;
+    width: 100px;
+    height: 30px;
+    border: 1px solid #32b983;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 25px; /* Match this with the button height */
+    cursor: pointer;
+    background-color: #ffffff;
+    margin-right: 15px;
+  }

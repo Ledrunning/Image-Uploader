@@ -29,6 +29,16 @@ namespace ImageUploader.Gateway
             services.AddDbContext<MainDatabaseContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IMainRepository<ImageEntity>, MainRepository<ImageEntity>>();
             services.AddScoped<IFileService, FileService>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                        .SetIsOriginAllowed((host) => true)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
             services.AddMvc();
         }
 
@@ -39,6 +49,7 @@ namespace ImageUploader.Gateway
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("CorsPolicy");
             app.UseMvc();
         }
     }

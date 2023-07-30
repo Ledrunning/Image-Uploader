@@ -1,4 +1,4 @@
-﻿namespace ImageUploader.DesktopCommon
+﻿namespace ImageUploader.DesktopCommon.Enum
 {
     public enum FileUpdate
     {
