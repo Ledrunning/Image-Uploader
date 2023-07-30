@@ -13,6 +13,7 @@ using ImageUploader.DesktopCommon.Events;
 using ImageUploader.DesktopCommon.Models;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Helpers;
+using ImageUploader.ModernDesktopClient.Resources;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
@@ -97,7 +98,7 @@ public partial class ImageDataViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Title", "Could not load image data!");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, ImageDataMessages.FileLoadErrorMessage);
         }
     }
 
@@ -108,12 +109,12 @@ public partial class ImageDataViewModel : BaseViewModel
         try
         {
             LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
-            MessageBoxService.ModernMessageBox.Show("Information!", "File has been opened");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, ImageDataMessages.FileOpenedMessage);
             _fileUpdate = FileUpdate.DeleteAndSave;
         }
         catch (IOException)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Could not open the file!");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, ImageDataMessages.FileOpenErrorMessage);
         }
     }
 
@@ -122,13 +123,13 @@ public partial class ImageDataViewModel : BaseViewModel
     {
         if (SelectedItem == null)
         {
-            MessageBoxService.ModernMessageBox.Show("Attention!", "Selected row has incorrect or no data.");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Attention, ImageDataMessages.SelectedRowErrorMessage);
             return;
         }
 
         if (SelectedItem.Id is 0 or < 0)
         {
-            MessageBoxService.ModernMessageBox.Show("Attention!", "Selected Id is incorrect.");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Attention, ImageDataMessages.SelectedIdError);
             return;
         }
 
@@ -141,7 +142,7 @@ public partial class ImageDataViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Could not delete the file");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, ImageDataMessages.DeleteErrorMessage);
         }
     }
 
@@ -154,7 +155,7 @@ public partial class ImageDataViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Can not save image to local storage");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, "Can not save image to local storage");
         }
     }
 
@@ -189,7 +190,7 @@ public partial class ImageDataViewModel : BaseViewModel
         }
         catch (Exception)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Can not update the file");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, "Can not update the file");
         }
         finally
         {

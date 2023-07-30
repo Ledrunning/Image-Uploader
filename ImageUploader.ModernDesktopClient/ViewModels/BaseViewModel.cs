@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using ImageUploader.DesktopCommon.Events;
 using ImageUploader.ModernDesktopClient.Contracts;
 using ImageUploader.ModernDesktopClient.Enums;
+using ImageUploader.ModernDesktopClient.Resources;
 using Wpf.Ui.Common.Interfaces;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
@@ -64,7 +65,7 @@ public abstract partial class BaseViewModel : ObservableObject, INavigationAware
     {
         if (ImageName == null || ImageBuffer == null || ImageBuffer.Length == 0)
         {
-            MessageBoxService.ModernMessageBox.Show("Error!", "Please select the image");
+            MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, BaseMessages.ImageSelectMessage);
             return;
         }
 

@@ -1,4 +1,5 @@
-﻿using ImageUploader.DesktopCommon.Events;
+﻿using System.ComponentModel;
+using ImageUploader.DesktopCommon.Events;
 using ImageUploader.ModernDesktopClient.Enums;
 using Wpf.Ui.Controls;
 
