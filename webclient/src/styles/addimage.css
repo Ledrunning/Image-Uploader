@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+}
+
+.image-container {
+  flex: 1;
+}
+
+.content {
+  flex: 1;
+}
+
+.uploaded-image {
+  width: 600px;
+  height: 600px;
+  object-fit: cover;
+  font-size: 1em;
+}
+
+.input-file {
+  width: 100px;
+  height: 30px;
+}
+
+.input-file {
+  display: none;
+}
