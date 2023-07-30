@@ -12,8 +12,8 @@
         placeholder="Enter text here"
       />
       <div class="buttons-container">
-        <button class="buttons">Open</button>
-        <button class="buttons">Save</button>
+        <label class="buttons" @click="openImage" for="fileInput">Open</label>
+        <button class="buttons" @click="saveImage">Save</button>
         <button class="buttons">Update</button>
         <button class="buttons">Delete</button>
       </div>
@@ -37,6 +37,7 @@ import DateTimeHelper from "@/helpers/DateTimeHelper";
 import "@/styles/genstyle.css";
 import "@/styles/editImage.css";
 import IImageDto from "@/model/ImageDto";
+import FileService from "@/services/FileService";
 
 export default defineComponent({
   setup() {
@@ -49,6 +50,7 @@ export default defineComponent({
     const fileSizeText = ref("");
     const imageSrc = ref("");
     const userService = new ImageApiService();
+    const fileService = new FileService();
 
     onMounted(async () => {
       // Suppose fetchFileName is a method that gets the file name based on the id
@@ -69,6 +71,27 @@ export default defineComponent({
       imageSrc.value = `data:image/png;base64,${dto.photo}`;
     }
 
+    async function saveImage() {
+      await fileService.saveImage(imageSrc.value, fileName.value);
+    }
+
+    function openImage(event: Event) {
+      const fileInput = event.target as HTMLInputElement;
+      const file = fileInput.files?.[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          if (e.target && e.target.result) {
+            imageSrc.value = e.target.result as string;
+          }
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+
     return {
       fileName,
       idText,
@@ -76,6 +99,8 @@ export default defineComponent({
       createdTimeText,
       fileSizeText,
       imageSrc,
+      saveImage,
+      openImage,
     };
   },
 });
