@@ -35,6 +35,8 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { TimeType } from "@/enum/TimeType";
 import DateTimeHelper from "@/helpers/DateTimeHelper";
+import FileService from "@/services/FileService";
+import { useRouter } from "vue-router";
 
 import "@/styles/addimage.css";
 import "@/styles/genstyle.css";
@@ -48,6 +50,8 @@ export default {
     const loading = ref(false);
     const byteToMegabyteCoefficient = 0.000001;
     let selectedFile: File | null = null;
+    const fileService = new FileService();
+    const router = useRouter();
     dayjs.extend(utc);
     dayjs.extend(timezone);
 
@@ -91,24 +95,15 @@ export default {
         console.log(error);
       } finally {
         loading.value = false; // Stop loading
+        router.push({
+          name: "home",
+        });
       }
-    }
-
-    // Convert file to ByteArray
-    function fileToByteArray(file: File) {
-      return new Promise<Uint8Array>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(new Uint8Array(e.target?.result as ArrayBuffer));
-        };
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
-      });
     }
 
     // Create DTO from File
     async function createImageDto(file: File) {
-      const byteArray = await fileToByteArray(file);
+      const byteArray = await fileService.fileToByteArray(file);
       return {
         name: `MyPhoto_${DateTimeHelper.getUtcDateTimeNow(
           TimeType.FileNameDateTime

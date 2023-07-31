@@ -39,10 +39,10 @@ export default class ImageApiService {
   }
 
   //TODO: what about Id?
-  async updateImage(imageId: number, imageDto: Partial<IImageDto>) {
+  async updateImage(imageDto: IImageDto) {
     return this.axiosCall<IImageDto>({
       method: "post",
-      url: `api/FileUpload/Update/${imageDto}`,
+      url: "api/FileUpload/Update/",
       data: imageDto,
     });
   }

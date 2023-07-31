@@ -50,6 +50,7 @@ export default defineComponent({
           creationTime: DateTimeHelper.formatDateToLocalString(
             item.creationTime
           ),
+          fileSize: item.fileSize.toFixed(3),
         }));
       } catch (error) {
         console.error("Error fetching images:", error);

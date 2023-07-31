@@ -31,4 +31,16 @@ export default class FileService {
 
     return new Blob(byteArrays, { type: contentType });
   }
+
+  // Convert file to ByteArray
+  fileToByteArray(file: File) {
+    return new Promise<Uint8Array>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve(new Uint8Array(e.target?.result as ArrayBuffer));
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  }
 }
