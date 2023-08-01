@@ -18,4 +18,8 @@ export default class DateTimeHelper {
   static formatDateToLocalString(dateTime: Date) {
     return dayjs(dateTime).format("DD-MM-YYYY HH:mm:ss");
   }
+
+  static convertStringToDate(input: string): Date {
+    return dayjs(input, "DD-MM-YYYY HH:mm:ss").toDate();
+  }
 }

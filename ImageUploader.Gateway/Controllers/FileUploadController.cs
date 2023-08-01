@@ -75,9 +75,9 @@ namespace ImageUploader.Gateway.Controllers
         [Route(nameof(Update))]
         public async Task<IActionResult> Update([FromBody] ImageDto imageDto, CancellationToken token)
         {
-            if (imageDto == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             await _fileService.UpdateAsync(imageDto, token);
