@@ -86,7 +86,6 @@ export default defineComponent({
         dto.creationTime
       );
       fileSizeText.value = dto.fileSize.toFixed(3).toString();
-
       // Updating the image source
       imageSrc.value = `data:image/png;base64,${dto.photo}`;
     }
@@ -139,8 +138,6 @@ export default defineComponent({
       }
       let imageDto = await createImageDto(currentFile, id);
       if (imageDto !== null) {
-        console.log(imageDto);
-        console.log(`++++++++++++++++${imageDto.dateTime}`);
         await imageService.updateImage(imageDto);
       }
     }
@@ -151,7 +148,7 @@ export default defineComponent({
       return {
         id: id,
         name: fileName.value,
-        dateTime: DateTimeHelper.convertStringToDate(dateTimeText.value),
+        dateTime: DateTimeHelper.convertStringToIso(dateTimeText.value),
         creationTime: new Date(file.lastModified),
         fileSize: isNaN(Number(fileSizeText.value))
           ? 0

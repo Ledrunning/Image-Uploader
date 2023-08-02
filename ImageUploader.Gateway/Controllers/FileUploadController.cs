@@ -36,7 +36,7 @@ namespace ImageUploader.Gateway.Controllers
         public async Task<IActionResult> GetById(long id, CancellationToken token)
         {
             var imageDto = await _fileService.GetByIdAsync(id, token);
-            if (imageDto == null)
+            if (!ModelState.IsValid)
             {
                 return NotFound();
             }
@@ -48,7 +48,7 @@ namespace ImageUploader.Gateway.Controllers
         [Route(nameof(Create))]
         public async Task<IActionResult> Create([FromBody] ImageDto imageDto, CancellationToken token)
         {
-            if (imageDto == null)
+            if (!ModelState.IsValid)
             {
                 return NotFound();
             }
@@ -62,7 +62,7 @@ namespace ImageUploader.Gateway.Controllers
         public async Task<IActionResult> Delete(long id, CancellationToken token)
         {
             var imageDto = await _fileService.GetByIdAsync(id, token);
-            if (imageDto == null)
+            if (!ModelState.IsValid)
             {
                 return NotFound();
             }
