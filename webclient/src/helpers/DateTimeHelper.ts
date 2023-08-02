@@ -4,7 +4,6 @@ import timezone from "dayjs/plugin/timezone";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { TimeType } from "@/enum/TimeType";
 
-// Load the plugins
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 

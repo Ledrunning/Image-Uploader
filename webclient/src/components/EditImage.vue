@@ -65,7 +65,10 @@ export default defineComponent({
     const router = useRouter();
     var fileUpdate = FileUpdate.NoOperation;
     var loadedFileName = "";
+    let lastFileName = "";
     let currentFile: File | null = null;
+    let isFileOpened = false;
+    let imageData: number[] | null = null;
 
     onMounted(async () => {
       // Suppose fetchFileName is a method that gets the file name based on the id
@@ -86,8 +89,10 @@ export default defineComponent({
         dto.creationTime
       );
       fileSizeText.value = dto.fileSize.toFixed(3).toString();
+      imageData = dto.photo;
       // Updating the image source
       imageSrc.value = `data:image/png;base64,${dto.photo}`;
+      lastFileName = dto.name;
     }
 
     async function saveImage() {
@@ -110,6 +115,7 @@ export default defineComponent({
         reader.readAsDataURL(file);
 
         currentFile = file;
+        isFileOpened = true;
       }
     }
 
@@ -139,21 +145,27 @@ export default defineComponent({
       let imageDto = await createImageDto(currentFile, id);
       if (imageDto !== null) {
         await imageService.updateImage(imageDto);
+        isFileOpened = false;
+        router.push({
+          name: "home",
+        });
       }
     }
 
     // Create DTO from File
     async function createImageDto(file: File, id: number) {
-      const byteArray = await fileService.fileToByteArray(file);
       return {
         id: id,
         name: fileName.value,
+        lastPhotoName: lastFileName,
         dateTime: DateTimeHelper.convertStringToIso(dateTimeText.value),
         creationTime: new Date(file.lastModified),
         fileSize: isNaN(Number(fileSizeText.value))
           ? 0
           : Number(fileSizeText.value),
-        photo: Array.from(byteArray),
+        photo: isFileOpened
+          ? Array.from(await fileService.fileToByteArray(file))
+          : imageData,
         fileUpdate: fileUpdate,
       } as IImageDto;
     }

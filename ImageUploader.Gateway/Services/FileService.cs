@@ -121,16 +121,18 @@ namespace ImageUploader.Gateway.Services
                     PhotoPath = $"{PhotoDataPath}\\{file.Name}"
                 };
 
+                var deletePath = $"{PhotoDataPath}\\{file.LastPhotoName}";
+
                 switch (file.FileUpdate)
                 {
                     case FileUpdate.NoOperation:
                         return;
                     case FileUpdate.DeleteAndSave:
-                        File.Delete($"{PhotoDataPath}\\{file.LastPhotoName}");
+                        File.Delete(deletePath);
                         SaveImage(file);
                         break;
                     case FileUpdate.Rewrite:
-                        File.Move($"{PhotoDataPath}\\{file.LastPhotoName}", $"{PhotoDataPath}\\{file.Name}");
+                        File.Move(deletePath, $"{PhotoDataPath}\\{file.Name}");
 
                         break;
                     default:
