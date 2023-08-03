@@ -9,6 +9,13 @@
   animation: spin 2s linear infinite;
 }
 
+.spinner-centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 /* Safari */
 @-webkit-keyframes spin {
   0% {

@@ -5,6 +5,9 @@
 .image-container {
   flex: 1;
   position: relative;
+  border: 2px solid #32b983;
+  width: 800px;
+  height: 500px;
 }
 
 .content {
@@ -12,8 +15,8 @@
 }
 
 .uploaded-image {
-  width: 600px;
-  height: 600px;
+  width: 800px;
+  height: 500px;
   object-fit: cover;
   font-size: 1em;
 }

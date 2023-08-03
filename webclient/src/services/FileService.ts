@@ -1,4 +1,5 @@
 export default class FileService {
+  static readonly byteToMegabyteCoefficient = 0.000001;
   async saveImage(imageSrc: string, fileName: string) {
     // Remove 'data:image/png;base64,' from the imageSrc
     const base64Image = imageSrc.split(";base64,")[1];

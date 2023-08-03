@@ -7,10 +7,10 @@
         alt="User selected image"
         class="uploaded-image"
       />
-      <div v-if="loading" class="spinner"></div>
+      <div v-if="loading" class="spinner spinner-centered"></div>
     </div>
     <div class="content">
-      <label class="buttons" for="fileInput">Upload</label>
+      <label class="buttons" for="fileInput">Open</label>
       <input
         type="file"
         @change="onFileChange"
@@ -48,7 +48,6 @@ export default {
     const image = ref("");
     const fileInput = ref(null);
     const loading = ref(false);
-    const byteToMegabyteCoefficient = 0.000001;
     let selectedFile: File | null = null;
     const fileService = new FileService();
     const router = useRouter();
@@ -110,7 +109,7 @@ export default {
         )}.jpg`,
         dateTime: dayjs().tz().toDate(),
         creationTime: new Date(file.lastModified),
-        fileSize: byteArray.byteLength * byteToMegabyteCoefficient,
+        fileSize: byteArray.byteLength * FileService.byteToMegabyteCoefficient,
         photo: Array.from(byteArray),
       } as IImageDto;
     }
