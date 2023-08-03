@@ -2,6 +2,7 @@
   <div class="image-frame-container">
     <div class="image-frame">
       <img :src="imageSrc" class="image-size" alt="Description of the image" />
+      <div v-if="loading" class="spinner"></div>
     </div>
     <div class="controls">
       <label class="labelz">File name</label>
@@ -60,6 +61,7 @@ export default defineComponent({
     const createdTimeText = ref("");
     const fileSizeText = ref("");
     const imageSrc = ref("");
+    const loading = ref(false);
     const imageService = new ImageApiService();
     const fileService = new FileService();
     const router = useRouter();
@@ -75,9 +77,13 @@ export default defineComponent({
       try {
         const fetchedData = await imageService.getImage(id);
         loadedFileName = fetchedData.name;
+
+        loading.value = true;
         fillData(fetchedData);
       } catch (error) {
         console.log("Image getting error", error);
+      } finally {
+        loading.value = false;
       }
     });
 
@@ -100,72 +106,99 @@ export default defineComponent({
     }
 
     function openImage(event: Event) {
-      const fileInput = event.target as HTMLInputElement;
-      const file = fileInput.files?.[0];
+      try {
+        loading.value = true;
+        const fileInput = event.target as HTMLInputElement;
+        const file = fileInput.files?.[0];
 
-      if (file) {
-        const reader = new FileReader();
-        fileUpdate = FileUpdate.DeleteAndSave;
+        if (file) {
+          const reader = new FileReader();
+          fileUpdate = FileUpdate.DeleteAndSave;
 
-        reader.onload = (e) => {
-          if (e.target?.result) {
-            imageSrc.value = e.target.result as string;
-          }
-        };
-        reader.readAsDataURL(file);
+          reader.onload = (e) => {
+            if (e.target?.result) {
+              imageSrc.value = e.target.result as string;
+            }
+          };
+          reader.readAsDataURL(file);
 
-        currentFile = file;
-        isFileOpened = true;
+          currentFile = file;
+          isFileOpened = true;
+        }
+      } catch (error) {
+        console.log("Edit page: An error occurs when opening a file", error);
+      } finally {
+        loading.value = false;
       }
     }
 
     async function deleteImage() {
       let result = window.confirm("Are you sure you want to proceed?");
 
-      if (result) {
-        await imageService.deleteImage(id);
-        router.push({
-          name: "home",
-        });
-        console.log("OK clicked");
-      } else {
-        console.log("Cancel clicked");
-        return;
+      try {
+        if (result) {
+          loading.value = true;
+          await imageService.deleteImage(id);
+          router.push({
+            name: "home",
+          });
+          console.log("OK clicked");
+        } else {
+          console.log("Cancel clicked");
+          return;
+        }
+      } catch (error) {
+        console.log("Edit page: An error occurs when deleting the data");
+      } finally {
+        loading.value = false;
       }
     }
 
     async function updateImage() {
-      if (loadedFileName !== fileName.value) {
-        fileUpdate = FileUpdate.Rewrite;
-      }
-      if (!currentFile) {
-        alert("Ups.. Something wrong with file loading!");
-        return;
-      }
-      let imageDto = await createImageDto(currentFile, id);
-      if (imageDto !== null) {
-        await imageService.updateImage(imageDto);
-        isFileOpened = false;
-        router.push({
-          name: "home",
-        });
+      try {
+        if (loadedFileName !== fileName.value) {
+          fileUpdate = FileUpdate.Rewrite;
+        }
+
+        loading.value = true;
+
+        let fileCreatedTime =
+          isFileOpened && currentFile !== null
+            ? new Date(currentFile.lastModified)
+            : DateTimeHelper.convertStringToIso(createdTimeText.value);
+        let buffer =
+          isFileOpened && currentFile !== null
+            ? Array.from(await fileService.fileToByteArray(currentFile))
+            : imageData;
+
+        let imageDto = await createImageDto(buffer, fileCreatedTime);
+        console.log(imageDto);
+        if (imageDto !== null) {
+          await imageService.updateImage(imageDto);
+          isFileOpened = false;
+        }
+      } catch (error) {
+        console.log("Edit page: An error occurs when updating the data");
+      } finally {
+        loading.value = false;
       }
     }
 
     // Create DTO from File
-    async function createImageDto(file: File, id: number) {
+    async function createImageDto(
+      imageByteArray: number[] | null,
+      fileCreatedTime: Date
+    ) {
       return {
         id: id,
         name: fileName.value,
         lastPhotoName: lastFileName,
         dateTime: DateTimeHelper.convertStringToIso(dateTimeText.value),
-        creationTime: new Date(file.lastModified),
+        creationTime: fileCreatedTime,
         fileSize: isNaN(Number(fileSizeText.value))
           ? 0
           : Number(fileSizeText.value),
-        photo: isFileOpened
-          ? Array.from(await fileService.fileToByteArray(file))
-          : imageData,
+        photo: imageByteArray,
         fileUpdate: fileUpdate,
       } as IImageDto;
     }
@@ -177,6 +210,7 @@ export default defineComponent({
       createdTimeText,
       fileSizeText,
       imageSrc,
+      loading,
       saveImage,
       openImage,
       deleteImage,

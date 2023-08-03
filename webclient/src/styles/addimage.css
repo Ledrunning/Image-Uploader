@@ -4,6 +4,7 @@
 
 .image-container {
   flex: 1;
+  position: relative;
 }
 
 .content {

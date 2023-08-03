@@ -7,6 +7,7 @@
         alt="User selected image"
         class="uploaded-image"
       />
+      <div v-if="loading" class="spinner"></div>
     </div>
     <div class="content">
       <label class="buttons" for="fileInput">Upload</label>
@@ -21,7 +22,6 @@
       />
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
-      <div v-if="loading" class="spinner"></div>
     </div>
   </div>
 </template>
