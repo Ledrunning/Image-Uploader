@@ -28,16 +28,22 @@ public class FileService : IFileService
 
     public byte[]? ImageByteArray { get; set; }
 
-    public ImageSource OpenFileAndGetImageSource()
+    //BUG! If open and cancel
+    public (ImageSource imageSource, bool isNotCancel) OpenFileAndGetImageSource()
     {
         if (!_openFileDialog.ShowDialog().HasValue)
         {
-            return new D3DImage();
+            return (new D3DImage(), isNotCancel: false);
+        }
+
+        if (string.IsNullOrWhiteSpace(_openFileDialog.FileName))
+        {
+            return (new D3DImage(), isNotCancel: false);
         }
 
         ImageByteArray = File.ReadAllBytes(_openFileDialog.FileName);
 
-        return ImageConverter.ByteToImage(ImageByteArray);
+        return (ImageConverter.ByteToImage(ImageByteArray), isNotCancel: true);
     }
 
     public (DateTime creationData, double fileSize) GetFileData(string filePath)

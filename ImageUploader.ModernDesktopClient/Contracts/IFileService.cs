@@ -6,7 +6,7 @@ namespace ImageUploader.ModernDesktopClient.Contracts;
 public interface IFileService
 {
     public byte[]? ImageByteArray { get; set; }
-    ImageSource OpenFileAndGetImageSource();
+    (ImageSource imageSource, bool isNotCancel) OpenFileAndGetImageSource();
     (DateTime creationData, double fileSize) GetFileData(string filePath);
     string GetFilepath();
 
