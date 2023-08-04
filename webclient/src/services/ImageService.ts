@@ -9,6 +9,7 @@ export default class ImageApiService {
     this.axiousInstance = axios.create({
       baseURL: "http://localhost:59871/",
     });
+    axios.defaults.headers.post["Content-Type"] = "application/json";
   }
 
   async axiosCall<T>(config: AxiosRequestConfig): Promise<T> {
@@ -38,11 +39,10 @@ export default class ImageApiService {
     });
   }
 
-  //TODO: what about Id?
-  async updateImage(imageId: number, imageDto: Partial<IImageDto>) {
+  async updateImage(imageDto: IImageDto) {
     return this.axiosCall<IImageDto>({
       method: "post",
-      url: `api/FileUpload/Update/${imageDto}`,
+      url: "api/FileUpload/Update/",
       data: imageDto,
     });
   }

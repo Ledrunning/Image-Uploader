@@ -7,9 +7,10 @@
         alt="User selected image"
         class="uploaded-image"
       />
+      <div v-if="loading" class="spinner spinner-centered"></div>
     </div>
     <div class="content">
-      <label class="buttons" for="fileInput">Upload</label>
+      <label class="buttons" for="fileInput">Open</label>
       <input
         type="file"
         @change="onFileChange"
@@ -21,7 +22,6 @@
       />
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
-      <div v-if="loading" class="spinner"></div>
     </div>
   </div>
 </template>
@@ -35,6 +35,8 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { TimeType } from "@/enum/TimeType";
 import DateTimeHelper from "@/helpers/DateTimeHelper";
+import FileService from "@/services/FileService";
+import { useRouter } from "vue-router";
 
 import "@/styles/addimage.css";
 import "@/styles/genstyle.css";
@@ -46,8 +48,9 @@ export default {
     const image = ref("");
     const fileInput = ref(null);
     const loading = ref(false);
-    const byteToMegabyteCoefficient = 0.000001;
     let selectedFile: File | null = null;
+    const fileService = new FileService();
+    const router = useRouter();
     dayjs.extend(utc);
     dayjs.extend(timezone);
 
@@ -91,31 +94,22 @@ export default {
         console.log(error);
       } finally {
         loading.value = false; // Stop loading
+        router.push({
+          name: "home",
+        });
       }
-    }
-
-    // Convert file to ByteArray
-    function fileToByteArray(file: File) {
-      return new Promise<Uint8Array>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(new Uint8Array(e.target?.result as ArrayBuffer));
-        };
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
-      });
     }
 
     // Create DTO from File
     async function createImageDto(file: File) {
-      const byteArray = await fileToByteArray(file);
+      const byteArray = await fileService.fileToByteArray(file);
       return {
         name: `MyPhoto_${DateTimeHelper.getUtcDateTimeNow(
           TimeType.FileNameDateTime
         )}.jpg`,
         dateTime: dayjs().tz().toDate(),
         creationTime: new Date(file.lastModified),
-        fileSize: byteArray.byteLength * byteToMegabyteCoefficient,
+        fileSize: byteArray.byteLength * FileService.byteToMegabyteCoefficient,
         photo: Array.from(byteArray),
       } as IImageDto;
     }
