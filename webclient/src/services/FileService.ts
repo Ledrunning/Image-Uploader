@@ -1,4 +1,5 @@
 export default class FileService {
+  static readonly byteToMegabyteCoefficient = 0.000001;
   async saveImage(imageSrc: string, fileName: string) {
     // Remove 'data:image/png;base64,' from the imageSrc
     const base64Image = imageSrc.split(";base64,")[1];
@@ -30,5 +31,17 @@ export default class FileService {
     }
 
     return new Blob(byteArrays, { type: contentType });
+  }
+
+  // Convert file to ByteArray
+  fileToByteArray(file: File) {
+    return new Promise<Uint8Array>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        resolve(new Uint8Array(e.target?.result as ArrayBuffer));
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
   }
 }

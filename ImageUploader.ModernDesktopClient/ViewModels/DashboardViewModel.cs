@@ -18,9 +18,15 @@ public partial class DashboardViewModel : BaseViewModel
 {
     private readonly IFileRestService _fileRestService;
     private readonly IFileService _fileService;
+    [ObservableProperty] private string? _createdTime;
 
     [ObservableProperty] private long _fileId;
-    [ObservableProperty] private Image _loadedImage = new();
+    [ObservableProperty] private string? _fileName;
+    [ObservableProperty] private string? _fileSize;
+
+    [ObservableProperty] private long? _imageId;
+    [ObservableProperty] private Image? _loadedImage = new();
+    [ObservableProperty] private string? _uploadedDateTime;
 
     public DashboardViewModel(IFileRestService fileRestService, IFileService fileService,
         IMessageBoxService messageBoxService) : base(messageBoxService, fileService)
@@ -37,8 +43,20 @@ public partial class DashboardViewModel : BaseViewModel
     {
         try
         {
-            LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
+            var imageData = _fileService.OpenFileAndGetImageSource();
+            if (!imageData.isNotCancel)
+            {
+                return;
+            }
+
+            if (LoadedImage == null)
+            {
+                return;
+            }
+
+            LoadedImage.Source = imageData.imageSource;
             MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, "File has been opened");
+
         }
         catch (IOException)
         {
@@ -49,7 +67,10 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private void OnImageClear()
     {
-        LoadedImage.Source = null;
+        if (LoadedImage != null)
+        {
+            LoadedImage.Source = null;
+        }
     }
 
     [RelayCommand]
@@ -95,7 +116,12 @@ public partial class DashboardViewModel : BaseViewModel
                 var imageDto = await _fileRestService.GetFileAsync(id);
                 ImageBuffer = imageDto.Photo;
                 ImageName = imageDto.Name;
-                LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
+                if (LoadedImage != null)
+                {
+                    LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
+                }
+
+                FillImageInfo(imageDto);
             }, FileId);
         }
         catch (Exception)
@@ -104,6 +130,15 @@ public partial class DashboardViewModel : BaseViewModel
             IsIndeterminate = false;
             IsVisible = Visibility.Hidden;
         }
+    }
+
+    private void FillImageInfo(ImageDto imageDto)
+    {
+        ImageId = imageDto.Id;
+        FileName = imageDto.Name;
+        UploadedDateTime = imageDto.DateTime.ToString("dd-MM-yyyy HH:mm");
+        CreatedTime = imageDto.CreationTime.ToString("dd-MM-yyyy HH:mm");
+        FileSize = imageDto.FileSize.ToString("F3");
     }
 
     [RelayCommand]

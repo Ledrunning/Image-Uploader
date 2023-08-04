@@ -108,7 +108,13 @@ public partial class ImageDataViewModel : BaseViewModel
     {
         try
         {
-            LoadedImage.Source = _fileService.OpenFileAndGetImageSource();
+            var imageData = _fileService.OpenFileAndGetImageSource();
+            if (!imageData.isNotCancel)
+            {
+                return;
+            }
+
+            LoadedImage.Source = imageData.imageSource;
             MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, ImageDataMessages.FileOpenedMessage);
             _fileUpdate = FileUpdate.DeleteAndSave;
         }
