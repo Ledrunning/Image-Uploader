@@ -80,7 +80,8 @@ public partial class ImageDataViewModel : BaseViewModel
         IsDataLoadIndeterminate = false;
     }
 
-    public async Task DownloadImage()
+    [RelayCommand]
+    public async Task OnDownloadImage()
     {
         try
         {
@@ -202,5 +203,11 @@ public partial class ImageDataViewModel : BaseViewModel
         {
             _fileUpdate = FileUpdate.NoOperation;
         }
+    }
+
+    [RelayCommand]
+    public void UpdateDataManually()
+    {
+        UpdateDataGrid();
     }
 }
