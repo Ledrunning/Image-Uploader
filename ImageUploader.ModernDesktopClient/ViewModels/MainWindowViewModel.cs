@@ -8,6 +8,10 @@ using Wpf.Ui.Mvvm.Contracts;
 
 namespace ImageUploader.ModernDesktopClient.ViewModels;
 
+/// <summary>
+/// https://github.com/microsoft/fluentui-system-icons/blob/main/icons_regular.md
+/// All icons
+/// </summary>
 public partial class MainWindowViewModel : ObservableObject
 {
     private readonly INavigationService _navigationService;

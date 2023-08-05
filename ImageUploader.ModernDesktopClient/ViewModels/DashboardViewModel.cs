@@ -56,7 +56,6 @@ public partial class DashboardViewModel : BaseViewModel
 
             LoadedImage.Source = imageData.imageSource;
             MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, "File has been opened");
-
         }
         catch (IOException)
         {
@@ -67,10 +66,13 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private void OnImageClear()
     {
-        if (LoadedImage != null)
+        if (LoadedImage == null)
         {
-            LoadedImage.Source = null;
+            return;
         }
+
+        LoadedImage.Source = null;
+        ClearFileInfo();
     }
 
     [RelayCommand]
@@ -139,6 +141,15 @@ public partial class DashboardViewModel : BaseViewModel
         UploadedDateTime = imageDto.DateTime.ToString("dd-MM-yyyy HH:mm");
         CreatedTime = imageDto.CreationTime.ToString("dd-MM-yyyy HH:mm");
         FileSize = imageDto.FileSize.ToString("F3");
+    }
+
+    private void ClearFileInfo()
+    {
+        ImageId = null;
+        FileName = string.Empty;
+        UploadedDateTime = string.Empty;
+        CreatedTime = string.Empty;
+        FileSize = string.Empty;
     }
 
     [RelayCommand]

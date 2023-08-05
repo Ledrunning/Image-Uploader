@@ -5,6 +5,7 @@
            xmlns:local="clr-namespace:ImageUploader.ModernDesktopClient.Views.Pages"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+           xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
            Title="DashboardPage"
            d:DataContext="{d:DesignInstance local:ImageDataPage, IsDesignTimeCreatable=False}"
            d:DesignHeight="450"
@@ -22,8 +23,12 @@
             <ui:DataGrid Grid.Column="0" ItemsSource="{Binding ViewModel.RowCollection, Mode=OneWay}"
                          SelectedItem="{Binding ViewModel.SelectedItem, Mode=TwoWay}"
                          AutoGenerateColumns="False" IsReadOnly="True"
-                         SelectionMode="Single" SelectionUnit="FullRow"
-                         SelectionChanged="OnSelectionChanged">
+                         SelectionMode="Single" SelectionUnit="FullRow">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding ViewModel.DownloadImageCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <ui:DataGrid.Columns>
                     <DataGridTextColumn Header="Id" Width="*" Binding="{Binding Id}" />
                     <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}" />
@@ -76,5 +81,7 @@
                 </Grid>
             </Grid>
         </Grid>
+        <ui:Button Margin="0,4,0,0" VerticalAlignment="Top" Icon="ArrowCounterclockwise48" IconFilled="True"
+                   Command="{Binding ViewModel.UpdateDataManuallyCommand}" />
     </Grid>
 </ui:UiPage>
