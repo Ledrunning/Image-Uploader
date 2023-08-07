@@ -81,7 +81,13 @@
                 </Grid>
             </Grid>
         </Grid>
-        <ui:Button Margin="0,4,0,0" VerticalAlignment="Top" Icon="ArrowCounterclockwise48" IconFilled="True"
+        <ui:Button Margin="0,4,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Icon="ArrowCounterclockwise48" IconFilled="True"
                    Command="{Binding ViewModel.UpdateDataManuallyCommand}" />
+        <Label HorizontalAlignment="Left" Margin="466,12,0,0" VerticalAlignment="Top">
+            <TextBlock FontSize="14">
+                <Run Text="Id: "/>
+                <Run Text="{Binding ViewModel.ImageId}"/>
+            </TextBlock>
+        </Label>
     </Grid>
 </ui:UiPage>
