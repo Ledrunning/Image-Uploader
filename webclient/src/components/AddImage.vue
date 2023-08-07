@@ -23,11 +23,21 @@
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
     </div>
+    <template>
+      <button @click="open = true">Open Dialog</button>
+      <Dialog v-if="open" @close="open = false">
+        <Dialog.Overlay />
+        <Dialog.Title>Example Dialog</Dialog.Title>
+        <p>This is an example dialog.</p>
+        <button @click="open = false">Close Dialog</button>
+      </Dialog>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
+import { ref, defineComponent } from "vue";
+import { Dialog } from "@headlessui/vue";
 import ImageApiService from "@/services/ImageService";
 import IImageDto from "@/model/ImageDto";
 import dayjs from "dayjs";
@@ -42,13 +52,17 @@ import "@/styles/addimage.css";
 import "@/styles/genstyle.css";
 import "@/styles/spinnerloader.css";
 
-export default {
+export default defineComponent({
+  components: {
+    Dialog,
+  },
   setup() {
     const userService = new ImageApiService();
     const image = ref("");
     const fileInput = ref(null);
     const loading = ref(false);
     let selectedFile: File | null = null;
+    const open = ref(false);
     const fileService = new FileService();
     const router = useRouter();
     dayjs.extend(utc);
@@ -121,7 +135,8 @@ export default {
       uploadImage,
       fileInput,
       loading,
+      open,
     };
   },
-};
+});
 </script>

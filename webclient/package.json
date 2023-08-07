@@ -9,6 +9,7 @@
     "prettier-format": "prettier --config .prettierrc 'src//**/*.ts' --write"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.15",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",
     "register-service-worker": "^1.7.2",
