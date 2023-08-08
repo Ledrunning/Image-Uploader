@@ -23,21 +23,22 @@
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
     </div>
-    <template>
-      <button @click="open = true">Open Dialog</button>
-      <Dialog v-if="open" @close="open = false">
-        <Dialog.Overlay />
-        <Dialog.Title>Example Dialog</Dialog.Title>
-        <p>This is an example dialog.</p>
-        <button @click="open = false">Close Dialog</button>
-      </Dialog>
-    </template>
+
+    <button @click="showConfirmModal">Open Modal</button>
+    <confirm-modal
+      :is-open="showModal"
+      title="Confirmation"
+      message="Are you sure?"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+      @update:isOpen="updateShowModal"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent } from "vue";
-import { Dialog } from "@headlessui/vue";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 import ImageApiService from "@/services/ImageService";
 import IImageDto from "@/model/ImageDto";
 import dayjs from "dayjs";
@@ -53,16 +54,17 @@ import "@/styles/genstyle.css";
 import "@/styles/spinnerloader.css";
 
 export default defineComponent({
+  name: "App",
   components: {
-    Dialog,
+    ConfirmModal,
   },
   setup() {
     const userService = new ImageApiService();
     const image = ref("");
+    const showModal = ref(false);
     const fileInput = ref(null);
     const loading = ref(false);
     let selectedFile: File | null = null;
-    const open = ref(false);
     const fileService = new FileService();
     const router = useRouter();
     dayjs.extend(utc);
@@ -128,6 +130,25 @@ export default defineComponent({
       } as IImageDto;
     }
 
+    const handleConfirm = () => {
+      console.log("Confirmed");
+      showModal.value = false; // Close the modal after confirming
+      alert("Test!");
+    };
+
+    const handleCancel = () => {
+      console.log("Cancelled");
+      showModal.value = false; // Close the modal after cancelling
+    };
+
+    const showConfirmModal = () => {
+      showModal.value = false;
+    };
+
+    const updateShowModal = (value: boolean) => {
+      showModal.value = value;
+    };
+
     return {
       image,
       onFileChange,
@@ -135,7 +156,11 @@ export default defineComponent({
       uploadImage,
       fileInput,
       loading,
-      open,
+      showModal,
+      handleConfirm,
+      handleCancel,
+      updateShowModal,
+      showConfirmModal,
     };
   },
 });
