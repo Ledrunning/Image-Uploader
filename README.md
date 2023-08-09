@@ -3,10 +3,11 @@
 This repository contains an image uploader application developed using C# and .NET.
 The application allows users to upload images to the server and view them on a desktop application. 
 The server-side written on C# using **.NET Core 2.0** in 
-2017 but updated in 2023 without migration to the latest version of .NET only for described my knowledge of previous .NET technologies.
+2017 but updated in 2023 without migration to the latest version of .NET only to describe my knowledge of previous .NET technologies.
 The repository also contains two versions of desktop applications:
 1- Simple WPF-client application called: **ImageUploader.DesktopClient**
 2 - WPF application with more functionality and modern design: **ImageUploader.ModernDesktopClient**
+3 - Simple web client written on Typescript and powered by Vue.js 3
 
 ## Features
 
@@ -59,6 +60,10 @@ Hover over the image you want to delete.
 Put the Id
 
 Click on the delete button.
+
+## Web client
+
+.................. The application is under construction ..................
 
 ## Contributing
 
