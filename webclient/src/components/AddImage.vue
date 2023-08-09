@@ -23,16 +23,16 @@
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
     </div>
-
-    <button @click="showConfirmModal">Open Modal</button>
-    <confirm-modal
-      :is-open="showModal"
-      title="Confirmation"
-      message="Are you sure?"
-      @confirm="handleConfirm"
-      @cancel="handleCancel"
-      @update:isOpen="updateShowModal"
-    />
+    <div>
+      <button @click="showModal = true">Open Modal</button>
+      <ConfirmModal
+        :isVisible="showModal"
+        @update:isVisible="showModal = $event"
+        title="My Modal Title"
+      >
+        Hello World!
+      </ConfirmModal>
+    </div>
   </div>
 </template>
 
@@ -96,6 +96,7 @@ export default defineComponent({
     // Upload Image Function
     async function uploadImage() {
       if (!selectedFile) {
+        showModal.value = true;
         alert("Please select a file first.");
         return;
       }
@@ -129,26 +130,6 @@ export default defineComponent({
         photo: Array.from(byteArray),
       } as IImageDto;
     }
-
-    const handleConfirm = () => {
-      console.log("Confirmed");
-      showModal.value = false; // Close the modal after confirming
-      alert("Test!");
-    };
-
-    const handleCancel = () => {
-      console.log("Cancelled");
-      showModal.value = false; // Close the modal after cancelling
-    };
-
-    const showConfirmModal = () => {
-      showModal.value = false;
-    };
-
-    const updateShowModal = (value: boolean) => {
-      showModal.value = value;
-    };
-
     return {
       image,
       onFileChange,
@@ -157,10 +138,6 @@ export default defineComponent({
       fileInput,
       loading,
       showModal,
-      handleConfirm,
-      handleCancel,
-      updateShowModal,
-      showConfirmModal,
     };
   },
 });

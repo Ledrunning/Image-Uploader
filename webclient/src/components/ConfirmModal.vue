@@ -1,47 +1,38 @@
 <template>
-  <v-modal :show="isOpen" @update:show="updateIsOpen">
-    <div>
-      <h1>{{ title }}</h1>
-      <p>{{ message }}</p>
-      <button @click="confirm">OK</button>
-      <button @click="cancel">Cancel</button>
-    </div>
-  </v-modal>
+  <Modal :visible="isVisible" @update:visible="handleClose">
+    <template #header>
+      <h2>{{ title }}</h2>
+    </template>
+    <slot></slot>
+    <template #footer>
+      <button @click="handleClose">Close</button>
+    </template>
+  </Modal>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
+import { Modal } from "vue3-modal";
 
 export default defineComponent({
   name: "ConfirmModal",
+  components: {
+    Modal, // Register the Modal component
+  },
   props: {
+    isVisible: {
+      type: Boolean,
+      required: true,
+    },
     title: {
-      type: String as PropType<string>,
-      default: "",
-    },
-    message: {
-      type: String as PropType<string>,
-      default: "",
-    },
-    isOpen: {
-      type: Boolean as PropType<boolean>,
-      default: false,
+      type: String,
+      required: true,
     },
   },
-  setup(props, { emit }) {
-    const updateIsOpen = (value: boolean) => {
-      emit("update:isOpen", value);
-    };
-
-    const confirm = () => {
-      emit("confirm");
-    };
-
-    const cancel = () => {
-      emit("cancel");
-    };
-
-    return { confirm, cancel, updateIsOpen };
+  methods: {
+    handleClose() {
+      this.$emit("update:isVisible", false);
+    },
   },
 });
 </script>
