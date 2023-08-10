@@ -24,21 +24,21 @@
       <button @click="uploadImage" class="buttons">Add</button>
     </div>
     <div>
-      <button @click="showModal = true">Open Modal</button>
-      <ConfirmModal
-        :isVisible="showModal"
-        @update:isVisible="showModal = $event"
-        title="My Modal Title"
-      >
-        Hello World!
-      </ConfirmModal>
+      <button @click="showModal">Show Modal</button>
+      <CustomModal v-model:visible="modalVisible">
+        <h2>My Modal Content</h2>
+        <p>This is the content of the modal window.</p>
+      </CustomModal>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import "@/styles/addimage.css";
+import "@/styles/genstyle.css";
+import "@/styles/spinnerloader.css";
 import { ref, defineComponent } from "vue";
-import ConfirmModal from "@/components/ConfirmModal.vue";
+import CustomModal from "@/components/CustomModal.vue";
 import ImageApiService from "@/services/ImageService";
 import IImageDto from "@/model/ImageDto";
 import dayjs from "dayjs";
@@ -49,23 +49,18 @@ import DateTimeHelper from "@/helpers/DateTimeHelper";
 import FileService from "@/services/FileService";
 import { useRouter } from "vue-router";
 
-import "@/styles/addimage.css";
-import "@/styles/genstyle.css";
-import "@/styles/spinnerloader.css";
-
 export default defineComponent({
-  name: "App",
   components: {
-    ConfirmModal,
+    CustomModal,
   },
   setup() {
-    const userService = new ImageApiService();
-    const image = ref("");
-    const showModal = ref(false);
-    const fileInput = ref(null);
-    const loading = ref(false);
     let selectedFile: File | null = null;
     const fileService = new FileService();
+    const userService = new ImageApiService();
+    const modalVisible = ref(false);
+    const image = ref("");
+    const fileInput = ref(null);
+    const loading = ref(false);
     const router = useRouter();
     dayjs.extend(utc);
     dayjs.extend(timezone);
@@ -96,7 +91,6 @@ export default defineComponent({
     // Upload Image Function
     async function uploadImage() {
       if (!selectedFile) {
-        showModal.value = true;
         alert("Please select a file first.");
         return;
       }
@@ -130,6 +124,11 @@ export default defineComponent({
         photo: Array.from(byteArray),
       } as IImageDto;
     }
+
+    const showModal = () => {
+      modalVisible.value = true;
+    };
+
     return {
       image,
       onFileChange,
@@ -138,6 +137,7 @@ export default defineComponent({
       fileInput,
       loading,
       showModal,
+      modalVisible,
     };
   },
 });

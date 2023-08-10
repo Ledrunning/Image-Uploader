@@ -12,12 +12,13 @@
 </template>
 
 <script lang="ts">
+import "@/styles/spinnerloader.css";
+
 import { useRouter } from "vue-router";
 import type { Header, Item, ClickRowArgument } from "vue3-easy-data-table";
 import { defineComponent, ref, onMounted } from "vue";
 import ImageApiService from "@/services/ImageService";
 import DateTimeHelper from "@/helpers/DateTimeHelper";
-import "@/styles/spinnerloader.css";
 
 export default defineComponent({
   setup() {

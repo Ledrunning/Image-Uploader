@@ -19,8 +19,7 @@
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.3",
-    "vue3-easy-data-table": "^1.5.47",
-    "vue3-modal": "^0.1.6"
+    "vue3-easy-data-table": "^1.5.47"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.4.0",

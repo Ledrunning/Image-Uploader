@@ -38,15 +38,15 @@
 </template>
 
 <script lang="ts">
+import "@/styles/genstyle.css";
+import "@/styles/editImage.css";
+
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { defineComponent } from "vue";
 import ImageApiService from "@/services/ImageService";
 import DateTimeHelper from "@/helpers/DateTimeHelper";
 import { FileUpdate } from "@/enum/FileUpdate";
-
-import "@/styles/genstyle.css";
-import "@/styles/editImage.css";
 import IImageDto from "@/model/ImageDto";
 import FileService from "@/services/FileService";
 import { useRouter } from "vue-router";
