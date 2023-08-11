@@ -24,11 +24,20 @@
       <button @click="uploadImage" class="buttons">Add</button>
     </div>
     <div>
-      <button @click="showModal">Show Modal</button>
-      <CustomModal v-model:visible="modalVisible">
-        <h2>My Modal Content</h2>
-        <p>This is the content of the modal window.</p>
+      <CustomModal
+        v-model:visible="modalVisible"
+        modalTitle="{{ text }}"
+        @close="handleCloseModal"
+      >
+        <h2>{{ modalContent }}</h2>
+        <p>{{ modalText }}</p>
       </CustomModal>
+    </div>
+    <div>
+      <CustomToast
+        v-model:isOpen="toastIsOpen"
+        v-model:message="toastMessage"
+      />
     </div>
   </div>
 </template>
@@ -39,6 +48,7 @@ import "@/styles/genstyle.css";
 import "@/styles/spinnerloader.css";
 import { ref, defineComponent } from "vue";
 import CustomModal from "@/components/CustomModal.vue";
+import CustomToast from "@/components/CustomToast.vue";
 import ImageApiService from "@/services/ImageService";
 import IImageDto from "@/model/ImageDto";
 import dayjs from "dayjs";
@@ -52,16 +62,23 @@ import { useRouter } from "vue-router";
 export default defineComponent({
   components: {
     CustomModal,
+    CustomToast,
   },
   setup() {
     let selectedFile: File | null = null;
     const fileService = new FileService();
     const userService = new ImageApiService();
     const modalVisible = ref(false);
+    const toastIsOpen = ref(false);
     const image = ref("");
     const fileInput = ref(null);
     const loading = ref(false);
     const router = useRouter();
+    const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+    var text;
+    var modalContent;
+    var modalText;
+    const toastMessage = ref("");
     dayjs.extend(utc);
     dayjs.extend(timezone);
 
@@ -91,7 +108,8 @@ export default defineComponent({
     // Upload Image Function
     async function uploadImage() {
       if (!selectedFile) {
-        alert("Please select a file first.");
+        showToast(true, "Please select a file first.");
+        //alert("Please select a file first.");
         return;
       }
 
@@ -125,19 +143,35 @@ export default defineComponent({
       } as IImageDto;
     }
 
+    async function showToast(isOpen: boolean, text: string) {
+      toastIsOpen.value = isOpen;
+      toastMessage.value = text;
+      await delay(3000);
+      toastIsOpen.value = false;
+    }
+
     const showModal = () => {
       modalVisible.value = true;
+    };
+    const handleCloseModal = () => {
+      modalVisible.value = false;
     };
 
     return {
       image,
+      fileInput,
+      loading,
+      modalVisible,
+      text,
+      modalContent,
+      modalText,
+      toastIsOpen,
+      toastMessage,
+      handleCloseModal,
       onFileChange,
       deleteImage,
       uploadImage,
-      fileInput,
-      loading,
       showModal,
-      modalVisible,
     };
   },
 });

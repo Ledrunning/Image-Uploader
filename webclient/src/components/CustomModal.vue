@@ -1,31 +1,62 @@
 <template>
-  <div class="modal-container" v-if="visible">
+  <div v-if="visible" class="modal-container">
+    <!-- Modal overlay -->
     <div class="modal-overlay"></div>
+
+    <!-- Modal content -->
     <div class="modal-content">
-      <button class="close-button" @click="closeModal">Close</button>
-      <slot></slot>
+      <h2>{{ modalTitle }}</h2>
+      <div class="content">
+        <slot></slot>
+      </div>
+      <div v-if="isConfirmation" class="actions">
+        <button class="dialog-button" @click="confirmAction">
+          {{ confirmText }}
+        </button>
+        <button class="dialog-button" @click="cancelAction">
+          {{ cancelText }}
+        </button>
+      </div>
+      <button class="dialog-button" @click="closeModal">Close</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import "@/styles/custommodal.css";
-import { defineComponent } from "vue";
+import { ref, defineComponent, PropType } from "vue";
 
 export default defineComponent({
   props: {
-    visible: {
-      type: Boolean,
-      required: true,
+    visible: Boolean,
+    isConfirmation: Boolean,
+    modalTitle: String,
+    confirmText: {
+      type: String,
+      default: "Confirm",
+    },
+    cancelText: {
+      type: String,
+      default: "Cancel",
     },
   },
-  emits: ["update:visible"],
+
   setup(props, { emit }) {
+    const confirmAction = () => {
+      emit("confirm");
+    };
+
+    const cancelAction = () => {
+      emit("cancel");
+    };
+
     const closeModal = () => {
-      emit("update:visible", false);
+      emit("close");
     };
 
     return {
+      confirmAction,
+      cancelAction,
       closeModal,
     };
   },
