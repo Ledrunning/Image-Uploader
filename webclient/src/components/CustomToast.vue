@@ -5,6 +5,8 @@
 </template>
 
 <script lang="ts">
+import "@/styles/genstyle.css";
+
 export default {
   props: {
     isOpen: Boolean,
@@ -12,17 +14,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.toasty {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #32b983;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  z-index: 1000;
-}
-</style>

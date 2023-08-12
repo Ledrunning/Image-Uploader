@@ -24,16 +24,6 @@
       <button @click="uploadImage" class="buttons">Add</button>
     </div>
     <div>
-      <CustomModal
-        v-model:visible="modalVisible"
-        modalTitle="{{ text }}"
-        @close="handleCloseModal"
-      >
-        <h2>{{ modalContent }}</h2>
-        <p>{{ modalText }}</p>
-      </CustomModal>
-    </div>
-    <div>
       <CustomToast
         v-model:isOpen="toastIsOpen"
         v-model:message="toastMessage"
@@ -47,7 +37,6 @@ import "@/styles/addimage.css";
 import "@/styles/genstyle.css";
 import "@/styles/spinnerloader.css";
 import { ref, defineComponent } from "vue";
-import CustomModal from "@/components/CustomModal.vue";
 import CustomToast from "@/components/CustomToast.vue";
 import ImageApiService from "@/services/ImageService";
 import IImageDto from "@/model/ImageDto";
@@ -61,23 +50,17 @@ import { useRouter } from "vue-router";
 
 export default defineComponent({
   components: {
-    CustomModal,
     CustomToast,
   },
   setup() {
     let selectedFile: File | null = null;
     const fileService = new FileService();
     const userService = new ImageApiService();
-    const modalVisible = ref(false);
     const toastIsOpen = ref(false);
     const image = ref("");
     const fileInput = ref(null);
     const loading = ref(false);
     const router = useRouter();
-    const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-    var text;
-    var modalContent;
-    var modalText;
     const toastMessage = ref("");
     dayjs.extend(utc);
     dayjs.extend(timezone);
@@ -108,8 +91,7 @@ export default defineComponent({
     // Upload Image Function
     async function uploadImage() {
       if (!selectedFile) {
-        showToast(true, "Please select a file first.");
-        //alert("Please select a file first.");
+        showToast("Please select a file first.");
         return;
       }
 
@@ -119,13 +101,14 @@ export default defineComponent({
         loading.value = true; // Start loading
 
         await userService.addImage(imageDto);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        loading.value = false; // Stop loading
         router.push({
           name: "home",
         });
+      } catch (error) {
+        console.log("An error occurred while image uploading", error);
+        showToast("An error occurred while image uploading");
+      } finally {
+        loading.value = false; // Stop loading
       }
     }
 
@@ -143,35 +126,22 @@ export default defineComponent({
       } as IImageDto;
     }
 
-    async function showToast(isOpen: boolean, text: string) {
-      toastIsOpen.value = isOpen;
+    async function showToast(text: string) {
+      toastIsOpen.value = true;
       toastMessage.value = text;
-      await delay(3000);
+      await DateTimeHelper.delay(DateTimeHelper.delayTimeout);
       toastIsOpen.value = false;
     }
-
-    const showModal = () => {
-      modalVisible.value = true;
-    };
-    const handleCloseModal = () => {
-      modalVisible.value = false;
-    };
 
     return {
       image,
       fileInput,
       loading,
-      modalVisible,
-      text,
-      modalContent,
-      modalText,
       toastIsOpen,
       toastMessage,
-      handleCloseModal,
       onFileChange,
       deleteImage,
       uploadImage,
-      showModal,
     };
   },
 });
