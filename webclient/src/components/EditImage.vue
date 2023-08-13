@@ -43,7 +43,7 @@
     <CustomModal
       :visible="showConfirmModal"
       modalTitle="Image uploader"
-      :isConfirmation="isConfirm"
+      isConfirmation
       @confirm="handleConfirm"
       @cancel="handleCancel"
     >
@@ -175,6 +175,7 @@ export default defineComponent({
         showToast("Edit page: An error occurs when deleting the data");
         console.log("Edit page: An error occurs when deleting the data", error);
       } finally {
+        isConfirm.value = false;
         loading.value = false;
       }
     }
@@ -236,8 +237,8 @@ export default defineComponent({
       toastIsOpen.value = false;
     }
 
-    //Do you really want to delete this item?
     function showConfirmationWindow(text: string) {
+      isConfirm.value = true;
       modalText.value = text;
       showConfirmModal.value = true;
     }

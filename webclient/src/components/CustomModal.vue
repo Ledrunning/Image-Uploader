@@ -17,7 +17,6 @@
           {{ cancelText }}
         </button>
       </div>
-      <button class="dialog-button" @click="closeModal">Close</button>
     </div>
   </div>
 </template>
@@ -50,14 +49,9 @@ export default defineComponent({
       emit("cancel");
     };
 
-    const closeModal = () => {
-      emit("close");
-    };
-
     return {
       confirmAction,
       cancelAction,
-      closeModal,
     };
   },
 });
