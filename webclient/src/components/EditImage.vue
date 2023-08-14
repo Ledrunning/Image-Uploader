@@ -42,8 +42,8 @@
     </div>
     <CustomModal
       :visible="showConfirmModal"
-      modalTitle="Image uploader"
-      isConfirmation
+      modalTitle="Attention!"
+      :isConfirmation="isConfirm"
       @confirm="handleConfirm"
       @cancel="handleCancel"
     >
@@ -88,6 +88,7 @@ export default defineComponent({
     const showConfirmModal = ref(false);
     const isConfirm = ref(false);
     const modalText = ref("");
+    const isDialogConfirm = ref(false);
     const imageService = new ImageApiService();
     const fileService = new FileService();
     const router = useRouter();
@@ -159,25 +160,8 @@ export default defineComponent({
       }
     }
 
-    async function deleteImage() {
+    function deleteImage() {
       showConfirmationWindow("Are you sure you want to proceed?");
-      try {
-        if (isConfirm.value) {
-          loading.value = true;
-          await imageService.deleteImage(id);
-          router.push({
-            name: "home",
-          });
-        } else {
-          return;
-        }
-      } catch (error) {
-        showToast("Edit page: An error occurs when deleting the data");
-        console.log("Edit page: An error occurs when deleting the data", error);
-      } finally {
-        isConfirm.value = false;
-        loading.value = false;
-      }
     }
 
     async function updateImage() {
@@ -238,19 +222,38 @@ export default defineComponent({
     }
 
     function showConfirmationWindow(text: string) {
-      isConfirm.value = true;
       modalText.value = text;
+      isConfirm.value = true;
       showConfirmModal.value = true;
     }
 
-    const handleConfirm = () => {
-      isConfirm.value = true;
+    const handleConfirm = async () => {
+      isDialogConfirm.value = true;
       showConfirmModal.value = false;
+
+      if (isDialogConfirm.value) {
+        try {
+          loading.value = true;
+          await imageService.deleteImage(id);
+          router.push({
+            name: "home",
+          });
+        } catch (error) {
+          showToast("Edit page: An error occurs when deleting the data");
+          console.log(
+            "Edit page: An error occurs when deleting the data",
+            error
+          );
+        } finally {
+          loading.value = false;
+        }
+      }
     };
 
     const handleCancel = () => {
       isConfirm.value = false;
       showConfirmModal.value = false;
+      isDialogConfirm.value = false;
     };
 
     return {
@@ -266,6 +269,7 @@ export default defineComponent({
       showConfirmModal,
       modalText,
       isConfirm,
+      isDialogConfirm,
       saveImage,
       openImage,
       deleteImage,
