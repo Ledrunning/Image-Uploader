@@ -37,6 +37,8 @@ public partial class ImageDataViewModel : BaseViewModel
 
     [ObservableProperty] private ImageModel? _selectedItem;
 
+    [ObservableProperty] private string _imageId;
+
     public ImageDataViewModel(IFileRestService fileRestService,
         IMessageBoxService messageBoxService,
         IFileService fileService,
@@ -94,6 +96,8 @@ public partial class ImageDataViewModel : BaseViewModel
                     ImageName = imageDto.Name;
                     LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
                     FileName = SelectedItem.Name;
+
+                    ImageId = imageDto.Id.ToString();
                 }, SelectedItem.Id);
             }
         }
@@ -109,13 +113,13 @@ public partial class ImageDataViewModel : BaseViewModel
     {
         try
         {
-            var imageData = _fileService.OpenFileAndGetImageSource();
-            if (!imageData.isNotCancel)
+            var (imageSource, isNotCancel) = _fileService.OpenFileAndGetImageSource();
+            if (!isNotCancel)
             {
                 return;
             }
 
-            LoadedImage.Source = imageData.imageSource;
+            LoadedImage.Source = imageSource;
             MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, ImageDataMessages.FileOpenedMessage);
             _fileUpdate = FileUpdate.DeleteAndSave;
         }

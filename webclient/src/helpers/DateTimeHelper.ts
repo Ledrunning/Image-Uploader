@@ -8,6 +8,10 @@ dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
 export default class DateTimeHelper {
+  static readonly delay = (ms: number) =>
+    new Promise((res) => setTimeout(res, ms));
+  static readonly delayTimeout = 3000;
+
   static getUtcDateTimeNow(timeType: TimeType): string {
     const nowUTC = dayjs.utc();
 

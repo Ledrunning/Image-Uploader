@@ -34,27 +34,55 @@
         <label class="labelz">File size, Mb: {{ fileSizeText }}</label>
       </div>
     </div>
+    <div>
+      <CustomToast
+        v-model:isOpen="toastIsOpen"
+        v-model:message="toastMessage"
+      />
+    </div>
+    <CustomModal
+      :visible="showConfirmModal"
+      modalTitle="Attention!"
+      :isConfirmation="isConfirm"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    >
+      {{ modalText }}
+    </CustomModal>
   </div>
 </template>
 
 <script lang="ts">
+import "@/styles/genstyle.css";
+import "@/styles/editImage.css";
+
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { defineComponent } from "vue";
+import CustomToast from "@/components/CustomToast.vue";
+import CustomModal from "@/components/CustomModal.vue";
 import ImageApiService from "@/services/ImageService";
 import DateTimeHelper from "@/helpers/DateTimeHelper";
 import { FileUpdate } from "@/enum/FileUpdate";
-
-import "@/styles/genstyle.css";
-import "@/styles/editImage.css";
 import IImageDto from "@/model/ImageDto";
 import FileService from "@/services/FileService";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
+  components: {
+    CustomToast,
+    CustomModal,
+  },
   setup() {
+    const PendingAction = {
+      NONE: "none",
+      DELETE: "delete",
+      UPDATE: "update",
+      SAVE: "save",
+    };
+    const currentAction = ref(PendingAction.NONE);
     const route = useRoute();
-    const id = Number(route.params.id); // This is the id you passed
+    const id = Number(route.params.id); // This is from grid
     const fileName = ref("");
     const idText = ref("");
     const dateTimeText = ref("");
@@ -62,6 +90,12 @@ export default defineComponent({
     const fileSizeText = ref("");
     const imageSrc = ref("");
     const loading = ref(false);
+    const toastMessage = ref("");
+    const toastIsOpen = ref(false);
+    const showConfirmModal = ref(false);
+    const isConfirm = ref(false);
+    const modalText = ref("");
+    const isDialogConfirm = ref(false);
     const imageService = new ImageApiService();
     const fileService = new FileService();
     const router = useRouter();
@@ -73,7 +107,6 @@ export default defineComponent({
     let imageData: number[] | null = null;
 
     onMounted(async () => {
-      // Suppose fetchFileName is a method that gets the file name based on the id
       try {
         const fetchedData = await imageService.getImage(id);
         loadedFileName = fetchedData.name;
@@ -81,11 +114,27 @@ export default defineComponent({
         loading.value = true;
         fillData(fetchedData);
       } catch (error) {
+        showToast("An error occurred while the image getting");
         console.log("Image getting error", error);
       } finally {
         loading.value = false;
       }
     });
+
+    function deleteImage() {
+      currentAction.value = PendingAction.DELETE;
+      showConfirmationWindow("Are you sure you want to delete?");
+    }
+
+    function updateImage() {
+      currentAction.value = PendingAction.UPDATE;
+      showConfirmationWindow("Are you sure you want to update?");
+    }
+
+    function saveImage() {
+      currentAction.value = PendingAction.SAVE;
+      showConfirmationWindow("Are you sure you want to save?");
+    }
 
     async function fillData(dto: IImageDto) {
       fileName.value = dto.name;
@@ -99,10 +148,6 @@ export default defineComponent({
       // Updating the image source
       imageSrc.value = `data:image/png;base64,${dto.photo}`;
       lastFileName = dto.name;
-    }
-
-    async function saveImage() {
-      await fileService.saveImage(imageSrc.value, fileName.value);
     }
 
     function openImage(event: Event) {
@@ -126,35 +171,35 @@ export default defineComponent({
           isFileOpened = true;
         }
       } catch (error) {
+        showToast("Edit page: An error occurs when opening a file");
         console.log("Edit page: An error occurs when opening a file", error);
       } finally {
         loading.value = false;
       }
     }
 
-    async function deleteImage() {
-      let result = window.confirm("Are you sure you want to proceed?");
-
-      try {
-        if (result) {
+    async function deleteImageMainLogic() {
+      showConfirmationWindow("Are you sure you want to proceed?");
+      if (isDialogConfirm.value) {
+        try {
           loading.value = true;
           await imageService.deleteImage(id);
           router.push({
             name: "home",
           });
-          console.log("OK clicked");
-        } else {
-          console.log("Cancel clicked");
-          return;
+        } catch (error) {
+          showToast("Edit page: An error occurs when deleting the data");
+          console.log(
+            "Edit page: An error occurs when deleting the data",
+            error
+          );
+        } finally {
+          loading.value = false;
         }
-      } catch (error) {
-        console.log("Edit page: An error occurs when deleting the data");
-      } finally {
-        loading.value = false;
       }
     }
 
-    async function updateImage() {
+    async function updateImageMainLogic() {
       try {
         if (loadedFileName !== fileName.value) {
           fileUpdate = FileUpdate.Rewrite;
@@ -178,6 +223,7 @@ export default defineComponent({
           isFileOpened = false;
         }
       } catch (error) {
+        showToast("Edit page: An error occurs when updating the data");
         console.log("Edit page: An error occurs when updating the data");
       } finally {
         loading.value = false;
@@ -203,6 +249,46 @@ export default defineComponent({
       } as IImageDto;
     }
 
+    async function showToast(text: string) {
+      toastIsOpen.value = true;
+      toastMessage.value = text;
+      await DateTimeHelper.delay(DateTimeHelper.delayTimeout);
+      toastIsOpen.value = false;
+    }
+
+    function showConfirmationWindow(text: string) {
+      modalText.value = text;
+      isConfirm.value = true;
+      showConfirmModal.value = true;
+    }
+
+    const handleConfirm = async () => {
+      isDialogConfirm.value = true;
+      showConfirmModal.value = false;
+
+      switch (currentAction.value) {
+        case PendingAction.DELETE:
+          deleteImageMainLogic();
+          break;
+        case PendingAction.UPDATE:
+          updateImageMainLogic();
+          break;
+        case PendingAction.SAVE:
+          fileService.saveImage(imageSrc.value, fileName.value);
+          break;
+      }
+
+      // Reset the current action to none after handling it.
+      currentAction.value = PendingAction.NONE;
+    };
+
+    const handleCancel = () => {
+      isConfirm.value = false;
+      showConfirmModal.value = false;
+      isDialogConfirm.value = false;
+      currentAction.value = PendingAction.NONE; // Reset the current action
+    };
+
     return {
       fileName,
       idText,
@@ -211,10 +297,18 @@ export default defineComponent({
       fileSizeText,
       imageSrc,
       loading,
+      toastIsOpen,
+      toastMessage,
+      showConfirmModal,
+      modalText,
+      isConfirm,
+      isDialogConfirm,
       saveImage,
       openImage,
       deleteImage,
       updateImage,
+      handleConfirm,
+      handleCancel,
     };
   },
 });

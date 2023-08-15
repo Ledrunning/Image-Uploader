@@ -35,7 +35,8 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "src/model/ImageLoadDto"  ],
+, "src/model/ImageLoadDto",
+  "vue3-modal.d.ts" ],
   "exclude": [
     "node_modules"
   ]
