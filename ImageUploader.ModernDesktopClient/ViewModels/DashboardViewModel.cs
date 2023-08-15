@@ -43,8 +43,8 @@ public partial class DashboardViewModel : BaseViewModel
     {
         try
         {
-            var imageData = _fileService.OpenFileAndGetImageSource();
-            if (!imageData.isNotCancel)
+            var (imageSource, isNotCancel) = _fileService.OpenFileAndGetImageSource();
+            if (!isNotCancel)
             {
                 return;
             }
@@ -54,7 +54,7 @@ public partial class DashboardViewModel : BaseViewModel
                 return;
             }
 
-            LoadedImage.Source = imageData.imageSource;
+            LoadedImage.Source = imageSource;
             MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, "File has been opened");
         }
         catch (IOException)
@@ -85,14 +85,14 @@ public partial class DashboardViewModel : BaseViewModel
                 MessageBoxService.ModernMessageBox.Show(BaseMessages.Attention, DashBoardMessages.UploadFileMessage);
             }
 
-            var fileInfo = _fileService.GetFileData(_fileService.GetFilepath());
+            var (creationData, fileSize) = _fileService.GetFileData(_fileService.GetFilepath());
 
             var imageDto = new ImageDto
             {
                 Name = $"MyPhoto_{DateTime.UtcNow:MMddyyyy_HHmmss}.jpg",
                 DateTime = DateTimeOffset.Now,
-                CreationTime = fileInfo.creationData,
-                FileSize = fileInfo.fileSize,
+                CreationTime = creationData,
+                FileSize = fileSize,
                 Photo = _fileService.ImageByteArray
             };
 

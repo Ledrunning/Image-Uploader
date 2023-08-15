@@ -23,11 +23,21 @@
       <button @click="deleteImage" class="buttons">Clear</button>
       <button @click="uploadImage" class="buttons">Add</button>
     </div>
+    <div>
+      <CustomToast
+        v-model:isOpen="toastIsOpen"
+        v-model:message="toastMessage"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
+import "@/styles/addimage.css";
+import "@/styles/genstyle.css";
+import "@/styles/spinnerloader.css";
+import { ref, defineComponent } from "vue";
+import CustomToast from "@/components/CustomToast.vue";
 import ImageApiService from "@/services/ImageService";
 import IImageDto from "@/model/ImageDto";
 import dayjs from "dayjs";
@@ -38,19 +48,20 @@ import DateTimeHelper from "@/helpers/DateTimeHelper";
 import FileService from "@/services/FileService";
 import { useRouter } from "vue-router";
 
-import "@/styles/addimage.css";
-import "@/styles/genstyle.css";
-import "@/styles/spinnerloader.css";
-
-export default {
+export default defineComponent({
+  components: {
+    CustomToast,
+  },
   setup() {
+    let selectedFile: File | null = null;
+    const fileService = new FileService();
     const userService = new ImageApiService();
+    const toastIsOpen = ref(false);
     const image = ref("");
     const fileInput = ref(null);
     const loading = ref(false);
-    let selectedFile: File | null = null;
-    const fileService = new FileService();
     const router = useRouter();
+    const toastMessage = ref("");
     dayjs.extend(utc);
     dayjs.extend(timezone);
 
@@ -80,7 +91,7 @@ export default {
     // Upload Image Function
     async function uploadImage() {
       if (!selectedFile) {
-        alert("Please select a file first.");
+        showToast("Please select a file first.");
         return;
       }
 
@@ -90,13 +101,14 @@ export default {
         loading.value = true; // Start loading
 
         await userService.addImage(imageDto);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        loading.value = false; // Stop loading
         router.push({
           name: "home",
         });
+      } catch (error) {
+        console.log("An error occurred while image uploading", error);
+        showToast("An error occurred while image uploading");
+      } finally {
+        loading.value = false; // Stop loading
       }
     }
 
@@ -114,14 +126,23 @@ export default {
       } as IImageDto;
     }
 
+    async function showToast(text: string) {
+      toastIsOpen.value = true;
+      toastMessage.value = text;
+      await DateTimeHelper.delay(DateTimeHelper.delayTimeout);
+      toastIsOpen.value = false;
+    }
+
     return {
       image,
+      fileInput,
+      loading,
+      toastIsOpen,
+      toastMessage,
       onFileChange,
       deleteImage,
       uploadImage,
-      fileInput,
-      loading,
     };
   },
-};
+});
 </script>
