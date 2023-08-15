@@ -74,6 +74,13 @@ export default defineComponent({
     CustomModal,
   },
   setup() {
+    const PendingAction = {
+      NONE: "none",
+      DELETE: "delete",
+      UPDATE: "update",
+      SAVE: "save",
+    };
+    const currentAction = ref(PendingAction.NONE);
     const route = useRoute();
     const id = Number(route.params.id); // This is from grid
     const fileName = ref("");
@@ -114,6 +121,21 @@ export default defineComponent({
       }
     });
 
+    function deleteImage() {
+      currentAction.value = PendingAction.DELETE;
+      showConfirmationWindow("Are you sure you want to delete?");
+    }
+
+    function updateImage() {
+      currentAction.value = PendingAction.UPDATE;
+      showConfirmationWindow("Are you sure you want to update?");
+    }
+
+    function saveImage() {
+      currentAction.value = PendingAction.SAVE;
+      showConfirmationWindow("Are you sure you want to save?");
+    }
+
     async function fillData(dto: IImageDto) {
       fileName.value = dto.name;
       idText.value = dto.id !== undefined ? dto.id?.toString() : "";
@@ -126,10 +148,6 @@ export default defineComponent({
       // Updating the image source
       imageSrc.value = `data:image/png;base64,${dto.photo}`;
       lastFileName = dto.name;
-    }
-
-    async function saveImage() {
-      await fileService.saveImage(imageSrc.value, fileName.value);
     }
 
     function openImage(event: Event) {
@@ -160,11 +178,28 @@ export default defineComponent({
       }
     }
 
-    function deleteImage() {
+    async function deleteImageMainLogic() {
       showConfirmationWindow("Are you sure you want to proceed?");
+      if (isDialogConfirm.value) {
+        try {
+          loading.value = true;
+          await imageService.deleteImage(id);
+          router.push({
+            name: "home",
+          });
+        } catch (error) {
+          showToast("Edit page: An error occurs when deleting the data");
+          console.log(
+            "Edit page: An error occurs when deleting the data",
+            error
+          );
+        } finally {
+          loading.value = false;
+        }
+      }
     }
 
-    async function updateImage() {
+    async function updateImageMainLogic() {
       try {
         if (loadedFileName !== fileName.value) {
           fileUpdate = FileUpdate.Rewrite;
@@ -231,29 +266,27 @@ export default defineComponent({
       isDialogConfirm.value = true;
       showConfirmModal.value = false;
 
-      if (isDialogConfirm.value) {
-        try {
-          loading.value = true;
-          await imageService.deleteImage(id);
-          router.push({
-            name: "home",
-          });
-        } catch (error) {
-          showToast("Edit page: An error occurs when deleting the data");
-          console.log(
-            "Edit page: An error occurs when deleting the data",
-            error
-          );
-        } finally {
-          loading.value = false;
-        }
+      switch (currentAction.value) {
+        case PendingAction.DELETE:
+          deleteImageMainLogic();
+          break;
+        case PendingAction.UPDATE:
+          updateImageMainLogic();
+          break;
+        case PendingAction.SAVE:
+          fileService.saveImage(imageSrc.value, fileName.value);
+          break;
       }
+
+      // Reset the current action to none after handling it.
+      currentAction.value = PendingAction.NONE;
     };
 
     const handleCancel = () => {
       isConfirm.value = false;
       showConfirmModal.value = false;
       isDialogConfirm.value = false;
+      currentAction.value = PendingAction.NONE; // Reset the current action
     };
 
     return {
