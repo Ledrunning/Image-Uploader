@@ -17,7 +17,11 @@ The repository also contains two versions of desktop applications:
 
 ## UI layout
 
- ![](imageUploader.gif)
+ ![](imageUploaderModernClient.gif)
+
+## WEB UI layout
+
+ ![](imageUploaderWebClient.gif)
 
 ## Getting Started
 To get started with the Image Uploader, follow these steps:
