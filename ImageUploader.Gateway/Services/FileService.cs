@@ -85,20 +85,25 @@ namespace ImageUploader.Gateway.Services
             {
                 var imageEntity = await _repository.GetByIdAsync(id, token);
 
-                var bufferImage = await File.ReadAllBytesAsync(imageEntity.PhotoPath, token);
-
-                _logger.LogInformation("Getting the image from the server");
-
-                return new ImageDto
+                if (imageEntity != null)
                 {
-                    Id = imageEntity.Id,
-                    Name = imageEntity.Name,
-                    DateTime = imageEntity.DateTime,
-                    CreationTime = imageEntity.CreationTime,
-                    FileSize = imageEntity.FileSize,
-                    Photo = bufferImage,
-                    PhotoPath = imageEntity.PhotoPath
-                };
+                    var bufferImage = await File.ReadAllBytesAsync(imageEntity.PhotoPath, token);
+
+                    _logger.LogInformation("Getting the image from the server");
+
+                    return new ImageDto
+                    {
+                        Id = imageEntity.Id,
+                        Name = imageEntity.Name,
+                        DateTime = imageEntity.DateTime,
+                        CreationTime = imageEntity.CreationTime,
+                        FileSize = imageEntity.FileSize,
+                        Photo = bufferImage,
+                        PhotoPath = imageEntity.PhotoPath
+                    };
+                }
+
+                throw new ImageUploaderException("Failed to getting the image by Id!");
             }
             catch (Exception e)
             {

@@ -27,7 +27,7 @@ public abstract partial class BaseViewModel : ObservableObject, INavigationAware
         _fileService = fileService;
         MessageBoxService.ButtonEvent += OnButtonEvent;
     }
-
+    
     public virtual void OnNavigatedFrom()
     {
     }
@@ -66,6 +66,11 @@ public abstract partial class BaseViewModel : ObservableObject, INavigationAware
         if (ImageName == null || ImageBuffer == null || ImageBuffer.Length == 0)
         {
             MessageBoxService.ModernMessageBox.Show(BaseMessages.Error, BaseMessages.ImageSelectMessage);
+            return;
+        }
+
+        if (ImageName == null || ImageBuffer == null)
+        {
             return;
         }
 
