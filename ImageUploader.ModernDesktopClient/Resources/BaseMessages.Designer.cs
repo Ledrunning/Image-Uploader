@@ -61,6 +61,15 @@ namespace ImageUploader.ModernDesktopClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Image Uploader application allows users to upload images to the server and view them on a desktop application..
+        /// </summary>
+        internal static string AboutApp {
+            get {
+                return ResourceManager.GetString("AboutApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attention!.
         /// </summary>
         internal static string Attention {

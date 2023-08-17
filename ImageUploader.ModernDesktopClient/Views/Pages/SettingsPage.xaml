@@ -44,7 +44,13 @@
             Margin="0,24,0,0"
             FontSize="20"
             FontWeight="Medium"
-            Text="About ImageUploader.ModernDesktopClient" />
+            Text="About Image Uploader" />
+        <TextBlock FontSize="16" Margin="0,0,0,0" Text="{Binding ViewModel.About, Mode=OneWay}" />
+        <TextBlock FontSize="16">           
+            <Hyperlink Command="{Binding ViewModel.RequestNavigateCommand}">
+                GitHub
+            </Hyperlink>
+        </TextBlock>
         <TextBlock Margin="0,12,0,0" Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
     </StackPanel>
 </ui:UiPage>
