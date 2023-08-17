@@ -67,7 +67,20 @@ Click on the delete button.
 
 ## Web client
 
-.................. The application is under construction ..................
+### Project setup
+```
+npm install
+```
+
+- Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+- Compiles and minifies for production
+```
+npm run build
+```
 
 ## Contributing
 
@@ -75,5 +88,5 @@ Contributions to the Image Uploader are welcome. If you encounter any issues or 
 
 ## License
 
-The Image Uploader is licensed under the MIT License. Feel free to modify and distribute the code as per the terms of the license.
+The Image Uploader is licensed under the MIT License. Feel free to modify and distribute the code per the license terms.
 
