@@ -64,8 +64,8 @@ namespace ImageUploader.ModernDesktopClient
                 // Service containing navigation, same as INavigationWindow... but without window
                 services.AddSingleton<INavigationService, NavigationService>();
 
-                services.AddScoped<OpenFileDialog>();
-                services.AddScoped<SaveFileDialog>();
+                services.AddTransient<OpenFileDialog>();
+                services.AddTransient<SaveFileDialog>();
                 services.AddTransient<Wpf.Ui.Controls.MessageBox>();
                 services.AddTransient<IMessageBoxService, MessageBoxService>();
                 services.AddTransient<IFileService, FileService>();
