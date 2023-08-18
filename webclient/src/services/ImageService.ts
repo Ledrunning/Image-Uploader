@@ -1,13 +1,19 @@
 import IImageDto from "@/model/ImageDto";
 import IImageLoadDto from "@/model/ImageLoadDto";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import { getConfig } from "@/services/ConfigLoader";
+import IConfig from "@/model/Config";
 
 export default class ImageApiService {
   private axiousInstance: AxiosInstance;
+  private config: IConfig;
 
   constructor() {
+    // Load the configuration
+    this.config = getConfig();
+
     this.axiousInstance = axios.create({
-      baseURL: "http://localhost:59871/",
+      baseURL: this.config.apiUrl,
     });
     axios.defaults.headers.post["Content-Type"] = "application/json";
   }

@@ -129,6 +129,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <ui:Button Grid.Row="0" Grid.Column="0"
+                               IsEnabled="{Binding ViewModel.IsSaveButtonEnabled}"
                                Command="{Binding ViewModel.SaveFileToLocalStorageCommand, Mode=OneWay}" Content="Save"
                                Width="87.02" HorizontalAlignment="Stretch" />
                 </Grid>

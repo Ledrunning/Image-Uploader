@@ -1,6 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Diagnostics;
+using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ImageUploader.ModernDesktopClient.Resources;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Common.Interfaces;
 
@@ -9,6 +12,7 @@ namespace ImageUploader.ModernDesktopClient.ViewModels;
 public partial class SettingsViewModel : ObservableObject, INavigationAware
 {
     [ObservableProperty] private string _appVersion = string.Empty;
+    [ObservableProperty] private string _about = string.Empty;
 
     [ObservableProperty] private ThemeType _currentTheme = ThemeType.Unknown;
 
@@ -30,13 +34,23 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         CurrentTheme = Theme.GetAppTheme();
         AppVersion = $"ImageUploader.ModernDesktopClient - {GetAssemblyVersion()}";
-
+        About = BaseMessages.AboutApp;
         _isInitialized = true;
     }
 
     private string GetAssemblyVersion()
     {
         return Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
+    }
+
+    [RelayCommand]
+    private void RequestNavigate()
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "https://github.com/Ledrunning/Image-Uploader",
+            UseShellExecute = true
+        });
     }
 
     [RelayCommand]

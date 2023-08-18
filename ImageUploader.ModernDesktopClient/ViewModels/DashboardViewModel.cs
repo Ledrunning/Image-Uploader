@@ -23,6 +23,7 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] private long _fileId;
     [ObservableProperty] private string? _fileName;
     [ObservableProperty] private string? _fileSize;
+    [ObservableProperty] private bool _isSaveButtonEnabled;
 
     [ObservableProperty] private long? _imageId;
     [ObservableProperty] private Image? _loadedImage = new();
@@ -66,9 +67,21 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private void OnImageClear()
     {
+        ClearDefault();
+    }
+
+    private void ClearDefault()
+    {
         if (LoadedImage == null)
         {
             return;
+        }
+
+        if (ImageBuffer != null)
+        {
+            ImageName = string.Empty;
+            Array.Clear(ImageBuffer);
+            IsSaveButtonEnabled = false;
         }
 
         LoadedImage.Source = null;
@@ -121,6 +134,7 @@ public partial class DashboardViewModel : BaseViewModel
                 if (LoadedImage != null)
                 {
                     LoadedImage.Source = ImageConverter.ByteToImage(imageDto.Photo);
+                    IsSaveButtonEnabled = true;
                 }
 
                 FillImageInfo(imageDto);
@@ -167,6 +181,8 @@ public partial class DashboardViewModel : BaseViewModel
             FileEvent?.Invoke(new TemplateEventArgs<bool>(true));
             MessageBoxService.ModernMessageBox.Show(BaseMessages.Information, DashBoardMessages.FileDeletedMessage);
             FileId = 0;
+            ClearDefault();
+            ClearFileInfo();
         }
         catch (Exception)
         {
