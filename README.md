@@ -78,7 +78,7 @@ npm run serve
 npm run build
 ```
 
-* Url for connection to the server located in public/config.json f.e: "apiUrl": "http://localhost:59871/" *
+**Url for connection to the server located in public/config.json f.e: "apiUrl": "http://localhost:59871/"**
 
 you can change it at yours.
 
