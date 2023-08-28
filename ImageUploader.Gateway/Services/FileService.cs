@@ -57,8 +57,6 @@ namespace ImageUploader.Gateway.Services
 
         public async Task AddAsync(ImageDto imageDto, CancellationToken token)
         {
-            SaveImage(imageDto);
-
             try
             {
                 await _repository.AddAsync(new ImageEntity
@@ -69,6 +67,8 @@ namespace ImageUploader.Gateway.Services
                     FileSize = imageDto.FileSize,
                     PhotoPath = $"{PhotoDataPath}\\{imageDto.Name}"
                 }, token);
+
+                SaveImage(imageDto);
 
                 _logger.LogInformation("The image and details has been added on the server");
             }
