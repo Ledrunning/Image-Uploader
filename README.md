@@ -20,10 +20,6 @@ The repository also contains two versions of desktop applications:
 
  ![](imageUploaderModernClient.gif)
 
-## WEB UI layout
-
- ![](imageUploaderWebClient.gif)
-
 ## Getting Started
 To get started with the Image Uploader, follow these steps:
 
@@ -81,6 +77,14 @@ npm run serve
 ```
 npm run build
 ```
+
+**Url for connection to the server located in public/config.json f.e: "apiUrl": "http://localhost:59871/"**
+
+you can change it at yours.
+
+## WEB UI layout
+
+ ![](imageUploaderWebClient.gif)
 
 ## Contributing
 
