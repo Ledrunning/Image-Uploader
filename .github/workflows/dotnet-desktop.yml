@@ -57,3 +57,13 @@ jobs:
       run: |
         cd ImageUploader.ModernDesktopClient
         dotnet build --configuration Release
+
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: built-files
+        path: |
+          ImageUploader.DesktopClient/bin/Release/
+          ImageUploader.DesktopCommon/bin/Release/
+          ImageUploader.Gateway/bin/Release/
+          ImageUploader.ModernDesktopClient/bin/Release/
