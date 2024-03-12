@@ -10,60 +10,60 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '6.0.x' # Укажите версию .NET Core, которая подходит для всех ваших проектов
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
 
-    - name: Restore NuGet packages for .NET Framework 4.8
-      run: |
-        cd ImageUploader.DesktopClient
-        dotnet restore
+      - name: Restore NuGet packages for .NET Framework 4.8
+        run: |
+          cd ImageUploader.DesktopClient
+          dotnet restore
 
-    - name: Build Solution for .NET Framework 4.8
-      run: |
-        cd ImageUploader.DesktopClient
-        dotnet build --configuration Release
+      - name: Build Solution for .NET Framework 4.8
+        run: |
+          cd ImageUploader.DesktopClient
+          dotnet build --configuration Release
 
-    - name: Restore NuGet packages for .NET Standard 2.0
-      run: |
-        cd ImageUploader.DesktopCommon
-        dotnet restore
+      - name: Restore NuGet packages for .NET Standard 2.0
+        run: |
+          cd ImageUploader.DesktopCommon
+          dotnet restore
 
-    - name: Build Solution for .NET Standard 2.0
-      run: |
-        cd ImageUploader.DesktopCommon
-        dotnet build --configuration Release
+      - name: Build Solution for .NET Standard 2.0
+        run: |
+          cd ImageUploader.DesktopCommon
+          dotnet build --configuration Release
 
-    - name: Restore NuGet packages for .NET Core 2.0
-      run: |
-        cd ImageUploader.Gateway
-        dotnet restore
+      - name: Restore NuGet packages for .NET Core 2.0
+        run: |
+          cd ImageUploader.Gateway
+          dotnet restore
 
-    - name: Build Solution for .NET Core 2.0
-      run: |
-        cd ImageUploader.Gateway
-        dotnet build --configuration Release
+      - name: Build Solution for .NET Core 2.0
+        run: |
+          cd ImageUploader.Gateway
+          dotnet build --configuration Release
 
-    - name: Restore NuGet packages for .NET 6.0
-      run: |
-        cd ImageUploader.ModernDesktopClient
-        dotnet restore
+      - name: Restore NuGet packages for .NET 6.0
+        run: |
+          cd ImageUploader.ModernDesktopClient
+          dotnet restore
 
-    - name: Build Solution for .NET 6.0
-      run: |
-        cd ImageUploader.ModernDesktopClient
-        dotnet build --configuration Release
+      - name: Build Solution for .NET 6.0
+        run: |
+          cd ImageUploader.ModernDesktopClient
+          dotnet build --configuration Release
 
-    - name: Publish artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: built-files
-        path: |
-          ImageUploader.DesktopClient/bin/Release/
-          ImageUploader.DesktopCommon/bin/Release/
-          ImageUploader.Gateway/bin/Release/
-          ImageUploader.ModernDesktopClient/bin/Release/
+      - name: Publish artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: built-files
+          path: |
+            ImageUploader.DesktopClient/bin/Release/
+            ImageUploader.DesktopCommon/bin/Release/
+            ImageUploader.Gateway/bin/Release/
+            ImageUploader.ModernDesktopClient/bin/Release/
