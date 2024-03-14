@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x64]
 
     steps:
       - name: Checkout repository
@@ -57,20 +60,6 @@ jobs:
         run: |
           cd ImageUploader.ModernDesktopClient
           dotnet build --configuration Release
-
-      # Debugging steps
-      - name: List files in DesktopClient/bin/Release/
-        run: |
-          ls -l ImageUploader.DesktopClient/bin/Release/
-      - name: List files in DesktopCommon/bin/Release/
-        run: |
-          ls -l ImageUploader.DesktopCommon/bin/Release/
-      - name: List files in Gateway/bin/Release/
-        run: |
-          ls -l ImageUploader.Gateway/bin/Release/
-      - name: List files in ModernDesktopClient/bin/Release/
-        run: |
-          ls -l ImageUploader.ModernDesktopClient/bin/Release/
 
       - name: Publish artifacts
         uses: actions/upload-artifact@v2
