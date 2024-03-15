@@ -17,9 +17,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup .NET Framework
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '4.8'
+        run: |
+          choco install dotnet-48
+          refreshenv
 
       - name: Restore NuGet packages for .NET Framework 4.8
         run: |
