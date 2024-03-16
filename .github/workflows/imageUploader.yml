@@ -16,10 +16,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup .NET Framework
+      - name: Install .NET Framework 4.8
         run: |
-          choco install dotnet-48
-          refreshenv
+          Invoke-WebRequest -Uri 'https://download.visualstudio.microsoft.com/download/pr/7afca223-55d2-470a-8edc-6a1739ae3252/106acd0e9a74c19bc33f297f0f75f6d8/ndp48-x86-x64-allos-enu.exe' -OutFile 'dotnet-framework-installer.exe'
+          Start-Process -FilePath 'dotnet-framework-installer.exe' -ArgumentList '/quiet /norestart' -Wait
 
       - name: Restore NuGet packages for .NET Framework 4.8
         run: |
