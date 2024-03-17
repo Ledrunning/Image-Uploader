@@ -18,7 +18,7 @@ jobs:
 
       - name: Download .NET Framework 4.8 installer
         run: |
-          Invoke-WebRequest -Uri 'https://download.visualstudio.microsoft.com/download/pr/8f6fe40b-1f09-4cd5-8b91-6cc025e39cf7/0f3ac1b7687f84af79a34ed8b4395a01/ndp48-x86-x64-allos-enu.exe' -OutFile 'dotnet-framework-installer.exe'
+          Invoke-WebRequest -Uri 'https://support.microsoft.com/ru-ru/topic/microsoft-net-framework-4-8-%D0%B0%D0%B2%D1%82%D0%BE%D0%BD%D0%BE%D0%BC%D0%BD%D1%8B%D0%B9-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D1%89%D0%B8%D0%BA-%D0%B4%D0%BB%D1%8F-windows-9d23f658-3b97-68ab-d013-aa3c3e7495e0/ndp48-x86-x64-allos-enu.exe' -OutFile 'dotnet-framework-installer.exe'
 
       - name: Install .NET Framework 4.8
         run: |
