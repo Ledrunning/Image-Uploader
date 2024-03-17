@@ -16,9 +16,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install .NET Framework 4.8
-        run: |
-          .\dotnet-framework-installer.exe /q /norestart
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '4.8'
 
       - name: Restore NuGet packages for .NET Framework 4.8
         run: |
